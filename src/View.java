@@ -17,8 +17,9 @@ public class View {
         return scanner.nextLine();
     }
 
+    // TODO: Implement clearScreen()
     public void clearScreen() {
-        // TODO: Code the clearScreen() function
+
     }
 
     public String displayCreateHotelPrompt() {

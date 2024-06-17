@@ -38,9 +38,12 @@ public class Reservation {
         return Room.getBasePricePerNight() * numDays;
     }
 
+    // TODO: Implement getPriceBreakdown()
     public String getPriceBreakdown() {
-        System.out.println("Price breakdown:");
-        // TODO: Implement getPriceBreakdown()
+        String priceBreakdown = "Price breakdown:";
+        // Iterate through each day of the reservation and concatenate to priceBreakdown
         return "";
     }
+
+
 }
