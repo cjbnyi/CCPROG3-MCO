@@ -5,7 +5,7 @@ public class Model {
     private ArrayList<Hotel> hotelList;
 
     public Model() {
-        hotelList = new ArrayList<Hotel>();
+        this.hotelList = new ArrayList<Hotel>();
     }
 
     public boolean createHotel(String name) {
