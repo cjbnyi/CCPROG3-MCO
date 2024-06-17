@@ -14,7 +14,7 @@ public class Controller {
 
         String userInput = view.displayCreateHotelPrompt();
 
-        
+
     }
 
     public void viewHotel() {
