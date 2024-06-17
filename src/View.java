@@ -17,6 +17,30 @@ public class View {
         return scanner.nextLine();
     }
 
+    public void clearScreen() {
+        // TODO: Code the clearScreen() function
+    }
+
+    public String displayCreateHotelPrompt() {
+        System.out.println("<insert Create Hotel prompt>");
+        return getUserInput("Please provide a response: ");
+    }
+
+    public String displayViewHotelPrompt() {
+        System.out.println("<insert View Hotel prompt>");
+        return getUserInput("Please provide a response: ");
+    }
+
+    public String displayManageHotelPrompt() {
+        System.out.println("<insert Manage Hotel prompt>");
+        return getUserInput("Please provide a response: ");
+    }
+
+    public String displayBookReservationPrompt() {
+        System.out.println("<insert Book Reservation prompt>");
+        return getUserInput("Please provide a response: ");
+    }
+
     public void displayProgramTerminationMessage() {
         System.out.println("Thank you for trying out our Hotel Reservation System!");
         System.out.println("Authors:");

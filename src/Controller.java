@@ -10,57 +10,74 @@ public class Controller {
         this.view = view;
     }
 
+    public void createHotel() {
+
+        String userInput = view.displayCreateHotelPrompt();
+
+        
+    }
+
+    public void viewHotel() {
+
+        String userInput = view.displayViewHotelPrompt();
+
+
+    }
+
+    public void manageHotel() {
+
+        String userInput = view.displayManageHotelPrompt();
+
+
+    }
+
+    public void bookReservation() {
+
+        String userInput = view.displayBookReservationPrompt();
+
+
+    }
+
     public void start() {
 
         boolean isProgramRunning = true;
 
         while (isProgramRunning) {
 
-            String input = view.getUserInput("Please provide a response: ");
+            view.displayMessage("\nWelcome to the Hotel Reservation System!\n");
 
-            switch(input) {
+            view.displayMessage("[C]reate Hotel");
+            view.displayMessage("[V]iew Hotel");
+            view.displayMessage("[M]anage Hotel");
+            view.displayMessage("[B]ook Reservation");
+
+            String userInput = view.getUserInput("\nPlease provide a response: ");
+
+            switch(userInput) {
                 case "C":
-
+                    this.createHotel();
                     break;
                 case "V":
-
+                    this.viewHotel();
                     break;
                 case "M":
-
+                    this.manageHotel();
                     break;
                 case "B":
-
+                    this.bookReservation();
                     break;
                 case "quit":
                     isProgramRunning = false;
                     break;
                 default:
-                    System.out.println("\nPlease provide a valid response!"); // temporary
+                    view.displayMessage("\nPlease provide a valid response!"); // temporary
                     break;
             }
 
-            // insert code that clears screen
+            view.clearScreen();
         }
 
+        /* program termination sequence */
         view.displayProgramTerminationMessage();
     }
-
-    /*
-    public static void main(String[] Args) {
-
-        // main program
-        while (isProgramRunning) {
-            System.out.println("\nWelcome to the Hotel Reservation System!\n");
-
-            System.out.println("[C]reate Hotel");
-            System.out.println("[V]iew Hotel");
-            System.out.println("[M]anage Hotel");
-            System.out.println("[B]ook Reservation");
-
-            System.out.print("\nPlease provide a response: ");
-            userResponse = sc.nextLine();
-
-
-        }
-     */
 }
