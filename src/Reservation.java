@@ -33,17 +33,18 @@ public class Reservation {
         return this.room;
     }
 
-    public double getTotalPrice() {
-        int numDays = (int) ChronoUnit.DAYS.between(this.checkInDate, this.checkOutDate);
-        return Room.getBasePricePerNight() * numDays;
+    public int getNumDays() {
+        return (int) ChronoUnit.DAYS.between(this.checkInDate, this.checkOutDate);
     }
 
-    // TODO: Implement getPriceBreakdown()
+    public double getTotalPrice() {
+        return this.room.getBasePricePerNight() * this.getNumDays();
+    }
+
     public String getPriceBreakdown() {
         String priceBreakdown = "Price breakdown:";
-        // Iterate through each day of the reservation and concatenate to priceBreakdown
-        return "";
+        for (int i = 0; i < this.getNumDays(); i++)
+            priceBreakdown += "\n" + this.checkInDate.plusDays(i) + " --- " + this.room.getBasePricePerNight();
+        return priceBreakdown;
     }
-
-
 }

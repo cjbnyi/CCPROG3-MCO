@@ -1,7 +1,7 @@
 public class Room {
 
     private String name;
-    private static double basePricePerNight = 1299.0;
+    private double basePricePerNight = 1299.0;
 
     public Room(String name) {
         this.name = name;
@@ -11,13 +11,11 @@ public class Room {
         return this.name;
     }
 
-    public static double getBasePricePerNight() {
-        return Room.basePricePerNight;
+    public double getBasePricePerNight() {
+        return this.basePricePerNight;
     }
 
-    public static void setBasePricePerNight(double basePricePerNight) {
-        Room.basePricePerNight = basePricePerNight;
+    public void setBasePricePerNight(double basePricePerNight) {
+        this.basePricePerNight = basePricePerNight;
     }
-
-
 }
