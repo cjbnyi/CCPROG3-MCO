@@ -1,6 +1,4 @@
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-
 import static java.time.temporal.ChronoUnit.DAYS;
 
 public class Reservation {
@@ -34,7 +32,7 @@ public class Reservation {
     }
 
     public int getNumDays() {
-        return (int) ChronoUnit.DAYS.between(this.checkInDate, this.checkOutDate);
+        return (int) DAYS.between(this.checkInDate, this.checkOutDate);
     }
 
     public double getTotalPrice() {

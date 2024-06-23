@@ -47,6 +47,7 @@ public class Model {
 
         if (!hotelExists)
             return 0;
+        // find a way to use confirmAction()
 
         for (Hotel hotel : this.hotelList) {
             String hotelName = hotel.getName();

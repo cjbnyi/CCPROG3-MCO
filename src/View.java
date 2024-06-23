@@ -13,8 +13,22 @@ public class View {
     }
 
     public String getUserInput(String prompt) {
-        System.out.print(prompt);
+        System.out.print(prompt + " ");
         return scanner.nextLine();
+    }
+
+    /**
+     * Prompts the user to confirm their input.
+     * @return true if the user inputs 'Y'; false if the user inputs 'N'
+     */
+    public boolean confirmUserInput() {
+        System.out.print("Do you want to confirm your action (Y/N)? "); // placeholder and tentative
+        String userInput = scanner.nextLine();
+        if (userInput.equalsIgnoreCase("Y"))
+            return true;
+        else if (userInput.equalsIgnoreCase("N"))
+            return false;
+        return confirmUserInput(); // may cause some errors, idk
     }
 
     // TODO: Implement clearScreen()
