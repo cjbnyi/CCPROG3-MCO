@@ -9,7 +9,7 @@ public class Model {
         this.hotelList = new ArrayList<Hotel>();
     }
 
-    public boolean createHotel(String name) {
+    public boolean addHotel(String name) {
         for (Hotel hotel : hotelList)
             if (hotel.getName().equals(name))
                 return false;
@@ -56,5 +56,15 @@ public class Model {
         }
 
         return 2;
+    }
+
+
+    /**
+     * Gets the array of hotels.
+     *
+     * @return An array of hotels.
+     */
+    public ArrayList<Hotel> hotelList() {
+        return this.hotelList;
     }
 }
