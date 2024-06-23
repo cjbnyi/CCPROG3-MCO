@@ -12,65 +12,73 @@ public class Controller {
 
     public void createHotel() {
 
-        String userInput = view.displayCreateHotelPrompt();
+        view.displayCreateHotelPrompt();
+        String userInput = view.getUserInput("Please provide a response: ");
 
+        switch(userInput) {
 
+        }
     }
 
     public void viewHotel() {
 
-        String userInput = view.displayViewHotelPrompt();
+        view.displayViewHotelPrompt();
+        String userInput = view.getUserInput("Please provide a response: ");
 
+        switch(userInput) {
 
+        }
     }
 
     public void manageHotel() {
 
-        String userInput = view.displayManageHotelPrompt();
+        view.displayManageHotelPrompt();
+        String userInput = view.getUserInput("Please provide a response: ");
 
+        switch(userInput) {
 
+        }
     }
 
     public void bookReservation() {
 
-        String userInput = view.displayBookReservationPrompt();
+        view.displayBookReservationPrompt();
+        String userInput = view.getUserInput("Please provide a response: ");
 
+        switch(userInput) {
 
+        }
     }
 
     public void start() {
 
         boolean isProgramRunning = true;
 
+        /* program flow */
         while (isProgramRunning) {
 
-            view.displayMessage("\nWelcome to the Hotel Reservation System!\n");
-
-            view.displayMessage("[C]reate Hotel");
-            view.displayMessage("[V]iew Hotel");
-            view.displayMessage("[M]anage Hotel");
-            view.displayMessage("[B]ook Reservation");
+            view.displayActionPrompt();
 
             String userInput = view.getUserInput("\nPlease provide a response: ");
 
-            switch(userInput) {
-                case "C":
+            switch(userInput.charAt(0)) {
+                case View.CREATE_HOTEL_OPTION:
                     this.createHotel();
                     break;
-                case "V":
+                case View.VIEW_HOTEL_OPTION:
                     this.viewHotel();
                     break;
-                case "M":
+                case View.MANAGE_HOTEL_OPTION:
                     this.manageHotel();
                     break;
-                case "B":
+                case View.BOOK_RESERVATION_OPTION:
                     this.bookReservation();
                     break;
-                case "quit":
+                case View.QUIT_OPTION:
                     isProgramRunning = false;
                     break;
                 default:
-                    view.displayMessage("\nPlease provide a valid response!"); // temporary
+                    view.displayInvalidInputWarning();
                     break;
             }
 

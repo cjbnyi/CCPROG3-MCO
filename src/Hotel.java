@@ -31,6 +31,10 @@ public class Hotel {
         return this.name;
     }
 
+    public ArrayList<Room> getRoomList() {
+        return this.roomList;
+    }
+
     public int getTotalRooms() {
         return this.roomList.size();
     }
