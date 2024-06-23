@@ -1,3 +1,4 @@
+import java.rmi.server.RemoteServer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -35,15 +36,12 @@ public class Hotel {
         return this.roomList;
     }
 
-    public int getTotalRooms() {
-        return this.roomList.size();
+    public ArrayList<Reservation> getReservationList() {
+        return this.reservationList;
     }
 
-    public double getEstimatedEarnings() {
-        double totalEarnings = 0.0;
-        for (Reservation reservation : reservationList)
-            totalEarnings += reservation.getTotalPrice();
-        return totalEarnings;
+    public int getTotalRooms() {
+        return this.roomList.size();
     }
 
     // TODO: Implement makeReservation()
@@ -51,13 +49,13 @@ public class Hotel {
         return -1;
     }
 
-    public boolean addRoom(String name) {
+    public Room addRoom(String name) {
         for (Room room : this.roomList)
             if (room.getName().equals(name))
-                return false;
+                return null;
         Room room = new Room(name);
         this.roomList.add(room);
-        return true;
+        return room;
     }
 
     public ArrayList<Room> filterAvailableRoomsByDate(LocalDate date) {
@@ -116,25 +114,27 @@ public class Hotel {
         return availableDates;
     }
 
-    public String getRoomInfo(String roomName) {
-        for (Room room : this.roomList) {
-            if (room.getName().equals(roomName)) {
-                StringBuilder roomInfo = new StringBuilder (
-                    "Name: " + room.getName() + "\n" +
-                    "Base price per night: " + room.getBasePricePerNight() + "\n" +
-                    "Available dates:"
-                );
-                ArrayList<LocalDate> availableDates = getRoomAvailabilityThisMonth(room);
-                for (LocalDate date : availableDates)
-                    roomInfo.append("\n").append(date.toString());
-                return roomInfo.toString();
-            }
-        }
-        return "Invalid room name.";
+    public Room getRoom(String roomName) {
+        for (Room room : this.roomList)
+            if (room.getName().equals(roomName))
+                return room;
+        return null;
+    }
+
+    public String getRoomInfo(Room room) {
+        StringBuilder roomInfo = new StringBuilder (
+            "Name: " + room.getName() + "\n" +
+            "Base price per night: " + room.getBasePricePerNight() + "\n" +
+            "Available dates:"
+        );
+        ArrayList<LocalDate> availableDates = getRoomAvailabilityThisMonth(room);
+        for (LocalDate date : availableDates)
+            roomInfo.append("\n").append(date.toString());
+        return roomInfo.toString();
     }
 
     public boolean setRoomBasePrice(double newPrice) {
-        if (!this.reservationList.isEmpty())
+        if (newPrice <= 0 || !this.reservationList.isEmpty())
             return false;
         for (Room room : this.roomList)
             room.setBasePricePerNight(newPrice);

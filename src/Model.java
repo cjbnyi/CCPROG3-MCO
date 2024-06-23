@@ -9,13 +9,20 @@ public class Model {
         this.hotelList = new ArrayList<Hotel>();
     }
 
-    public boolean addHotel(String name) {
+    public Hotel addHotel(String name) {
         for (Hotel hotel : hotelList)
             if (hotel.getName().equals(name))
-                return false;
-        Hotel newHotel = new Hotel(name);
-        this.hotelList.add(newHotel);
-        return true;
+                return null;
+        Hotel hotel = new Hotel(name);
+        this.hotelList.add(hotel);
+        return hotel;
+    }
+
+    public double getHotelEstimatedEarnings(Hotel hotel) {
+        double totalEarnings = 0.0;
+        for (Reservation reservation : hotel.getReservationList())
+            totalEarnings += reservation.getTotalPrice();
+        return totalEarnings;
     }
 
     public int getTotalAvailableRoomsByDate(Hotel hotel, LocalDate date) { // not sure if we should do these
@@ -47,7 +54,6 @@ public class Model {
 
         if (!hotelExists)
             return 0;
-        // find a way to use confirmAction()
 
         for (Hotel hotel : this.hotelList) {
             String hotelName = hotel.getName();
@@ -64,7 +70,7 @@ public class Model {
      *
      * @return An array of hotels.
      */
-    public ArrayList<Hotel> hotelList() {
+    public ArrayList<Hotel> getHotelList() {
         return this.hotelList;
     }
 }
