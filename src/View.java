@@ -1,5 +1,3 @@
-import com.sun.security.jgss.GSSUtil;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -18,6 +16,9 @@ public class View {
                              SELECTED_ROOM_OPTION = '2',
                              SELECTED_RESERVATION_OPTION = '3';
 
+    public static final int  SYSTEM_MONTH = 7,
+                             SYSTEM_YEAR = 2024;
+
     private final Scanner scanner;
 
     public View() {
@@ -25,17 +26,16 @@ public class View {
     }
 
     public void displayDivider() {
-        System.out.println("========");
+        System.out.println("\n========");
     }
 
 
     public void displayMessage(String message) {
-        displayDivider();
         System.out.println(message);
     }
 
 
-    public void displayActionPrompt() {
+    public void displayMainActionPrompt() {
         displayDivider();
         System.out.println("Welcome to the Hotel Reservation System!\n");
         System.out.println("[C]reate Hotel");
@@ -45,20 +45,56 @@ public class View {
     }
 
 
-    public String getInputString(String prompt) {
-        System.out.print(prompt + " ");
-        return scanner.nextLine();
+    public String getInputStr(String prompt) {
+        String s;
+        do {
+            System.out.print(prompt + " ");
+            s = scanner.nextLine();
+            displayInvalidInputWarning(!s.isEmpty(), "Please provide a string response!");
+        } while (s.isEmpty());
+        return s;
+    }
+
+
+    public char getInputChar(String prompt) {
+        String s;
+        do {
+            System.out.print(prompt + " ");
+            s = scanner.nextLine();
+            displayInvalidInputWarning(!s.isEmpty(), "Please provide a character response!");
+        } while (s.isEmpty());
+        return s.toUpperCase().charAt(0);
     }
 
 
     public int getInputInt(String prompt) {
-        System.out.println(prompt + " ");
-        return scanner.nextInt();
+        System.out.print(prompt + " ");
+        do {
+            displayInvalidInputWarning(scanner.hasNextInt(), "Please provide a numerical response!");
+            if (!scanner.hasNextInt()) {
+                scanner.nextLine();
+                System.out.print(prompt + " ");
+            }
+        } while (!scanner.hasNextInt());
+
+        int i = scanner.nextInt();
+        scanner.nextLine();
+        return i;
     }
 
     public double getInputDouble(String prompt) {
-        System.out.println(prompt + " ");
-        return scanner.nextDouble();
+        System.out.print(prompt + " ");
+        do {
+            displayInvalidInputWarning(scanner.hasNextDouble(), "Please provide a numerical response!");
+            if (!scanner.hasNextDouble()) {
+                scanner.nextLine();
+                System.out.print(prompt + " ");
+            }
+        } while (!scanner.hasNextDouble());
+
+        double d = scanner.nextDouble();
+        scanner.nextLine();
+        return d;
     }
 
     /**
@@ -88,12 +124,12 @@ public class View {
 
     public void displayCreateHotelPrompt() {
         displayDivider();
-        System.out.println("<insert Create Hotel prompt>");
+        System.out.println("[Hotel Creation]");
     }
 
     public void displayViewHotelPrompt() {
         displayDivider();
-        System.out.println("<insert View Hotel prompt>");
+        System.out.println("[Hotel Information Viewing]");
     }
 
     public void displayManageHotelPrompt() {
@@ -129,21 +165,61 @@ public class View {
     }
 
 
-    public void displayInvalidInputWarning() {
-        displayDivider();
-        System.out.println("Invalid input!");
+    public void displayInvalidInputWarning(boolean isValidInput, String warning) {
+        if (isValidInput) return;
+        System.out.println("Invalid input! " + warning);
     }
 
 
-    // TODO: Continue this
-    public Hotel selectHotel(ArrayList<Hotel> hotelList) {
-        displayDivider();
-
+    public void displayRoomSelection(ArrayList<Room> roomList) {
+        if (roomList.isEmpty())
+            System.out.println("No room exists.");
+        else {
+            System.out.println("List of rooms:");
+            int i = 1;
+            for (Room room : roomList) {
+                System.out.println(i + ".) " + room.getName());
+                ++i;
+            }
+        }
     }
 
 
-    public void displayHighLevelHotelInfoPrompt(boolean hasDivider) {
-        if (hasDivider) displayDivider();
+    public void displayReservationSelection(ArrayList<Reservation> reservationList) {
+        if (reservationList.isEmpty())
+            System.out.println("\nNo reservation exists.");
+        else {
+            System.out.println("\nList of reservations:");
+            int i = 1;
+            for (Reservation reservation : reservationList) {
+                System.out.println(i + ".)");
+                System.out.println("Check-in date: " + reservation.getCheckInDate());
+                System.out.println("Room: " + reservation.getRoom());
+                ++i;
+            }
+        }
+    }
+
+
+    public void displayHotelSelection(ArrayList<Hotel> hotelList) {
+        if (hotelList.isEmpty())
+            System.out.println("\nNo hotel exists.");
+        else {
+            System.out.println("\nList of hotels:");
+            int i = 1;
+            for (Hotel hotel : hotelList) {
+                System.out.println(i + ".) " + hotel.getName());
+                ++i;
+            }
+        }
+    }
+
+
+    public void displayHighLevelHotelInfoPrompt(boolean hasDivider, String hotelName) {
+        if (hasDivider) {
+            displayDivider();
+            System.out.println("Selected hotel: " + hotelName + "\n");
+        }
         System.out.println("[H]igh-level information");
         System.out.println("\t- Name");
         System.out.println("\t- Total number of rooms");
@@ -151,8 +227,20 @@ public class View {
     }
 
 
-    public void displayLowLevelHotelInfoPrompt(boolean hasDivider) {
-        if (hasDivider) displayDivider();
+    public void displayHighLevelHotelInfo(Hotel hotel, double estimatedEarnings) {
+        if (hotel == null) return;
+        displayDivider();
+        System.out.println("Name: " + hotel.getName());
+        System.out.println("Total number of rooms: " + hotel.getTotalRooms());
+        System.out.println("Estimated earnings: " + estimatedEarnings);
+    }
+
+
+    public void displayLowLevelHotelInfoPrompt(boolean hasDivider, String hotelName) {
+        if (hasDivider) {
+            displayDivider();
+            System.out.println("Selected hotel: " + hotelName + "\n");
+        }
         System.out.println("[L]ow-level information");
         System.out.println("\t[1] Selected date hotel availability");
         System.out.println("\t\t- Total number of available rooms");
@@ -170,8 +258,33 @@ public class View {
     }
 
 
-    public void displayHotelInfoPrompt() {
-        displayHighLevelHotelInfoPrompt(true);
-        displayLowLevelHotelInfoPrompt(false);
+    public void displayHotelInfoPrompt(String hotelName) {
+        displayDivider();
+        System.out.println("Selected hotel: " + hotelName + "\n");
+        displayHighLevelHotelInfoPrompt(false, hotelName);
+        displayLowLevelHotelInfoPrompt(false, hotelName);
+    }
+
+
+    public void displaySelectedDateInfo(int availableRooms, int unavailableRooms) {
+        System.out.println("Available rooms: " + availableRooms);
+        System.out.println("Unavailable rooms: " + unavailableRooms);
+    }
+
+
+    public void displaySelectedRoomInfo(String roomInfo) {
+        displayDivider();
+        System.out.println(roomInfo);
+    }
+
+
+    public void displaySelectedReservationInfo(Reservation reservation) {
+        if (reservation == null) return;
+        displayDivider();
+        System.out.println("Guest: " + reservation.getGuestName());
+        System.out.println("Check-in: " + reservation.getCheckInDate());
+        System.out.println("Check-out: " + reservation.getCheckOutDate());
+        System.out.println("Price breakdown:" + reservation.getPriceBreakdown());
+        System.out.println("Total price: " + reservation.getTotalPrice());
     }
 }

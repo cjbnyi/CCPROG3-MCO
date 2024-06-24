@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class Controller {
 
@@ -12,81 +13,131 @@ public class Controller {
 
     public void createHotel() {
 
+        view.clearConsole();
         view.displayCreateHotelPrompt();
+        view.displayHotelSelection(model.getHotelList());
 
         String hotelName;
         Hotel hotel;
+        boolean isValidHotel;
         do {
-            hotelName = view.getInputString("Name of hotel: ");
+            hotelName = view.getInputStr("\nName of hotel: ");
             hotel = model.addHotel(hotelName);
-        } while(hotel == null);
+            isValidHotel = hotel != null;
+
+            view.displayInvalidInputWarning(isValidHotel, "Please provide a unique hotel name!");
+        } while(!isValidHotel);
 
         double roomBasePrice;
+        boolean isValidBasePrice;
         do {
-            roomBasePrice = view.getInputDouble("Base price per night per room: ");
-        } while(!hotel.setRoomBasePrice(roomBasePrice));
+            roomBasePrice = view.getInputDouble("\nBase price per night per room: ");
+            isValidBasePrice = hotel.setRoomBasePrice(roomBasePrice);
+            view.displayInvalidInputWarning(isValidBasePrice, "Please provide a base price greater than 0!");
+        } while(!isValidBasePrice);
 
-
-        view.displayMessage("Hotel successfully initialized! :>");
+        view.displayMessage("\nHotel successfully initialized! :>");
     }
 
-    public void viewHighLevelInfo(Hotel hotel) {
-
-    }
 
     public void viewLowLevelInfo(Hotel hotel) {
-        char userInput;
-        do {
-            view.displayLowLevelHotelInfoPrompt(true);
-            userInput = view.getInputString("Please provide a response (1/2/3): ").toUpperCase().charAt(0);
-        } while (!(userInput >= '1' && userInput <= '3'));
 
+        char userInput;
+        boolean isValidInput;
+        do {
+            view.displayLowLevelHotelInfoPrompt(true, hotel.getName());
+            userInput = view.getInputChar("\nEnter a response (1/2/3): ");
+            isValidInput = userInput >= '1' && userInput <= '3';
+            view.displayInvalidInputWarning(isValidInput, "Please provide a valid response (1/2/3)!");
+        } while (!isValidInput);
+
+        view.clearConsole();
         view.displayDivider();
+
+        String roomName;
+        Room room;
+        boolean isValidRoom;
+
+        int day;
+        LocalDate date;
+
         switch(userInput) {
             case View.SELECTED_DATE_OPTION: // selected date hotel availability
-                int month = view.getInputInt("Enter month (1-12): ");
-                int day = view.getInputInt("Enter day (1-31): ");
-                LocalDate date = LocalDate.of(2024, month, day);
+
+                view.displayMessage("The only month in the system is July.");
+                day = view.getInputInt("\nEnter a day in July (1-31): ");
+                date = LocalDate.of(2024, View.SYSTEM_MONTH, day);
+
                 int availableRooms = model.getTotalAvailableRoomsByDate(hotel, date);
-                // TODO: Create view function that will print this
+                view.displaySelectedDateInfo(availableRooms, hotel.getTotalRooms() - availableRooms);
                 break;
             case View.SELECTED_ROOM_OPTION: // selected room information
-                String roomName;
-                Room room;
 
+                view.displayRoomSelection(hotel.getRoomList());
                 do {
-                    roomName = view.getInputString("Enter the room name: ");
+                    roomName = view.getInputStr("\nEnter the room name: ").toUpperCase();
                     room = hotel.getRoom(roomName);
-                    if (room == null) view.displayInvalidInputWarning();
-                } while (room == null);
+                    isValidRoom = room != null;
+                    view.displayInvalidInputWarning(isValidRoom, "Please provide a valid room name!");
+                } while (!isValidRoom);
 
-                view.displayMessage(hotel.getRoomInfo(room));
-
+                view.displaySelectedRoomInfo(hotel.getRoomInfo(room));
                 break;
             case View.SELECTED_RESERVATION_OPTION: // selected reservation information
 
+                // TODO: Should I display the current hotel?
+                view.displayRoomSelection(hotel.getRoomList());
+                do {
+                    roomName = view.getInputStr("\nEnter the room name: ").toUpperCase();
+                    room = hotel.getRoom(roomName);
+                    isValidRoom = room != null;
+                    view.displayInvalidInputWarning(isValidRoom, "Please provide a valid room name!");
+                } while (!isValidRoom);
+
+                view.displayReservationSelection(hotel.filterReservationsByRoom(room));
+                day = view.getInputInt("\nEnter the check-in day of the reservation (1-31): ");
+                date = LocalDate.of(2024, View.SYSTEM_MONTH, day);
+
+                Reservation reservation = hotel.getReservation(room, date);
+                view.displaySelectedReservationInfo(reservation);
                 break;
+            default:
+                view.displayMessage("This can't be reached! :<");
         }
     }
 
-    // TODO: Continue this
+
     public void viewHotel() {
 
         view.displayViewHotelPrompt();
+        view.displayHotelSelection(model.getHotelList());
 
-        Hotel hotel = view.selectHotel(model.getHotelList());
-        if (hotel == null)
-            return;
+        String hotelName;
+        Hotel hotel;
+        boolean isValidHotel;
+        do {
+            hotelName = view.getInputStr("\nEnter the hotel name: ");
+            hotel = model.getHotel(hotelName);
+            isValidHotel = hotel != null;
+            view.displayInvalidInputWarning(isValidHotel, "Please provide a valid hotel name!");
+        } while (!isValidHotel);
+
+        view.clearConsole();
+        view.displayHotelInfoPrompt(hotelName);
 
         char userInput;
+        boolean isValidInput;
         do {
-            view.displayHotelInfoPrompt();
-            userInput = view.getInputString("Please provide a response (H/L): ").toUpperCase().charAt(0);
-        } while(!(userInput == 'H' || userInput == 'L'));
+            userInput = view.getInputStr("\nEnter a response (H/L): ").toUpperCase().charAt(0);
+            isValidInput = userInput == View.HIGH_LEVEL_OPTION || userInput == View.LOW_LEVEL_OPTION;
+            view.displayInvalidInputWarning(isValidInput, "Please provide a valid response (H/L)!");
+        } while(!isValidInput);
 
+        view.clearConsole();
         switch(userInput) {
             case View.HIGH_LEVEL_OPTION:
-                viewHighLevelInfo(hotel);
+                double estimatedEarnings = model.getHotelEstimatedEarnings(hotel);
+                view.displayHighLevelHotelInfo(hotel, estimatedEarnings);
                 break;
             case View.LOW_LEVEL_OPTION:
                 viewLowLevelInfo(hotel);
@@ -96,22 +147,22 @@ public class Controller {
 
     public void manageHotel() {
 
+        /*
         view.displayManageHotelPrompt();
-        String userInput = view.getInputString("Please provide a response: ");
+        String userInput = view.getInputStr("Please provide a response: ");
 
         switch(userInput) {
-            
+
         }
+         */
     }
 
     public void bookReservation() {
 
+        /*
         view.displayBookReservationPrompt();
-        String userInput = view.getInputString("Please provide a response: ");
-
-        switch(userInput) {
-
-        }
+        String userInput = view.getInputStr("Please provide a response: ");
+         */
     }
 
     public void start() {
@@ -121,9 +172,9 @@ public class Controller {
         /* program flow */
         while (isProgramRunning) {
 
-            view.displayActionPrompt();
-
-            char userInput = view.getInputString("\nPlease provide a response: ").toUpperCase().charAt(0);
+            view.displayMainActionPrompt();
+            char userInput = view.getInputChar("\nEnter a response: ");
+            view.clearConsole();
 
             switch(userInput) {
                 case View.CREATE_HOTEL_OPTION:
@@ -142,7 +193,7 @@ public class Controller {
                     isProgramRunning = false;
                     break;
                 default:
-                    view.displayInvalidInputWarning();
+                    view.displayInvalidInputWarning(true, "Please provide a valid response!");
                     break;
             }
 

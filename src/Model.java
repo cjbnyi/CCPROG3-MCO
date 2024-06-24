@@ -13,9 +13,9 @@ public class Model {
         for (Hotel hotel : hotelList)
             if (hotel.getName().equals(name))
                 return null;
-        Hotel hotel = new Hotel(name);
-        this.hotelList.add(hotel);
-        return hotel;
+        Hotel newHotel = new Hotel(name);
+        this.hotelList.add(newHotel);
+        return newHotel;
     }
 
     public double getHotelEstimatedEarnings(Hotel hotel) {
@@ -73,4 +73,39 @@ public class Model {
     public ArrayList<Hotel> getHotelList() {
         return this.hotelList;
     }
+
+
+    public Hotel getHotel(String name) {
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(name))
+                return hotel;
+        return null;
+    }
+
+
+    /*
+    public ArrayList<Room> filterAvailableRoomsByDate(Hotel hotel, LocalDate date) {
+        if (hotel == null) return null;
+        ArrayList<Room> availableRooms = new ArrayList<Room>(hotel.getRoomList()); // duplicates the ArrayList
+        for (Reservation reservation : hotel.getReservationList()) {
+            LocalDate checkInDate = reservation.getCheckInDate();
+            LocalDate checkOutDate = reservation.getCheckOutDate();
+            if ((date.isAfter(checkInDate) || date.isEqual(checkInDate)) &&
+                    (date.isBefore(checkOutDate) || date.isEqual(checkOutDate))) {
+                availableRooms.remove(reservation.getRoom());
+            }
+        }
+        return availableRooms;
+    }
+
+
+    public ArrayList<Reservation> filterReservationsByRoom(Hotel hotel, Room room) {
+        if (room == null) return null;
+        ArrayList<Reservation> reservationList = new ArrayList<Reservation>();
+        for (Reservation reservation : hotel.getReservationList())
+            if (reservation.getRoom().equals(room))
+                reservationList.add(reservation);
+        return reservationList;
+    }
+     */
 }
