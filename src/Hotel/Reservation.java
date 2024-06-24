@@ -1,3 +1,5 @@
+package Hotel;
+
 import java.time.LocalDate;
 import static java.time.temporal.ChronoUnit.DAYS;
 

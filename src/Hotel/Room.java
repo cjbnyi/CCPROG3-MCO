@@ -1,3 +1,5 @@
+package Hotel;
+
 public class Room {
 
     private String name;
