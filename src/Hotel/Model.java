@@ -1,5 +1,4 @@
 package Hotel;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -11,14 +10,6 @@ public class Model {
         this.hotelList = new ArrayList<Hotel>();
     }
 
-    public Hotel addHotel(String name) {
-        for (Hotel hotel : hotelList)
-            if (hotel.getName().equals(name))
-                return null;
-        Hotel newHotel = new Hotel(name);
-        this.hotelList.add(newHotel);
-        return newHotel;
-    }
 
     public double getHotelEstimatedEarnings(Hotel hotel) {
         double totalEarnings = 0.0;
@@ -35,6 +26,7 @@ public class Model {
         return hotel.getTotalRooms() - hotel.filterAvailableRoomsByDate(date).size();
     }
 
+    // ### 2. SETTERS
 
     /**
      * Sets the name of a hotel object given its current name.
@@ -56,6 +48,7 @@ public class Model {
 
         if (!hotelExists)
             return 0;
+        // find a way to use confirmAction()
 
         for (Hotel hotel : this.hotelList) {
             String hotelName = hotel.getName();
@@ -67,6 +60,73 @@ public class Model {
     }
 
 
+    public Hotel addHotel(String name) {
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(name))
+                return null;
+        Hotel newHotel = new Hotel(name);
+        this.hotelList.add(newHotel);
+        return newHotel;
+    }
+
+    
+    /**
+     * Adds a room to a hotel given the hotel's name and the room.
+     * @param nameOfHotel - hotel to add rooms
+     * @return false if not added a room succesful, true if it has. 
+     */
+    public boolean addRoomToAHotel(String nameOfHotel, String roomToAdd){
+        boolean hasFoundHotel = false, hasFoundRoom = false;
+        Room room; 
+
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(nameOfHotel)){
+                hasFoundHotel = true;
+                room = hotel.addRoom(roomToAdd);
+
+                hasFoundRoom = room.equals(null) ? false : true;
+            }
+
+        return hasFoundHotel && hasFoundRoom;
+    }
+
+    public int removeRoomToHotel(String nameOfHotel, String strRoomToRemove) {
+        int hasFoundHotel = 0, hasSuccesfulRemoveRoom = 0;
+        
+        for (Hotel hotel: this.hotelList){
+            if (hotel.getName().equals(nameOfHotel)){
+                hasFoundHotel = 0;
+                hasSuccesfulRemoveRoom = hotel.removeRoom(strRoomToRemove);
+            } 
+        }
+
+
+        if (hasFoundHotel == 0)
+            return hasFoundHotel;
+        else 
+            return hasSuccesfulRemoveRoom;
+    }
+
+    public ArrayList<Room> getRoomListOfAHotel(String nameOfHotel){
+        ArrayList<Room> listOfRooms = null;
+
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(nameOfHotel)){
+                listOfRooms = hotel.getRoomList();
+            }
+        return listOfRooms;
+    }
+    
+    public boolean doesHotelExist(String nameOfHotel){
+        boolean hasFoundHotel = false;
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(nameOfHotel)){
+                hasFoundHotel = true;
+            }
+
+        return hasFoundHotel;
+    }
+
     /**
      * Gets the array of hotels.
      *
@@ -76,38 +136,65 @@ public class Model {
         return this.hotelList;
     }
 
-
     public Hotel getHotel(String name) {
         for (Hotel hotel : this.hotelList)
             if (hotel.getName().equals(name))
                 return hotel;
         return null;
     }
+    
+    /**
+     * Updates the price of a hotel when no reservations are made.
+     * 
+     * @param strHotel
+     * @param setPrice
+     * @return 0 - hotel is not found, 1 - reservation is not empty, 2 - price is lower than 100, 3 - succesfully changed price
+    */
+    public int updatePriceOfAHotel(String strHotel, double setPrice){
+        int hasPriceChanged = 0;
 
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(strHotel)){
+                hasPriceChanged = hotel.updatePrice(setPrice) + 1;
+            }
+        
 
-    /*
-    public ArrayList<Room> filterAvailableRoomsByDate(Hotel hotel, LocalDate date) {
-        if (hotel == null) return null;
-        ArrayList<Room> availableRooms = new ArrayList<Room>(hotel.getRoomList()); // duplicates the ArrayList
-        for (Reservation reservation : hotel.getReservationList()) {
-            LocalDate checkInDate = reservation.getCheckInDate();
-            LocalDate checkOutDate = reservation.getCheckOutDate();
-            if ((date.isAfter(checkInDate) || date.isEqual(checkInDate)) &&
-                    (date.isBefore(checkOutDate) || date.isEqual(checkOutDate))) {
-                availableRooms.remove(reservation.getRoom());
+        return hasPriceChanged;
+    }
+
+    
+    /**
+     * Removed Reservations based on String names.
+     * 
+     * @param strHotel
+     * @param strRoomName
+     * @return 0 - if hotel not found, 1 - if reservation not found, 2 - if successful.
+    */
+    public int removeReservations(String strHotel, String strRoomName){
+        int hasRemoved = 0;
+        for (Hotel hotel : this.hotelList){
+            if (hotel.getName().equals(strHotel)){
+                hasRemoved = hotel.removeReservation(strRoomName) ? 2 : 1;
             }
         }
-        return availableRooms;
+        return hasRemoved;
     }
+    
+    /**
+     * Removes a Hotel
+     * @param strHotel
+     * @return true if removed succesful false, if not.
+    */
+    public boolean removeHotel(String strHotel){
+        boolean hasRemovedHotel = false;
 
+        for (Hotel hotel : this.hotelList) {
+            if (hotel.getName().equals(strHotel)){
+                this.hotelList.remove(hotel);
+                hasRemovedHotel = true;
+            }
+        }
 
-    public ArrayList<Reservation> filterReservationsByRoom(Hotel hotel, Room room) {
-        if (room == null) return null;
-        ArrayList<Reservation> reservationList = new ArrayList<Reservation>();
-        for (Reservation reservation : hotel.getReservationList())
-            if (reservation.getRoom().equals(room))
-                reservationList.add(reservation);
-        return reservationList;
+        return hasRemovedHotel;
     }
-     */
 }

@@ -1,10 +1,10 @@
 package Hotel;
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class View {
 
+public class View {
     public static final char CREATE_HOTEL_OPTION = 'C',
                              VIEW_HOTEL_OPTION = 'V',
                              MANAGE_HOTEL_OPTION = 'M',
@@ -20,6 +20,46 @@ public class View {
 
     public static final int  SYSTEM_MONTH = 7,
                              SYSTEM_YEAR = 2024;
+    public enum MANAGER_STATE {
+        MS_OVERVIEW(0),
+        MS_CHANGE_NAME(1),
+        MS_ADD_ROOMS(2),
+        MS_REMOVE_ROOMS(3),
+        MS_UPDATE_PRICE(4),
+        MS_REMOVE_RESERVATIONS(5),
+        MS_REMOVE_HOTEL(6);
+
+        private int numberID;
+
+
+        private MANAGER_STATE(int numberID) {
+            this.numberID = numberID;
+        }
+
+        public int getID() {
+            return this.numberID;
+        }
+
+    }
+
+
+    public enum SIMULATE_BOOKING {
+        SB_OVERVIEW(1),
+        SB_DATE_SELECTION(2),
+        SB_ROOM_SELECTION(3);
+
+        private int numberID;
+
+
+        private SIMULATE_BOOKING(int numberID) {
+            this.numberID = numberID;
+        }
+
+        public int getID() {
+            return this.numberID;
+        }
+
+    } 
 
     private final Scanner scanner;
 
@@ -99,11 +139,22 @@ public class View {
         return d;
     }
 
+    public LocalDate getLocalDate(String prompt) {
+        System.out.println(prompt + " ");
+        
+        System.out.println("Year: ");
+        int year = scanner.nextInt();
+        System.out.println("Month: ");
+        int month = scanner.nextInt();    
+        System.out.println("Day: ");
+        int day = scanner.nextInt();
+        return LocalDate.of(year, month, day);
+    }
     /**
      * Prompts the user to confirm their input.
      * @return true if the user inputs 'Y'; false if the user inputs 'N'
      */
-    public boolean confirmInput() {
+    public boolean confirmUserInput() {
         displayDivider();
         System.out.print("Do you want to confirm your action (Y/N)? "); // placeholder and tentative
         String userInput = scanner.nextLine();
@@ -111,7 +162,7 @@ public class View {
             return true;
         else if (userInput.equalsIgnoreCase("N"))
             return false;
-        return confirmInput(); // may cause some errors, idk
+        return confirmUserInput();
     }
 
 
@@ -131,17 +182,64 @@ public class View {
 
     public void displayViewHotelPrompt() {
         displayDivider();
-        System.out.println("[Hotel Information Viewing]");
+        System.out.println("<insert View Hotel prompt>");
     }
 
-    public void displayManageHotelPrompt() {
+    public void displayManageHotelPrompt(MANAGER_STATE displayState) {
+        final String[][] promptManageHotel = {
+            {       // 0 : Hotel
+                "# Please Choose the following Actions",
+                " [a] Change the name of the Hotel",
+                " [b] Add Rooms",
+                " [c] Remove Rooms",
+                " [d] Update the Base Price for a Room",
+                " [e] Remove Reservation",
+                " [f] Remove Hotel",
+                "Type \"quit\" to exit the program"
+            }, {
+                "## Change Name of the Hotel",
+                "Please provide the correct name of the hotel you want to change the name."
+            }, {    // 1 : Change
+                "## Add a Room(s)",
+                "Please provide the correct name of the hotel and the room you want to add."
+            }, {
+                "## Remove a Room(s)",
+                "Please provide the correct name of the hotel and the room you want to remove."
+            }, {
+                "## Update the Base Price",
+                "Please input the price you want to change. Change should be greater than P100."
+            }, {
+                "## Remove Reservation"
+            }, {
+                "## Remove Hotel"
+            }
+        };
+
         displayDivider();
-        System.out.println("<insert Manage Hotel prompt>");
+        for (String sentence : promptManageHotel[displayState.getID()]){
+            System.out.println(sentence);
+        }
+
     }
 
-    public void displayBookReservationPrompt() {
+    public void displayBookReservationPrompt(SIMULATE_BOOKING displayState) {
         displayDivider();
-        System.out.println("<insert Book Reservation prompt>");
+        final String[][] promptManageHotel = {
+            {
+                "To book a reservation, please do the following: ",
+                " 1) Enter a Valid Hotel",
+                " 2) Enter a Valid Check-In Date and a Check-out Date",
+                " 3) Enter a Room to Select"
+            }, {
+                "Please Select a Date to select from",
+                "Note: Check-in Date should be earlier than the Check-out Date."
+            }
+        };
+
+        displayDivider();
+        for (String sentence : promptManageHotel[displayState.getID()]){
+            System.out.println(sentence);
+        }
     }
 
     public void displayProgramTerminationMessage() {
@@ -211,6 +309,24 @@ public class View {
             int i = 1;
             for (Hotel hotel : hotelList) {
                 System.out.println(i + ".) " + hotel.getName());
+            }
+        }
+
+    }
+
+    public void displayRoomList(ArrayList<Room> roomList) {
+        
+        if(roomList.isEmpty()){
+            displayDivider();
+            System.out.println("No Rooms currently exist.");
+        } else {
+            int i = 0;
+            for (Room room : roomList){
+                displayDivider();
+                System.out.println(i + 1 + ".)");
+                System.out.println("Room: " + room.getName());
+                System.out.println("Class: " + room.getClass());
+                System.out.println("Base Price: " + room.getBasePricePerNight());
                 ++i;
             }
         }
@@ -289,4 +405,16 @@ public class View {
         System.out.println("Price breakdown:" + reservation.getPriceBreakdown());
         System.out.println("Total price: " + reservation.getTotalPrice());
     }
+
+    public void displayInvalidInputWarning() {
+        displayDivider();
+        System.out.println("Please provide a valid response!");
+    }
+
+    public void clearScreen(){
+        if (Debug.DONT_CLEAR_CONSOLE)
+            System.out.println("\033\143");
+        else 
+            System.out.println("\n\n\n\n\n");
+    };
 }

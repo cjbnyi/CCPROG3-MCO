@@ -1,10 +1,8 @@
 package Hotel;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Hotel {
-
     private String name;
     private ArrayList<Room> roomList;
     private ArrayList<Reservation> reservationList;
@@ -29,13 +27,15 @@ public class Hotel {
         }
     }
 
-    public String getName() {
+    // ### 1. GETTERS
+    public String               getName() {
         return this.name;
     }
 
-    public ArrayList<Room> getRoomList() {
+    public ArrayList<Room>      getRoomList() {
         return this.roomList;
     }
+
 
     public ArrayList<Reservation> getReservationList() {
         return this.reservationList;
@@ -45,11 +45,78 @@ public class Hotel {
         return this.roomList.size();
     }
 
+    public double               getEstimatedEarnings() {
+        double totalEarnings = 0.0;
+        for (Reservation reservation : reservationList)
+            totalEarnings += reservation.getTotalPrice();
+        return totalEarnings;
+    }
+
+    public String               getRoomInfo(String roomName) {
+        for (Room room : this.roomList) {
+            if (room.getName().equals(roomName)) {
+                StringBuilder roomInfo = new StringBuilder (
+                    "Name: " + room.getName() + "\n" +
+                    "Base price per night: " + room.getBasePricePerNight() + "\n" +
+                    "Available dates:"
+                );
+                ArrayList<LocalDate> availableDates = getRoomAvailabilityThisMonth(room);
+                for (LocalDate date : availableDates)
+                    roomInfo.append("\n").append(date.toString());
+                return roomInfo.toString();
+            }
+        }
+        return "Invalid room name.";
+    }
+
+    public ArrayList<LocalDate> getRoomAvailabilityThisMonth(Room room) {
+        ArrayList<LocalDate> availableDates = new ArrayList<LocalDate>();
+        ArrayList<Reservation> roomReservations = filterReservationsByRoom(room);
+
+        for (int i = 0; i < Hotel.DAYS_IN_MONTH; i++)
+            availableDates.add(LocalDate.of(View.SYSTEM_YEAR, View.SYSTEM_MONTH, 1 + i));
+
+        for (Reservation reservation : roomReservations)
+            for (int j = 0; j < reservation.getNumDays(); j++)
+                availableDates.remove(reservation.getCheckInDate().plusDays(j));
+
+        return availableDates;
+    }
+
+    // ### 2. SETTERS
+
+    public void     setName(String name) {
+        this.name = name;
+    }
+
+    // ### 3. MODIFIERS 
     // TODO: Implement makeReservation()
     public double makeReservation() {
         return -1;
     }
 
+    /**
+     * Removes a reservation.
+     * @param nameRoom
+     * @return true - removed room, false - has not found room to remove.
+    */
+    public boolean removeReservation(String nameRoom) {
+        for (Reservation reservation : this.reservationList) {
+            if (reservation.getRoom().getName().equals(nameRoom)) {
+                this.reservationList.remove(reservation);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    /**
+     * Adds a room.
+     * @param name
+     * @return true if adds a room with a unique name, false if not.
+    */
     public Room addRoom(String name) {
         for (Room room : this.roomList)
             if (room.getName().equals(name))
@@ -59,7 +126,28 @@ public class Hotel {
         return room;
     }
 
-    public ArrayList<Room> filterAvailableRoomsByDate(LocalDate date) {
+    /**
+     * 
+     * @param price
+     * @return 0 - if reservation list is empty, 1 - if price is low, 2 - if base price is set
+    */
+    public int updatePrice(double price) {
+        if (this.reservationList.isEmpty())
+            return 0;
+        
+        if (price < 100)
+            return 1;
+
+        for (Room room: this.roomList){
+            room.setBasePricePerNight(price);
+        }
+
+        return 2;
+    }
+
+
+    // ### 2.1. FILTERS
+    public ArrayList<Room>          filterAvailableRoomsByDate(LocalDate date) {
         ArrayList<Room> availableRooms = new ArrayList<Room>(this.roomList); // duplicates the ArrayList
         for (Reservation reservation : this.reservationList) {
             LocalDate checkInDate = reservation.getCheckInDate();
@@ -72,7 +160,7 @@ public class Hotel {
         return availableRooms;
     }
 
-    public ArrayList<Reservation> filterReservationsByRoom(Room room) {
+    public ArrayList<Reservation>   filterReservationsByRoom(Room room) {
         ArrayList<Reservation> reservationList = new ArrayList<Reservation>();
         for (Reservation reservation : this.reservationList)
             if (reservation.getRoom().equals(room))
@@ -100,20 +188,8 @@ public class Hotel {
         return 0;
     }
 
-    public ArrayList<LocalDate> getRoomAvailabilityThisMonth(Room room) {
 
-        ArrayList<LocalDate> availableDates = new ArrayList<LocalDate>();
-        ArrayList<Reservation> roomReservations = filterReservationsByRoom(room);
-
-        for (int i = 0; i < Hotel.DAYS_IN_MONTH; i++)
-            availableDates.add(LocalDate.of(View.SYSTEM_YEAR, View.SYSTEM_MONTH, 1 + i));
-
-        for (Reservation reservation : roomReservations)
-            for (int j = 0; j < reservation.getNumDays(); j++)
-                availableDates.remove(reservation.getCheckInDate().plusDays(j));
-
-        return availableDates;
-    }
+        
 
     public Room getRoom(String roomName) {
         for (Room room : this.roomList)
@@ -122,7 +198,7 @@ public class Hotel {
         return null;
     }
 
-
+    
     public Reservation getReservation(Room room, LocalDate checkInDate) {
         ArrayList<Reservation> reservationList = filterReservationsByRoom(room);
         for (Reservation reservation : reservationList)
@@ -151,7 +227,5 @@ public class Hotel {
         return true;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+
 }
