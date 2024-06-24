@@ -4,10 +4,10 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 public class Reservation {
 
-    private String guestName;
-    private LocalDate checkInDate;
-    private LocalDate checkOutDate;
-    private Room room;
+    private final String guestName;
+    private final LocalDate checkInDate;
+    private final LocalDate checkOutDate;
+    private final Room room;
 
     public Reservation(String guestName, LocalDate checkInDate, LocalDate checkOutDate, Room room) {
         this.guestName = guestName;
@@ -36,14 +36,14 @@ public class Reservation {
         return (int) DAYS.between(this.checkInDate, this.checkOutDate);
     }
 
-    public double getTotalPrice() {
-        return this.room.getBasePricePerNight() * this.getNumDays();
-    }
-
     public String getPriceBreakdown() {
-        String priceBreakdown = "Price breakdown:";
+        String priceBreakdown = "";
         for (int i = 0; i < this.getNumDays(); i++)
             priceBreakdown += "\n" + this.checkInDate.plusDays(i) + " --- " + this.room.getBasePricePerNight();
         return priceBreakdown;
+    }
+
+    public double getTotalPrice() {
+        return this.room.getBasePricePerNight() * this.getNumDays();
     }
 }

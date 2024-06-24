@@ -19,7 +19,7 @@ public class Hotel {
     private void initRooms() {
         String roomName;
         for (char letter = 'A'; letter <= 'J'; letter++) {
-            for (int number = 0; number <= 9; number++) {
+            for (int number = 1; number <= 5; number++) {
                 roomName = "" + letter + number;
                 Room newRoom = new Room(roomName);
                 this.roomList.add(newRoom);
@@ -36,7 +36,12 @@ public class Hotel {
         return this.roomList;
     }
 
-    public int                  getTotalRooms() {
+
+    public ArrayList<Reservation> getReservationList() {
+        return this.reservationList;
+    }
+
+    public int getTotalRooms() {
         return this.roomList.size();
     }
 
@@ -65,11 +70,11 @@ public class Hotel {
     }
 
     public ArrayList<LocalDate> getRoomAvailabilityThisMonth(Room room) {
-        ArrayList<LocalDate>    availableDates      = new ArrayList<LocalDate>();
-        ArrayList<Reservation>  roomReservations    = filterReservationsByRoom(room);
+        ArrayList<LocalDate> availableDates = new ArrayList<LocalDate>();
+        ArrayList<Reservation> roomReservations = filterReservationsByRoom(room);
 
         for (int i = 0; i < Hotel.DAYS_IN_MONTH; i++)
-            availableDates.add(LocalDate.of(2024, 1, 1));
+            availableDates.add(LocalDate.of(View.SYSTEM_YEAR, View.SYSTEM_MONTH, 1 + i));
 
         for (Reservation reservation : roomReservations)
             for (int j = 0; j < reservation.getNumDays(); j++)
@@ -79,14 +84,6 @@ public class Hotel {
     }
 
     // ### 2. SETTERS
-
-    public boolean  setRoomBasePrice(double newPrice) {
-        if (!this.reservationList.isEmpty())
-            return false;
-        for (Room room : this.roomList)
-            room.setBasePricePerNight(newPrice);
-        return true;
-    }
 
     public void     setName(String name) {
         this.name = name;
@@ -120,13 +117,13 @@ public class Hotel {
      * @param name
      * @return true if adds a room with a unique name, false if not.
     */
-    public boolean addRoom(String name) {
+    public Room addRoom(String name) {
         for (Room room : this.roomList)
             if (room.getName().equals(name))
-                return false;
+                return null;
         Room room = new Room(name);
         this.roomList.add(room);
-        return true;
+        return room;
     }
 
     /**
@@ -189,6 +186,45 @@ public class Hotel {
             }
         }
         return 0;
+    }
+
+
+        
+
+    public Room getRoom(String roomName) {
+        for (Room room : this.roomList)
+            if (room.getName().equals(roomName))
+                return room;
+        return null;
+    }
+
+    
+    public Reservation getReservation(Room room, LocalDate checkInDate) {
+        ArrayList<Reservation> reservationList = filterReservationsByRoom(room);
+        for (Reservation reservation : reservationList)
+            if (reservation.getCheckInDate().equals(checkInDate))
+                return reservation;
+        return null;
+    }
+
+    public String getRoomInfo(Room room) { // refactor this
+        StringBuilder roomInfo = new StringBuilder (
+            "Room name: " + room.getName() + "\n\n" +
+            "Base price per night: " + room.getBasePricePerNight() + "\n\n" +
+            "Available dates:"
+        );
+        ArrayList<LocalDate> availableDates = getRoomAvailabilityThisMonth(room);
+        for (LocalDate date : availableDates)
+            roomInfo.append("\n").append(date.toString());
+        return roomInfo.toString();
+    }
+
+    public boolean setRoomBasePrice(double newPrice) {
+        if (newPrice <= 0 || !this.reservationList.isEmpty())
+            return false;
+        for (Room room : this.roomList)
+            room.setBasePricePerNight(newPrice);
+        return true;
     }
 
 

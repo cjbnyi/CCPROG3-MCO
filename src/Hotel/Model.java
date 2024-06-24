@@ -10,7 +10,13 @@ public class Model {
         this.hotelList = new ArrayList<Hotel>();
     }
 
-    // ### 1. GETTERS
+
+    public double getHotelEstimatedEarnings(Hotel hotel) {
+        double totalEarnings = 0.0;
+        for (Reservation reservation : hotel.getReservationList())
+            totalEarnings += reservation.getTotalPrice();
+        return totalEarnings;
+    }
 
     public int getTotalAvailableRoomsByDate(Hotel hotel, LocalDate date) { // not sure if we should do these
         return hotel.filterAvailableRoomsByDate(date).size();
@@ -54,13 +60,13 @@ public class Model {
     }
 
 
-    public boolean addHotel(String name) {
+    public Hotel addHotel(String name) {
         for (Hotel hotel : this.hotelList)
             if (hotel.getName().equals(name))
-                return false;
+                return null;
         Hotel newHotel = new Hotel(name);
         this.hotelList.add(newHotel);
-        return true;
+        return newHotel;
     }
 
     
@@ -70,15 +76,18 @@ public class Model {
      * @return false if not added a room succesful, true if it has. 
      */
     public boolean addRoomToAHotel(String nameOfHotel, String roomToAdd){
-        boolean hasFoundHotel = false, hasSuccesfulAddedRoom = false;
-        
+        boolean hasFoundHotel = false, hasFoundRoom = false;
+        Room room; 
+
         for (Hotel hotel : this.hotelList)
             if (hotel.getName().equals(nameOfHotel)){
                 hasFoundHotel = true;
-                hasSuccesfulAddedRoom = hotel.addRoom(roomToAdd);
+                room = hotel.addRoom(roomToAdd);
+
+                hasFoundRoom = room.equals(null) ? false : true;
             }
 
-        return hasFoundHotel && hasSuccesfulAddedRoom;
+        return hasFoundHotel && hasFoundRoom;
     }
 
     public int removeRoomToHotel(String nameOfHotel, String strRoomToRemove) {
@@ -125,6 +134,13 @@ public class Model {
      */
     public ArrayList<Hotel> getHotelList() {
         return this.hotelList;
+    }
+
+    public Hotel getHotel(String name) {
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(name))
+                return hotel;
+        return null;
     }
     
     /**
