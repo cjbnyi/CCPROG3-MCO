@@ -177,20 +177,22 @@ private void changeHotelName() {
 
     oldHotelName = view.getInputStr("Please provide the name of the hotel you want to change:");
     newHotelName = view.getInputStr("Please input a new name: ");
-    setHotelState = model.setHotelName(oldHotelName, newHotelName);
-
-    switch(setHotelState) {
-        case 0:
-            view.displayMessage("Hotel does not exist.");
-            break;
-        case 1:
-            view.displayMessage("Name is not unique, please provide a new one.");
-            break;
-        case 2:
-            view.displayMessage("Changed Hotel name.");
-            break;
-    }
     
+    if (view.confirmUserInput()) {
+        setHotelState = model.setHotelName(oldHotelName, newHotelName);
+
+        switch(setHotelState) {
+            case 0:
+                view.displayMessage("Hotel does not exist.");
+                break;
+            case 1:
+                view.displayMessage("Name is not unique, please provide a new one.");
+                break;
+            case 2:
+                view.displayMessage("Changed Hotel name.");
+                break;
+        }
+    }
 }
 
 private void addRooms(){

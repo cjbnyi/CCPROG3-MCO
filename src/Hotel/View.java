@@ -155,14 +155,15 @@ public class View {
      * @return true if the user inputs 'Y'; false if the user inputs 'N'
      */
     public boolean confirmUserInput() {
-        displayDivider();
-        System.out.print("Do you want to confirm your action (Y/N)? "); // placeholder and tentative
-        String userInput = scanner.nextLine();
-        if (userInput.equalsIgnoreCase("Y"))
-            return true;
-        else if (userInput.equalsIgnoreCase("N"))
-            return false;
-        return confirmUserInput();
+        while (true){
+            displayDivider();
+            System.out.print("Do you want to confirm your action (Y/N)? "); // placeholder and tentative
+            String userInput = scanner.nextLine();
+            if (userInput.equalsIgnoreCase("Y"))
+                return true;
+            else if (userInput.equalsIgnoreCase("N"))
+                return false;
+        }
     }
 
 
