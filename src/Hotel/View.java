@@ -33,13 +33,14 @@ public class View {
      * Enum representing various manager states for managing hotels.
      */
     public enum MANAGER_STATE {
-        MS_OVERVIEW(0),
-        MS_CHANGE_NAME(1),
-        MS_ADD_ROOMS(2),
-        MS_REMOVE_ROOMS(3),
-        MS_UPDATE_PRICE(4),
-        MS_REMOVE_RESERVATIONS(5),
-        MS_REMOVE_HOTEL(6);
+        MS_CHOSE_HOTEL(0),
+        MS_OVERVIEW(1),
+        MS_CHANGE_NAME(2),
+        MS_ADD_ROOMS(3),
+        MS_REMOVE_ROOMS(4),
+        MS_UPDATE_PRICE(5),
+        MS_REMOVE_RESERVATIONS(6),
+        MS_REMOVE_HOTEL(7);
 
         private int numberID;
 
@@ -58,10 +59,12 @@ public class View {
      * Enum representing various states for simulating booking.
      */
     public enum SIMULATE_BOOKING {
-        SB_HOTEL_SELECTION(1),
-        SB_OVERVIEW(2),
-        SB_DATE_SELECTION(3),
-        SB_ROOM_SELECTION(4);
+        SB_HOTEL_SELECTION(0),
+        SB_OVERVIEW(1),
+        SB_DATE_SELECTION(2),
+        SB_ROOM_SELECTION(3),
+        SB_GUEST_SELECTION(4),
+        SB_RESERVATION_CONFIRMATION(5);
 
         private int numberID;
 
@@ -164,6 +167,10 @@ public class View {
     public LocalDate getLocalDate(String prompt) {
         System.out.println(prompt + " ");
 
+
+        int year = SYSTEM_YEAR;
+        int month = SYSTEM_MONTH;
+        System.out.print("Day: ");
         System.out.println("Year: ");
         int year = scanner.nextInt();
         System.out.println("Month: ");
@@ -206,9 +213,54 @@ public class View {
     /**
      * Displays a general invalid input warning.
      */
-    public void displayInvalidInputWarning() {
+
+    public void displayManageHotelPrompt(MANAGER_STATE displayState) {
+        final String[][] promptManageHotel = {
+            {
+                "",
+                "Welcome to Hotel Manager.",
+                "Please input the name of the hotel.",
+                ""
+            },{ // 0 : Hotel
+                "Hotel Manager", 
+                "Please Choose the following Managing actions:",
+                "",
+                " [a] Change the name of the Hotel",
+                " [b] Add Rooms",
+                " [c] Remove Rooms",
+                " [d] Update the Base Price for a Room",
+                " [e] Remove Reservation",
+                " [f] Remove Hotel",
+                " [q] Quit",
+                ""
+            }, {
+                "## Change Name of the Hotel",
+                "Please provide a valid name of the hotel you want to change the name."
+            }, {    // 1 : Change
+                "## Add a Room(s)",
+                "Adds a room to to the selected hotel.",
+                "Please provide the correct name for the additional room."
+            }, {
+                "## Remove a Room(s)",
+                "Please provide the room you want to remove.",
+                "Make sure that it does not have a reservation"
+            }, {
+                "## Update the Base Price",
+                "Please input the price you want to change. Change should be greater than P100."
+            }, {
+                "## Remove Reservation"
+            }, {
+                "## Remove Hotel"
+            }
+        };
+        clearScreen();
         displayDivider();
-        System.out.println("Please provide a valid response!");
+        System.out.println("\n");
+        for (String sentence : promptManageHotel[displayState.getID()]){
+            System.out.println(sentence);
+        }
+        displayDivider();
+
     }
 
 
@@ -217,9 +269,40 @@ public class View {
      * @param isValidInput true if the input is valid; false otherwise
      * @param warning the warning message to display
      */
+
+    public void displayBookReservationPrompt(SIMULATE_BOOKING displayState) {
+        final String[][] promptManageHotel = {
+            {
+                "",
+                "Welcome to Booking a Reservation.",
+                "Please input the name of the hotel.",
+                ""
+            }, {
+                "To book a reservation, please do the following: ",
+                " 1) Enter a Valid Check-In Date and a Check-out Date",
+                " 2) Enter a Room to Select"
+            }, {
+                "Please Select a Date to select from",
+                "Note: Check-in Date should be earlier than the Check-out Date."
+            }, {
+                "Please Select a Room to Reserve",
+                "Note: The room must be available for the selected dates."
+            }, {
+                "Input your name Please",
+            }, {
+                "Reservation Succesful.",
+            }
+        };
+
+        displayDivider();
+        for (String sentence : promptManageHotel[displayState.getID()]){
+            System.out.println(sentence);
+        }
+
     public void displayInvalidInputWarning(boolean isValidInput, String warning) {
         if (isValidInput) return;
         System.out.println("Invalid input! " + warning);
+
     }
 
 

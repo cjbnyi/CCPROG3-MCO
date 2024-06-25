@@ -86,6 +86,14 @@ public class Model {
     }
 
 
+    public ArrayList<Room> getListOfTotalUnreservedRoomsByDate(Hotel hotel,LocalDate date){
+
+        return hotel.filterAvailableRoomsByDate(date);
+    }
+
+    // ### 2. SETTERS
+
+
     // ### 2. SETTERS
     /**
      * Sets the name of a hotel object given its current name.
@@ -169,10 +177,20 @@ public class Model {
                 hasFoundHotel = true;
                 room = hotel.addRoom(roomToAdd);
 
-                hasFoundRoom = room.equals(null) ? false : true;
+                hasFoundRoom = (null == room) ? false : true;
             }
 
         return hasFoundHotel && hasFoundRoom;
+    }
+
+
+    public boolean makeReservation(String nameOfHotel, String GuestName, LocalDate checkInDate, LocalDate checkOutDate, Room room){
+        boolean hasMadeReservation = false;
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(nameOfHotel)){
+                hasMadeReservation = hotel.makeReservation(GuestName, checkInDate, checkOutDate, room);
+            }
+        return hasMadeReservation;
     }
 
 
@@ -184,19 +202,16 @@ public class Model {
      * @return 0 if the hotel was not found, 1 if room has reservation, 2 if the room was successfully removed
      */
     public int removeRoomToHotel(String nameOfHotel, String strRoomToRemove) {
-        int hasFoundHotel = 0, hasSuccesfulRemoveRoom = 0;
+        int hasSuccesfulRemoveRoom = 0;
         
         for (Hotel hotel: this.hotelList){
             if (hotel.getName().equals(nameOfHotel)){
-                hasFoundHotel = 0;
                 hasSuccesfulRemoveRoom = hotel.removeRoom(strRoomToRemove);
             } 
         }
 
-        if (hasFoundHotel == 0)
-            return hasFoundHotel;
-        else 
-            return hasSuccesfulRemoveRoom;
+        return hasSuccesfulRemoveRoom;
+
     }
 
     

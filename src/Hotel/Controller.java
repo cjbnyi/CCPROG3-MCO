@@ -257,7 +257,6 @@ public class Controller {
             isValidInput = userInput == View.HIGH_LEVEL_OPTION || userInput == View.LOW_LEVEL_OPTION;
             view.displayInvalidInputWarning(isValidInput, "Please provide a valid response!");
         } while(!isValidInput);
-
         view.clearScreen();
         switch(userInput) {
             case View.HIGH_LEVEL_OPTION:
@@ -269,7 +268,161 @@ public class Controller {
                 viewLowLevelInfo(hotel);
                 break;
         }
+        view.clearScreen();
     }
+
+
+/**
+ * Changes the name of a hotel.
+ * Displays a list of current hotels and prompts the user for the old and new names.
+ * Confirms the action and updates the hotel's name if valid.
+ */
+private void changeHotelName(Hotel oldHotelName) {
+    ArrayList<Hotel> currentList;
+    String newHotelName = "";
+    int setHotelState = 0;
+
+    view.clearScreen();
+    currentList = model.getHotelList();
+    view.displayHotelSelection(currentList);
+
+    newHotelName = view.getInputStr("Please input a new name: ");
+    
+    if (view.confirmUserAction("changing the hotel name")) {
+        view.displayMessage("\n");
+        setHotelState = model.setHotelName(oldHotelName.getName(), newHotelName);
+
+        switch(setHotelState) {
+            case 0:
+                view.displayResultMessage("Hotel does not exist.");
+                break;
+            case 1:
+                view.displayResultMessage("Name is not unique, please provide a new one.");
+                break;
+            case 2:
+                view.displayResultMessage("Changed Hotel name.");
+                oldHotelName = model.getHotel(newHotelName);
+        } 
+        view.clearScreen();
+    }
+}
+  
+
+/**
+ * Changes the name of a hotel.
+ * Displays a list of current hotels and prompts the user for the old and new names.
+ * Confirms the action and updates the hotel's name if valid.
+ */
+private void changeHotelName(Hotel oldHotelName) {
+    ArrayList<Hotel> currentList;
+    String newHotelName = "";
+    int setHotelState = 0;
+
+    view.clearScreen();
+    currentList = model.getHotelList();
+    view.displayHotelSelection(currentList);
+
+    newHotelName = view.getInputStr("Please input a new name: ");
+    
+    if (view.confirmUserAction("changing the hotel name")) {
+        view.displayMessage("\n");
+        setHotelState = model.setHotelName(oldHotelName.getName(), newHotelName);
+
+        switch(setHotelState) {
+            case 0:
+                view.displayResultMessage("Hotel does not exist.");
+                break;
+            case 1:
+                view.displayResultMessage("Name is not unique, please provide a new one.");
+                break;
+            case 2:
+                view.displayResultMessage("Changed Hotel name.");
+                oldHotelName = model.getHotel(newHotelName);
+        }
+        view.clearScreen();
+    }
+    
+} 
+
+    
+}
+
+/**
+ * Adds a room to a selected hotel.
+ * Displays a list of current hotels and rooms, prompts the user for the hotel and room names.
+ * Confirms the action and adds the room if valid.
+ */
+private void addRooms(Hotel hotel){
+    ArrayList<Hotel> currentHotelList;
+    ArrayList<Room> currentRoomList;
+
+    String nameOfRoomToAdd = "";
+    boolean isAddingSuccesful = false;
+
+    currentHotelList = model.getHotelList();
+    view.displayHotelSelection(currentHotelList);
+
+    if (!model.doesHotelExist(hotel.getName())) {
+        view.displayMessage(hotel.getName() + " does not exist.");
+        return;
+    }
+
+    currentRoomList = model.getRoomListOfAHotel(hotel.getName());
+    view.displayRoomList(currentRoomList);
+
+    nameOfRoomToAdd = view.getInputStr("Please provide the name of the room you want to add:");
+    if (view.confirmUserAction("adding a room to the selected hotel")) {
+        isAddingSuccesful = model.addRoomToAHotel(hotel.getName(), nameOfRoomToAdd);
+        if (isAddingSuccesful){
+            view.displayMessage("Succesfully added a Room.");
+        } else {
+            view.displayMessage("Cannot add the Room.");
+        }
+    }
+
+    view.pressEnterToContinue();
+    view.clearScreen();
+}
+
+/**
+ * Removes a room from a selected hotel.
+ * Displays a list of current hotels and rooms, prompts the user for the hotel and room names.
+ * Confirms the action and removes the room if valid.
+ */
+private void removeRooms(Hotel hotel){
+    ArrayList<Hotel> currentHotelList;
+    ArrayList<Room> currentRoomList;
+
+    String nameOfRoomToDelete = "";
+    int isRemovingSuccessful = 0;
+  
+  
+    if (!model.doesHotelExist(hotel.getName())) {
+        view.displayMessage("Hotel does not exist.");
+        return; 
+    }
+
+    currentRoomList = model.getRoomListOfAHotel(hotel.getName());
+    view.displayRoomList(currentRoomList);
+
+    nameOfRoomToDelete = view.getInputStr("Please provide the name of the room you want to DELETE:");
+    if (view.confirmUserAction("deleting a room?")){
+        isRemovingSuccessful = model.removeRoomToHotel(hotel.getName(), nameOfRoomToDelete);
+        switch(isRemovingSuccessful) {
+            case 0:
+                view.displayResultMessage("Room not found.");
+                break;
+            case 1:
+                view.displayResultMessage("Cannot delete, has a reservation.");
+                break;
+            case 2:   
+                view.displayResultMessage("Room succesfully deleted.");
+                break; 
+        }
+    }
+    view.clearScreen();
+}
+
 
 
     /**
@@ -337,6 +490,52 @@ public class Controller {
         String nameOfRoomToAdd = "";
         boolean isAddingSuccesful = false;
 
+
+
+    
+
+/**
+ * Updates the price of rooms in a selected hotel.
+ * Displays a list of current hotels, prompts the user for the hotel name and new price.
+ * Confirms the action and updates the price if valid.
+ */
+private void updatePrice(Hotel nameOfHotel){
+    double price = 0.0;
+    int errorState = 0;
+
+    if (!model.doesHotelExist(nameOfHotel.getName())) {
+        view.displayMessage("Hotel does not exist.");
+        return; 
+    }
+
+    price = view.getInputDouble("What is the new price? Price should be greater or equal 100.");
+    
+    if (price < 100) {
+        view.displayResultMessage("Error, Price should be greater or equal 100.");
+        view.clearScreen();
+        return;
+    }
+
+    if (view.confirmUserAction("updating the selected hotel's price per room>")){
+        errorState = model.updatePriceOfAHotel(nameOfHotel.getName(), price);
+        
+        switch (errorState) {
+            case 0:
+                view.displayResultMessage("Hotel not found.");
+                break;
+            case 1:
+                view.displayResultMessage("At least one reservation is made for this room; modification of price is not possible.");
+                break;
+            case 2:
+                view.displayResultMessage("Price is lower than 100. Please Change to a higher than the minimum price.");
+                break;
+            case 3:
+                view.displayResultMessage("Price succesfully changed");
+                break;
+         }
+    }
+}
+=======
         currentHotelList = model.getHotelList();
         view.displayHotelSelection(currentHotelList);
 
@@ -403,47 +602,105 @@ public class Controller {
     }
 
 
-    /**
-     * Updates the price of rooms in a selected hotel.
-     * Displays a list of current hotels, prompts the user for the hotel name and new price.
-     * Confirms the action and updates the price if valid.
-     */
-    private void updatePrice(){
-        ArrayList<Hotel> currentHotelList;
-        String nameOfHotel = "";
-        double price = 0.0;
+/**
+ * Removes a reservation from a selected hotel.
+ * Prompts the user for the hotel and reservation names.
+ * Confirms the action and removes the reservation if valid.
+ */
+private void removeReservations(Hotel hotel){
+    String nameOfReservation = "";
+    int errorState = 0;
 
-        int errorState = 0;
 
-        currentHotelList = model.getHotelList();
-        view.displayHotelSelection(currentHotelList);
-        nameOfHotel = view.getInputStr("Please provide the name of the hotel you want to change:");
+    if (!model.doesHotelExist(hotel.getName())){
+        view.displayMessage("Hotel does not exist.");
+        return;
+    }
+    
+    if (view.confirmUserAction("removing the selected reservation from the hotel")){
+        errorState = model.removeReservations(hotel.getName(), nameOfReservation);
+        switch (errorState) {
+            case 0:
+                view.displayMessage("Hotel is not found");
+                break;
+            case 1:
+                view.displayMessage("Reservation is not found");
+                break;
+            case 2:
+                view.displayMessage("Reservation succesfully deleted.");
+                break;
+            default:
+                break;
+        }
+    }
+}
 
-        if (!model.doesHotelExist(nameOfHotel)) {
-            view.displayMessage("Hotel does not exist.");
+
+        
+
+
+/**
+ * Removes a hotel.
+ * Prompts the user for the hotel name.
+ * Confirms the action and removes the hotel if valid.
+ */
+private Boolean removeHotel(Hotel hotel){
+    Boolean hasDelete = false;
+ 
+    if (view.confirmUserAction("removing the selected hotel")){
+        hasDelete = model.removeHotel(hotel.getName());
+
+        if (hasDelete){
+            view.displayMessage("Succesfully remove hotel.");
+        } else
+            view.displayMessage("Hotel name cannot be found.");
+    }
+
+    return hasDelete;
+}
+
+/**
+ * Manages hotel actions based on the given manager state.
+ * Prompts the user for specific actions and executes them.
+ *
+ * @param manageState the current state of the manager
+ */
+private void manageHotelActions(MANAGER_STATE manageState, Hotel hotel, Boolean hasDeleted){
+    boolean isUsingAFunction = true;
+    while (isUsingAFunction) { 
+        view.displayManageHotelPrompt(manageState);
+
+        if (!view.confirmUserAction("continue? Enter N to quit.")){
             return;
         }
 
-        price = view.getInputDouble("What is the new price? Price should be greater 100.");
-
-        if (view.confirmUserAction("updating the selected hotel's price per room")){
-            errorState = model.updatePriceOfAHotel(nameOfHotel, price);
-            switch (errorState) {
-                case 0:
-                    view.displayMessage("Hotel not found.");
-                    break;
-                case 1:
-                    view.displayMessage("At least one reservation is made, deletion is not possible.");
-                    break;
-                case 2:
-                    view.displayMessage("Price is lower than 100. Please Change to a higher than the minimum price.");
-                    break;
-                case 3:
-                    view.displayMessage("Price succesfully changed");
-                    break;
-            }
+        switch (manageState){
+            case MS_CHANGE_NAME:
+                changeHotelName(hotel);
+                break;
+            case MS_ADD_ROOMS:
+                addRooms(hotel);
+                break;
+            case MS_REMOVE_ROOMS:
+                removeRooms(hotel);
+                break;
+            case MS_UPDATE_PRICE:
+                updatePrice(hotel);
+                break;
+            case MS_REMOVE_RESERVATIONS:
+                removeReservations(hotel);
+                break;
+            case MS_REMOVE_HOTEL:
+                isUsingAFunction = removeHotel(hotel);
+                break;
+            default:
+                view.displayMessage("Invalid Display state.");
+                break;
         }
+
     }
+}
+
 
 
     /**
@@ -479,8 +736,92 @@ public class Controller {
                 default:
                     break;
             }
+
         }
+
     }
+
+
+/**
+ * Main method to manage hotels.
+ * Prompts the user for actions and manages the flow of hotel management.
+ */
+public void manageHotel(){
+    boolean isPerformingManagingHotel = true, isEnteringHotel = true, isManaging = true, hasDelete = false;
+    MANAGER_STATE CurrentState = MS_OVERVIEW;
+
+
+    Hotel newHotel = new Hotel("");
+
+    
+    while (isManaging){
+        isEnteringHotel = true;
+        isPerformingManagingHotel = true;
+        
+        while (isEnteringHotel) {
+            view.displayManageHotelPrompt(MS_CHOSE_HOTEL);
+
+            if (!view.confirmUserAction("managing the hotel?")){
+                isEnteringHotel = false;
+                isManaging = false;
+                return;
+            }
+            
+            newHotel = selectValidHotel();
+            
+            view.displayInvalidInputWarning(newHotel == null, "Please input a valid hotel name");
+            
+            if (model.doesHotelExist(newHotel.getName()) && view.confirmUserAction("\ncontinue at managing hotel with the given name?")){
+                isEnteringHotel = false;
+                view.pressEnterToContinue();
+            }
+                
+            view.clearScreen();
+        }
+    
+        while (isPerformingManagingHotel) {
+            
+            view.displayManageHotelPrompt(MS_OVERVIEW);
+            if (!hasDelete)
+                view.displayMessage("Editing Hotel: " + newHotel.getName());
+            String userInput = view.getInputStr("Please provide a response: ");
+            
+            switch (userInput) {
+                case "q":
+                    CurrentState = MS_OVERVIEW; 
+                    isPerformingManagingHotel = false;
+                    break;
+                case "a":
+                    CurrentState = MS_CHANGE_NAME; 
+                    break;
+                case "b":
+                    CurrentState = MS_ADD_ROOMS;
+                    break;
+                case "c":
+                    CurrentState = MS_REMOVE_ROOMS;
+                    break;  
+                case "d":
+                    CurrentState = MS_UPDATE_PRICE;
+                    break;    
+                case "e":
+                    CurrentState = MS_REMOVE_RESERVATIONS;
+                    break;
+                case "f":
+                    CurrentState = MS_REMOVE_HOTEL;
+                    break; 
+                default:
+                    CurrentState = MS_OVERVIEW; 
+                    view.displayInvalidInputWarning();  
+            }
+    
+            if (CurrentState != MS_OVERVIEW) {
+                manageHotelActions(CurrentState, newHotel, hasDelete);
+            }
+
+            if (hasDelete){
+                isPerformingManagingHotel = false;
+            }
+            view.clearScreen();
 
 
     /**
@@ -591,6 +932,7 @@ public class Controller {
     }
 
 
+
     /**
      * Selects a valid hotel based on user input.
      * Displays a list of current hotels and prompts the user for the hotel name.
@@ -612,7 +954,6 @@ public class Controller {
         }
         return model.getHotel(nameOfHotel);
     }
-
 
     /**
      * Prompts the user to input valid check-in and check-out dates.
@@ -641,6 +982,7 @@ public class Controller {
             } else {
                 view.displayMessage("Valid Date.");
             }
+
         }
 
         return result;
@@ -655,23 +997,128 @@ public class Controller {
     public void bookReservation(){
         String userInput;
 
-        Boolean isReserving = true;
-        Hotel validHotel;
-        ArrayList<LocalDate> CheckDates;
 
-        while (isReserving) {
-            view.displayBookReservationPrompt(SB_OVERVIEW);
-            userInput = view.getInputStr("Please provide a response: ");
+/**
+ * Manages the process of booking a reservation.
+ * Prompts the user for hotel selection and valid check-in and check-out dates.
+ * Retrieves the total available rooms by date for the selected hotel.
+ */
+public void bookReservation(){
+    String buffer = new String("");
+    String checkInDate = new String(), checkOutDate = new String(), guestName = new String();
+    Boolean isReserving = true, isPerformingBookReservation = true, isInputtingRoom = true, isInputtingName = true, isChoosingHotel = true, isValidDay = false, isChoosingRoom = true;
+    int day = 0, roomChoice = 0;
+    Room room = new Room("");
+    ArrayList<Room> listOfAvailableRooms = new ArrayList<Room>();
+    Hotel validHotel = new Hotel("");
+    LocalDate date;
+    ArrayList<LocalDate> arrayLocalDatesCheckInCheckOut = new ArrayList<LocalDate>();;
+
+    while (isReserving){
+        isChoosingHotel = true;
+        isPerformingBookReservation = false;
+        isChoosingRoom = false;
+        isInputtingName = false;
 
 
+        
+        while (isChoosingHotel) {
+            view.clearScreen();
+            view.displayBookReservationPrompt(SB_HOTEL_SELECTION);
+            if (!view.confirmUserAction("booking a reservation the hotel?")){
+                return;
+            }
             validHotel = selectValidHotel();
-            CheckDates = selectValidCheckInAndCheckOutDates();
+            if (validHotel != null) {
+                isChoosingHotel = false;
+                isPerformingBookReservation = true;
+            }
+            
+        }
 
-            model.getTotalAvailableRoomsByDate(validHotel, CheckDates.get(0));
-            // ? Automated or Manual Selection?
-            // Change Status of Room and be viewable in Hotel Feature.
+        while (isPerformingBookReservation) {
+            view.clearScreen();
+            view.displayBookReservationPrompt(SB_OVERVIEW);
+            if (!view.confirmUserAction("booking a reservation the hotel?")){
+                isPerformingBookReservation = false;
+            } else {
+                view.clearScreen();
+                arrayLocalDatesCheckInCheckOut = selectValidCheckInAndCheckOutDates();
+            
+                checkInDate = arrayLocalDatesCheckInCheckOut.get(0).getMonth() + "/" + arrayLocalDatesCheckInCheckOut.get(0).getDayOfMonth() + "/" + arrayLocalDatesCheckInCheckOut.get(0).getYear();
+                checkOutDate = arrayLocalDatesCheckInCheckOut.get(1).getMonth() + "/" + arrayLocalDatesCheckInCheckOut.get(1).getDayOfMonth() + "/" + arrayLocalDatesCheckInCheckOut.get(1).getYear();
+                
+                if (view.confirmUserAction("\nuse the date On " + checkInDate + "\n" + checkOutDate + "?")) {
+                    model.getTotalAvailableRoomsByDate(validHotel, arrayLocalDatesCheckInCheckOut.get(0));
+                    listOfAvailableRooms = model.getListOfTotalUnreservedRoomsByDate(validHotel, arrayLocalDatesCheckInCheckOut.get(0));
+                    isPerformingBookReservation = false;
+                    isInputtingRoom = true;
+                }
+            }
+        }
+
+        while (isInputtingRoom) {
+            view.clearScreen();
+            
+            if (!view.confirmUserAction("booking a reservation the hotel?")){
+                isInputtingRoom = false;
+            } else {
+                view.displayRoomList(listOfAvailableRooms);
+                roomChoice = view.getInputInt("Input room number: ");
+                view.displayInvalidInputWarning(roomChoice < 0 || roomChoice > listOfAvailableRooms.size(), "Room number not within index.");
+                if (roomChoice > 0 && roomChoice < listOfAvailableRooms.size() ){
+                    if (view.confirmUserAction("use room " + listOfAvailableRooms.get(roomChoice).getName() + "?")){
+                        room = listOfAvailableRooms.get(roomChoice);
+                        isInputtingRoom = false;
+                        isInputtingName = true; 
+                    } else if (room == null) {
+                        isInputtingRoom = false;
+                        isInputtingName = false;
+                        view.displayInvalidInputWarning();
+                    } 
+                }
+            }
+            view.pressEnterToContinue();
+        }
+
+        while (isInputtingName) {
+            view.clearScreen();
+            view.displayBookReservationPrompt(SB_GUEST_SELECTION);
+
+            if (!view.confirmUserAction("booking a reservation the hotel?")){
+                isInputtingName = false;
+            } else {
+                guestName = view.getInputStr("Please input your name:");
+                if (view.confirmUserAction("using the " + guestName)){
+                    isChoosingRoom = true;
+                    isInputtingName = false;
+                }
+
+                    
+            }
+        }
+
+
+        while (isChoosingRoom) {
+            view.clearScreen();
+            view.displayBookReservationPrompt(SB_RESERVATION_CONFIRMATION);
+            view.displayMessage("Hotel name: " + validHotel.getName() + "\tGuest name: " + guestName);
+            view.displayMessage("CheckIn: " + arrayLocalDatesCheckInCheckOut.get(0).toString() + "\tCheck-out " + arrayLocalDatesCheckInCheckOut.get(1) );
+            view.displayMessage("Room: " + room.getName() + " " + room.getBasePricePerNight() + " PHP per night");
+            
+            if (!view.confirmUserAction("booking a reservation the hotel?")){
+                isInputtingName = false;
+                isChoosingRoom = false;
+            }
+
+            if (view.confirmUserAction("Confirm with these details?"))
+                model.makeReservation(validHotel.getName(), guestName, arrayLocalDatesCheckInCheckOut.get(0), arrayLocalDatesCheckInCheckOut.get(1), room);
+                isChoosingRoom = false;
+            }
+                
         }
     }
+
 
 
     /**

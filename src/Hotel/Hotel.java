@@ -189,8 +189,27 @@ public class Hotel {
      * 
      * @return -1 (placeholder for future implementation)
      */
-    public double makeReservation() {
-        return -1;
+    public boolean makeReservation(String GuestName, LocalDate checkInDate, LocalDate checkOutDate, Room room) {
+        Reservation newReservation = new Reservation(GuestName, checkInDate, checkOutDate, room);
+        Boolean hasNoCoincidingReservation = false;
+        ArrayList<Room> availableRooms = new ArrayList<Room>(this.roomList); // duplicates the ArrayList
+        
+        for (Reservation reservation : this.reservationList) {
+            LocalDate reservationCheckInDate = reservation.getCheckInDate();
+            LocalDate reservationCheckOutDate = reservation.getCheckOutDate();
+            if ((checkInDate.isAfter(reservationCheckInDate) || checkInDate.isEqual(reservationCheckInDate)) &&
+                (checkOutDate.isBefore(reservationCheckOutDate))) {
+                availableRooms.remove(reservation.getRoom());
+            }
+        }
+        
+        for (Room availableRoom : availableRooms) {
+            if (availableRoom.equals(room)) {
+                hasNoCoincidingReservation = true;
+                this.reservationList.add(newReservation);
+            }
+        }
+        return hasNoCoincidingReservation;
     }
 
 
@@ -231,7 +250,7 @@ public class Hotel {
      * @return 0 - if reservation list is empty, 1 - if price is low, 2 - if base price is set
     */
     public int updatePrice(double price) {
-        if (this.reservationList.isEmpty())
+        if (!this.reservationList.isEmpty())
             return 0;
         
         if (price < 100)
@@ -258,7 +277,7 @@ public class Hotel {
             LocalDate checkInDate = reservation.getCheckInDate();
             LocalDate checkOutDate = reservation.getCheckOutDate();
             if ((date.isAfter(checkInDate) || date.isEqual(checkInDate)) &&
-                (date.isBefore(checkOutDate) || date.isEqual(checkOutDate))) {
+                (date.isBefore(checkOutDate))) {
                 availableRooms.remove(reservation.getRoom());
             }
         }
