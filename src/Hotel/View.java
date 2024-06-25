@@ -305,22 +305,6 @@ public class View {
         scanner.close(); // close the scanner
     }
 
-    /**
-     * Displays the details of a hotel.
-     * @param hotel the hotel to display
-     */
-    public void displayHotel(Hotel hotel) {
-        displayDivider();
-
-        System.out.println("Name: " + hotel.getName());
-        System.out.println("List of rooms:");
-
-        int i = 1;
-        for (Room room : hotel.getRoomList()) {
-            System.out.println(i + ".) " + room.getName());
-            ++i;
-        }
-    }
 
     /**
      * Displays an invalid input warning if the input is invalid.

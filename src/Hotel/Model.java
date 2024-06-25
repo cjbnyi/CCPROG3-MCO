@@ -139,7 +139,6 @@ public class Model {
             } 
         }
 
-
         if (hasFoundHotel == 0)
             return hasFoundHotel;
         else 
@@ -248,6 +247,4 @@ public class Model {
 
         return hasRemovedHotel;
     }
-
-
 }
