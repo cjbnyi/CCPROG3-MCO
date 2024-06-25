@@ -20,6 +20,7 @@ public class View {
 
     public static final int  SYSTEM_MONTH = 7,
                              SYSTEM_YEAR = 2024;
+    
     public enum MANAGER_STATE {
         MS_OVERVIEW(0),
         MS_CHANGE_NAME(1),
@@ -41,7 +42,6 @@ public class View {
         }
 
     }
-
 
     public enum SIMULATE_BOOKING {
         SB_OVERVIEW(1),
@@ -84,6 +84,7 @@ public class View {
         System.out.println("[V]iew Hotel");
         System.out.println("[M]anage Hotel");
         System.out.println("[B]ook Reservation");
+        System.out.println("[Q]uit");
     }
 
 
