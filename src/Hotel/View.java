@@ -56,12 +56,12 @@ public class View {
      * Enum representing various states for simulating booking.
      */
     public enum SIMULATE_BOOKING {
-        SB_OVERVIEW(1),
-        SB_DATE_SELECTION(2),
-        SB_ROOM_SELECTION(3);
+        SB_HOTEL_SELECTION(1),
+        SB_OVERVIEW(2),
+        SB_DATE_SELECTION(3),
+        SB_ROOM_SELECTION(4);
 
         private int numberID;
-
 
         private SIMULATE_BOOKING(int numberID) {
             this.numberID = numberID;
@@ -233,15 +233,23 @@ public class View {
      */
     public void displayManageHotelPrompt(MANAGER_STATE displayState) {
         final String[][] promptManageHotel = {
-            {       // 0 : Hotel
-                "# Please Choose the following Actions",
+            {
+                "",
+                "Welcome to Hotel Manager.",
+                "Please input the name of the hotel.",
+                ""
+            },{ // 0 : Hotel
+                "Hotel Manager", 
+                "Please Choose the following Managing actions:",
+                "",
                 " [a] Change the name of the Hotel",
                 " [b] Add Rooms",
                 " [c] Remove Rooms",
                 " [d] Update the Base Price for a Room",
                 " [e] Remove Reservation",
                 " [f] Remove Hotel",
-                "Type \"quit\" to exit the program"
+                " [q] Quit",
+                ""
             }, {
                 "## Change Name of the Hotel",
                 "Please provide the correct name of the hotel you want to change the name."

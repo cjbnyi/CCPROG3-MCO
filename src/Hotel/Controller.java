@@ -65,7 +65,7 @@ public void createHotel() {
         }
         try {
             roomBasePrice = Double.parseDouble(buffer);
-            isValidBasePrice = roomBasePrice > 0;
+            isValidBasePrice = roomBasePrice >= 100;
             view.displayInvalidInputWarning(isValidBasePrice, "Please provide a base price greater than 0!");
         } catch(NumberFormatException e) {
             roomBasePrice = 0;
@@ -501,7 +501,8 @@ private void manageHotelActions(MANAGER_STATE ManageState){
     while (isUsingAFunction) { 
         view.displayManageHotelPrompt(ManageState);
 
-        if (isQuit(isUsingAFunction)){
+
+        if (!view.confirmUserAction("Continue or Quit manager? Enter N to quit.")){
             return;
         }
 
