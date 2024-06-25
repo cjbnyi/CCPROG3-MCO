@@ -14,6 +14,7 @@ public class Reservation {
     private final LocalDate checkOutDate;
     private final Room room;
 
+
     /**
      * Constructs a Reservation object with the specified guest name, check-in date, 
      * check-out date, and room.
@@ -30,6 +31,7 @@ public class Reservation {
         this.room = room;
     }
 
+
     /**
      * Returns the name of the guest who made the reservation.
      * 
@@ -38,6 +40,7 @@ public class Reservation {
     public String getGuestName() {
         return this.guestName;
     }
+
 
     /**
      * Returns the check-in date of the reservation.
@@ -48,6 +51,7 @@ public class Reservation {
         return this.checkInDate;
     }
 
+
     /**
      * Returns the check-out date of the reservation.
      * 
@@ -56,6 +60,7 @@ public class Reservation {
     public LocalDate getCheckOutDate() {
         return this.checkOutDate;
     }
+
 
     /**
      * Returns the room reserved.
@@ -66,6 +71,7 @@ public class Reservation {
         return this.room;
     }
 
+
     /**
      * Returns the number of days between the check-in date and check-out date.
      * 
@@ -74,6 +80,7 @@ public class Reservation {
     public int getNumDays() {
         return (int) DAYS.between(this.checkInDate, this.checkOutDate);
     }
+
 
     /**
      * Returns a breakdown of the price per night for each night of the reservation.
@@ -86,6 +93,7 @@ public class Reservation {
             priceBreakdown += "\n" + this.checkInDate.plusDays(i) + " --- " + this.room.getBasePricePerNight();
         return priceBreakdown;
     }
+
 
     /**
      * Returns the total price for the entire reservation period.

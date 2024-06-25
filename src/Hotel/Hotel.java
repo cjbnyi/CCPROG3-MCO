@@ -6,12 +6,14 @@ import java.util.ArrayList;
  * The Hotel class represents a hotel with rooms and reservations.
  */
 public class Hotel {
+
     private String name;
     private ArrayList<Room> roomList;
     private ArrayList<Reservation> reservationList;
     private static final int MAX_ROOMS = 50;
     private static final int DAYS_IN_MONTH = 31;
-    
+
+
     /**
      * Constructs a Hotel object with a given name.
      * Initializes roomList and reservationList.
@@ -25,6 +27,7 @@ public class Hotel {
         this.reservationList = new ArrayList<Reservation>();
         this.initRooms();
     }
+
 
     /**
      * Initializes rooms in the hotel.
@@ -41,9 +44,8 @@ public class Hotel {
         }
     }
 
+
     // ### 1. GETTERS
-    
-    
     /**
      * Gets the name of the hotel.
      * 
@@ -52,6 +54,7 @@ public class Hotel {
     public String               getName() {
         return this.name;
     }
+
 
     /**
      * Gets the list of rooms in the hotel.
@@ -62,6 +65,7 @@ public class Hotel {
         return this.roomList;
     }
 
+
     /**
      * Gets the list of reservations in the hotel.
      * 
@@ -70,6 +74,7 @@ public class Hotel {
     public ArrayList<Reservation> getReservationList() {
         return this.reservationList;
     }
+
 
     /**
      * Gets the total number of rooms in the hotel.
@@ -80,40 +85,6 @@ public class Hotel {
         return this.roomList.size();
     }
 
-    /**
-     * Calculates the estimated earnings of the hotel based on reservations.
-     * 
-     * @return the estimated earnings of the hotel
-     */
-    public double               getEstimatedEarnings() {
-        double totalEarnings = 0.0;
-        for (Reservation reservation : reservationList)
-            totalEarnings += reservation.getTotalPrice();
-        return totalEarnings;
-    }
-
-    /**
-     * Retrieves information about a specific room in the hotel.
-     * 
-     * @param roomName the name of the room
-     * @return information about the room, including base price and available dates
-     */
-    public String               getRoomInfo(String roomName) {
-        for (Room room : this.roomList) {
-            if (room.getName().equals(roomName)) {
-                StringBuilder roomInfo = new StringBuilder (
-                    "Name: " + room.getName() + "\n" +
-                    "Base price per night: " + room.getBasePricePerNight() + "\n" +
-                    "Available dates:"
-                );
-                ArrayList<LocalDate> availableDates = getRoomAvailabilityThisMonth(room);
-                for (LocalDate date : availableDates)
-                    roomInfo.append("\n").append(date.toString());
-                return roomInfo.toString();
-            }
-        }
-        return "Invalid room name.";
-    }
 
     /**
      * Determines the availability of a room in the current month.
@@ -135,8 +106,57 @@ public class Hotel {
         return availableDates;
     }
 
-    // ### 2. SETTERS
 
+    /**
+     * Retrieves a room from the hotel's roomList given its name.
+     *
+     * @param roomName the name of the room to retrieve
+     * @return the room object with the specified name, or null if no such room exists
+     */
+    public Room getRoom(String roomName) {
+        for (Room room : this.roomList)
+            if (room.getName().equals(roomName))
+                return room;
+        return null;
+    }
+
+
+    /**
+     * Retrieves a reservation for a specific room and check-in date.
+     *
+     * @param room the room to check for reservations
+     * @param checkInDate the check-in date of the reservation
+     * @return the reservation object, or null if no reservation exists for the specified room and date
+     */
+    public Reservation getReservation(Room room, LocalDate checkInDate) {
+        ArrayList<Reservation> reservationList = filterReservationsByRoom(room);
+        for (Reservation reservation : reservationList)
+            if (reservation.getCheckInDate().equals(checkInDate))
+                return reservation;
+        return null;
+    }
+
+
+    /**
+     * Retrieves information about a specific room in the hotel.
+     *
+     * @param room the room to retrieve information for
+     * @return information about the room, including base price and available dates
+     */
+    public String getRoomInfo(Room room) { // refactor this
+        StringBuilder roomInfo = new StringBuilder (
+                "Room name: " + room.getName() + "\n\n" +
+                        "Base price per night: " + room.getBasePricePerNight() + "\n\n" +
+                        "Available dates:"
+        );
+        ArrayList<LocalDate> availableDates = getRoomAvailabilityThisMonth(room);
+        for (LocalDate date : availableDates)
+            roomInfo.append("\n").append(date.toString());
+        return roomInfo.toString();
+    }
+
+
+    // ### 2. SETTERS
     /**
      * Sets the name of the hotel.
      * 
@@ -146,7 +166,23 @@ public class Hotel {
         this.name = name;
     }
 
-    // ### 3. MODIFIERS 
+
+    /**
+     * Sets the base price per night for all rooms in the hotel if there are no reservations.
+     *
+     * @param newPrice the new base price per night
+     * @return true if the base price was successfully set, false otherwise
+     */
+    public boolean setRoomBasePrice(double newPrice) {
+        if (newPrice <= 0 || !this.reservationList.isEmpty())
+            return false;
+        for (Room room : this.roomList)
+            room.setBasePricePerNight(newPrice);
+        return true;
+    }
+
+
+    // ### 3. MODIFIERS
     // TODO: Implement makeReservation()
     /**
      * Makes a reservation for a room.
@@ -156,6 +192,7 @@ public class Hotel {
     public double makeReservation() {
         return -1;
     }
+
 
     /**
      * Removes a reservation.
@@ -173,7 +210,6 @@ public class Hotel {
     }
 
 
-
     /**
      * Adds a room.
      * @param name
@@ -187,6 +223,7 @@ public class Hotel {
         this.roomList.add(room);
         return room;
     }
+
 
     /**
      * 
@@ -208,7 +245,7 @@ public class Hotel {
     }
 
 
-    // ### 2.1. FILTERS
+    // ### 4. FILTERS
     /**
      * Filters and returns a list of available rooms by a specified date.
      * 
@@ -242,6 +279,7 @@ public class Hotel {
         return reservationList;
     }
 
+
     /**
      * Removes a room from the hotel's roomList[] given its name.
      *
@@ -261,66 +299,4 @@ public class Hotel {
         }
         return 0;
     }
-        
-    /**
-     * Retrieves a room from the hotel's roomList given its name.
-     * 
-     * @param roomName the name of the room to retrieve
-     * @return the room object with the specified name, or null if no such room exists
-     */
-    public Room getRoom(String roomName) {
-        for (Room room : this.roomList)
-            if (room.getName().equals(roomName))
-                return room;
-        return null;
-    }
-
-    /**
-     * Retrieves a reservation for a specific room and check-in date.
-     * 
-     * @param room the room to check for reservations
-     * @param checkInDate the check-in date of the reservation
-     * @return the reservation object, or null if no reservation exists for the specified room and date
-     */
-    public Reservation getReservation(Room room, LocalDate checkInDate) {
-        ArrayList<Reservation> reservationList = filterReservationsByRoom(room);
-        for (Reservation reservation : reservationList)
-            if (reservation.getCheckInDate().equals(checkInDate))
-                return reservation;
-        return null;
-    }
-
-    /**
-     * Retrieves information about a specific room in the hotel.
-     * 
-     * @param room the room to retrieve information for
-     * @return information about the room, including base price and available dates
-     */
-    public String getRoomInfo(Room room) { // refactor this
-        StringBuilder roomInfo = new StringBuilder (
-            "Room name: " + room.getName() + "\n\n" +
-            "Base price per night: " + room.getBasePricePerNight() + "\n\n" +
-            "Available dates:"
-        );
-        ArrayList<LocalDate> availableDates = getRoomAvailabilityThisMonth(room);
-        for (LocalDate date : availableDates)
-            roomInfo.append("\n").append(date.toString());
-        return roomInfo.toString();
-    }
-
-    /**
-     * Sets the base price per night for all rooms in the hotel if there are no reservations.
-     * 
-     * @param newPrice the new base price per night
-     * @return true if the base price was successfully set, false otherwise
-     */
-    public boolean setRoomBasePrice(double newPrice) {
-        if (newPrice <= 0 || !this.reservationList.isEmpty())
-            return false;
-        for (Room room : this.roomList)
-            room.setBasePricePerNight(newPrice);
-        return true;
-    }
-
-
 }

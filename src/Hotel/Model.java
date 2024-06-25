@@ -9,12 +9,39 @@ public class Model {
 
     private ArrayList<Hotel> hotelList;
 
+
     /**
      * Constructs a Model object with an empty list of hotels.
      */
     public Model() {
         this.hotelList = new ArrayList<Hotel>();
     }
+
+
+    // ### 1. GETTERS
+    /**
+     * Gets the array of hotels.
+     *
+     * @return An array of hotels.
+     */
+    public ArrayList<Hotel> getHotelList() {
+        return this.hotelList;
+    }
+
+
+    /**
+     * Gets an existing hotel with a specified name.
+     *
+     * @param name
+     * @return The instance of the hotel with the corresponding name; otherwise, null.
+     */
+    public Hotel getHotel(String name) {
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(name))
+                return hotel;
+        return null;
+    }
+
 
     /**
      * Calculates the estimated earnings for a given hotel.
@@ -29,6 +56,7 @@ public class Model {
         return totalEarnings;
     }
 
+
     /**
      * Returns the total number of available rooms in a hotel on a specific date.
      * 
@@ -40,19 +68,25 @@ public class Model {
         return hotel.filterAvailableRoomsByDate(date).size();
     }
 
+
     /**
-     * Returns the total number of booked rooms in a hotel on a specific date.
-     * 
-     * @param hotel the hotel to check
-     * @param date the date to check bookings
-     * @return the total number of booked rooms on the specified date
+     * Returns the list of rooms in a specified hotel.
+     *
+     * @param nameOfHotel the name of the hotel
+     * @return the list of rooms in the hotel
      */
-    public int getTotalBookedRoomsByDate(Hotel hotel, LocalDate date) {
-        return hotel.getTotalRooms() - hotel.filterAvailableRoomsByDate(date).size();
+    public ArrayList<Room> getRoomListOfAHotel(String nameOfHotel){
+        ArrayList<Room> listOfRooms = null;
+
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(nameOfHotel)){
+                listOfRooms = hotel.getRoomList();
+            }
+        return listOfRooms;
     }
 
-    // ### 2. SETTERS
 
+    // ### 2. SETTERS
     /**
      * Sets the name of a hotel object given its current name.
      *
@@ -73,7 +107,6 @@ public class Model {
 
         if (!hotelExists)
             return 0;
-        // find a way to use confirmAction()
 
         for (Hotel hotel : this.hotelList) {
             String hotelName = hotel.getName();
@@ -84,6 +117,26 @@ public class Model {
         return 2;
     }
 
+
+    // ### 3. FILTERS
+    /**
+     * Checks if a hotel with the specified name exists.
+     *
+     * @param nameOfHotel the name of the hotel to check
+     * @return true if the hotel exists, false otherwise
+     */
+    public boolean doesHotelExist(String nameOfHotel){
+        boolean hasFoundHotel = false;
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(nameOfHotel)){
+                hasFoundHotel = true;
+            }
+
+        return hasFoundHotel;
+    }
+
+
+    // ### 4. MODIFIERS
     /**
      * Adds a new hotel with the specified name.
      * 
@@ -145,53 +198,6 @@ public class Model {
             return hasSuccesfulRemoveRoom;
     }
 
-    /**
-     * Returns the list of rooms in a specified hotel.
-     * 
-     * @param nameOfHotel the name of the hotel
-     * @return the list of rooms in the hotel
-     */
-    public ArrayList<Room> getRoomListOfAHotel(String nameOfHotel){
-        ArrayList<Room> listOfRooms = null;
-
-        for (Hotel hotel : this.hotelList)
-            if (hotel.getName().equals(nameOfHotel)){
-                listOfRooms = hotel.getRoomList();
-            }
-        return listOfRooms;
-    }
-    
-    /**
-     * Checks if a hotel with the specified name exists.
-     * 
-     * @param nameOfHotel the name of the hotel to check
-     * @return true if the hotel exists, false otherwise
-     */
-    public boolean doesHotelExist(String nameOfHotel){
-        boolean hasFoundHotel = false;
-        for (Hotel hotel : this.hotelList)
-            if (hotel.getName().equals(nameOfHotel)){
-                hasFoundHotel = true;
-            }
-
-        return hasFoundHotel;
-    }
-
-    /**
-     * Gets the array of hotels.
-     *
-     * @return An array of hotels.
-     */
-    public ArrayList<Hotel> getHotelList() {
-        return this.hotelList;
-    }
-
-    public Hotel getHotel(String name) {
-        for (Hotel hotel : this.hotelList)
-            if (hotel.getName().equals(name))
-                return hotel;
-        return null;
-    }
     
     /**
      * Updates the price of a hotel when no reservations are made.
@@ -207,7 +213,6 @@ public class Model {
             if (hotel.getName().equals(strHotel)){
                 hasPriceChanged = hotel.updatePrice(setPrice) + 1;
             }
-        
 
         return hasPriceChanged;
     }

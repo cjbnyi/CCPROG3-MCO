@@ -7,6 +7,7 @@ import java.util.Scanner;
  * The {@code View} class handles user interaction and input/output operations for the Hotel Reservation System.
  */
 public class View {
+
     // Constants for main menu options
     public static final char CREATE_HOTEL_OPTION = 'C',
                              VIEW_HOTEL_OPTION = 'V',
@@ -27,6 +28,7 @@ public class View {
     public static final int  SYSTEM_MONTH = 7,
                              SYSTEM_YEAR = 2024;
 
+
      /**
      * Enum representing various manager states for managing hotels.
      */
@@ -41,7 +43,6 @@ public class View {
 
         private int numberID;
 
-
         private MANAGER_STATE(int numberID) {
             this.numberID = numberID;
         }
@@ -51,6 +52,7 @@ public class View {
         }
 
     }
+
 
     /**
      * Enum representing various states for simulating booking.
@@ -75,6 +77,7 @@ public class View {
 
     private final Scanner scanner;
 
+
     /**
      * Constructs a View object and initializes the scanner.
      */
@@ -82,35 +85,23 @@ public class View {
         this.scanner = new Scanner(System.in);
     }
 
+
+    // ### 1. INPUT GETTERS
     /**
-     * Displays a divider line.
+     * Prompts the user for a character input.
+     * @param prompt the prompt message
+     * @return the user's input character
      */
-    public void displayDivider() {
-        System.out.println("\n========================================");
+    public char getInputChar(String prompt) {
+        String s;
+        do {
+            System.out.print(prompt + " ");
+            s = scanner.nextLine();
+            displayInvalidInputWarning(!s.isEmpty(), "Please provide a character response!");
+        } while (s.isEmpty());
+        return s.toUpperCase().charAt(0);
     }
 
-    /**
-     * Displays a message to the user.
-     * @param message the message to display
-     */
-    public void displayMessage(String message) {
-        System.out.println(message);
-    }
-
-    /**
-     * Displays the main action prompt to the user.
-     */
-    public void displayMainActionPrompt() {
-        displayDivider();
-        System.out.println("\nWelcome to the Hotel Reservation System!");
-        displayDivider();
-        System.out.println("\n[C]reate Hotel");
-        System.out.println("[V]iew Hotel");
-        System.out.println("[M]anage Hotel");
-        System.out.println("[B]ook Reservation");
-        System.out.println("[Q]uit Program");
-        displayDivider();
-    }
 
     /**
      * Prompts the user for a string input.
@@ -127,20 +118,6 @@ public class View {
         return s;
     }
 
-    /**
-     * Prompts the user for a character input.
-     * @param prompt the prompt message
-     * @return the user's input character
-     */
-    public char getInputChar(String prompt) {
-        String s;
-        do {
-            System.out.print(prompt + " ");
-            s = scanner.nextLine();
-            displayInvalidInputWarning(!s.isEmpty(), "Please provide a character response!");
-        } while (s.isEmpty());
-        return s.toUpperCase().charAt(0);
-    }
 
     /**
      * Prompts the user for an integer input.
@@ -161,6 +138,7 @@ public class View {
         scanner.nextLine();
         return i;
     }
+
 
     /**
      * Prompts the user for a double input.
@@ -185,15 +163,86 @@ public class View {
 
     public LocalDate getLocalDate(String prompt) {
         System.out.println(prompt + " ");
-        
+
         System.out.println("Year: ");
         int year = scanner.nextInt();
         System.out.println("Month: ");
-        int month = scanner.nextInt();    
+        int month = scanner.nextInt();
         System.out.println("Day: ");
         int day = scanner.nextInt();
         return LocalDate.of(year, month, day);
     }
+
+
+    // ### 2. UTILITY FUNCTIONS
+    /**
+     * Displays a divider line.
+     */
+    public void displayDivider() {
+        System.out.println("\n========================================");
+    }
+
+
+    /**
+     * Displays a message to the user.
+     * @param message the message to display
+     */
+    public void displayMessage(String message) {
+        System.out.println(message);
+    }
+
+
+    /**
+     * Displays a result message to the user.
+     * @param result the result message to display
+     */
+    public void displayResultMessage(String result) {
+        displayDivider();
+        System.out.println("\n" + result);
+        pressEnterToContinue();
+    }
+
+
+    /**
+     * Displays a general invalid input warning.
+     */
+    public void displayInvalidInputWarning() {
+        displayDivider();
+        System.out.println("Please provide a valid response!");
+    }
+
+
+    /**
+     * Displays an invalid input warning if the input is invalid.
+     * @param isValidInput true if the input is valid; false otherwise
+     * @param warning the warning message to display
+     */
+    public void displayInvalidInputWarning(boolean isValidInput, String warning) {
+        if (isValidInput) return;
+        System.out.println("Invalid input! " + warning);
+    }
+
+
+    /**
+     * Clears the screen by printing several newline characters.
+     */
+    public void clearScreen(){
+        if (Debug.CLEAR_CONSOLE)
+            System.out.println("\033\143");
+        else
+            System.out.println("\n\n\n\n\n");
+    }
+
+
+    /**
+     * Prompts the user to press 'Enter' to continue.
+     */
+    public void pressEnterToContinue() {
+        System.out.print("Press 'Enter' to continue.");
+        scanner.nextLine();
+    }
+
+
     /**
      * Prompts the user to confirm their input.
      * @return true if the user inputs 'Y'; false if the user inputs 'N'
@@ -209,6 +258,175 @@ public class View {
         }
     }
 
+
+    // ### 3. LIST PRINTERS
+    /**
+     * Displays the list of hotels for selection.
+     * @param hotelList the list of hotels to display
+     */
+    public void displayHotelSelection(ArrayList<Hotel> hotelList) {
+        if (hotelList.isEmpty())
+            System.out.println("\nNo hotel currently exists.");
+        else {
+            System.out.println("\nList of hotels:");
+            int i = 1;
+            for (Hotel hotel : hotelList) {
+                System.out.println(i + ".) " + hotel.getName());
+                ++i;
+            }
+        }
+        displayDivider();
+    }
+
+
+    /**
+     * Displays the list of rooms for selection.
+     * @param roomList the list of rooms to display
+     */
+    public void displayRoomSelection(String hotelName, ArrayList<Room> roomList) {
+        if (roomList.isEmpty())
+            System.out.println("\nNo room currently exists.");
+        else {
+            System.out.println("\nSelected hotel: " + hotelName);
+            System.out.println("\nList of rooms:");
+            int i = 1;
+            for (Room room : roomList) {
+                if (i % 5 == 1)
+                    System.out.print("\n");
+                System.out.print(room.getName());
+                if (i % 5 != 0)
+                    System.out.print(" | ");
+                ++i;
+            }
+            System.out.print("\n");
+        }
+    }
+
+
+    /**
+     * Displays the list of reservations for selection.
+     * @param reservationList the list of reservations to display
+     */
+    public void displayReservationSelection(String hotelName, String roomName, ArrayList<Reservation> reservationList) {
+
+        System.out.println("\nSelected hotel: " + hotelName);
+        System.out.println("\nSelected room: " + roomName);
+
+        if (reservationList.isEmpty())
+            System.out.println("\nNo reservation currently exists.");
+        else {
+            System.out.println("\nList of reservations:");
+            int i = 1;
+            for (Reservation reservation : reservationList) {
+                System.out.println(i + ".)");
+                System.out.println("Check-in date: " + reservation.getCheckInDate());
+                System.out.println("Room: " + reservation.getRoom());
+                ++i;
+            }
+        }
+
+        displayDivider();
+    }
+
+
+    /**
+     * Displays the list of rooms with their details.
+     * @param roomList the list of rooms to display
+     */
+    public void displayRoomList(ArrayList<Room> roomList) {
+
+        if(roomList.isEmpty()){
+            displayDivider();
+            System.out.println("No Rooms currently exist.");
+        } else {
+            int i = 0;
+            for (Room room : roomList){
+                displayDivider();
+                System.out.println(i + 1 + ".)");
+                System.out.println("Room: " + room.getName());
+                System.out.println("Class: " + room.getClass());
+                System.out.println("Base Price: " + room.getBasePricePerNight());
+                ++i;
+            }
+        }
+    }
+
+
+    // ### 4. FORMATTED INFORMATION PRINTERS
+    /**
+     * Displays the high-level hotel information.
+     * @param hotel the hotel to display
+     * @param estimatedEarnings the estimated earnings of the hotel
+     */
+    public void displayHighLevelHotelInfo(Hotel hotel, double estimatedEarnings) {
+        if (hotel == null)
+            System.out.println("Error! Hotel nonexistent!");
+        displayDivider();
+        System.out.println("\nHotel name: " + hotel.getName());
+        System.out.println("Total number of rooms: " + hotel.getTotalRooms());
+        System.out.println("Estimated earnings: " + estimatedEarnings);
+    }
+
+
+    /**
+     * Displays the selected date information for a hotel.
+     * @param hotelName the name of the hotel
+     * @param availableRooms the number of available rooms
+     * @param unavailableRooms the number of unavailable rooms
+     */
+    public void displaySelectedDateInfo(String hotelName, int availableRooms, int unavailableRooms) {
+        displayDivider();
+        System.out.println("\nHotel: " + hotelName);
+        System.out.println("Available rooms: " + availableRooms);
+        System.out.println("Unavailable rooms: " + unavailableRooms);
+    }
+
+
+    /**
+     * Displays the selected room information.
+     * @param roomInfo the information of the selected room
+     */
+    public void displaySelectedRoomInfo(String roomInfo) {
+        displayDivider();
+        System.out.println("\n" + roomInfo);
+    }
+
+
+    /**
+     * Displays the selected reservation information.
+     * @param reservation the reservation to display
+     */
+    public void displaySelectedReservationInfo(Reservation reservation) {
+        displayDivider();
+        if (reservation == null) {
+            System.out.println("\nThe reservation does not exist.");
+            return;
+        }
+        System.out.println("\nGuest: " + reservation.getGuestName());
+        System.out.println("Check-in: " + reservation.getCheckInDate());
+        System.out.println("Check-out: " + reservation.getCheckOutDate());
+        System.out.println("Price breakdown:" + reservation.getPriceBreakdown());
+        System.out.println("Total price: " + reservation.getTotalPrice());
+    }
+
+
+    // ### 5. PROMPT PRINTERS
+    /**
+     * Displays the main action prompt to the user.
+     */
+    public void displayMainActionPrompt() {
+        displayDivider();
+        System.out.println("\nWelcome to the Hotel Reservation System!");
+        displayDivider();
+        System.out.println("\n[C]reate Hotel");
+        System.out.println("[V]iew Hotel");
+        System.out.println("[M]anage Hotel");
+        System.out.println("[B]ook Reservation");
+        System.out.println("[Q]uit Program");
+        displayDivider();
+    }
+
+
     /**
      * Displays the create hotel prompt to the user.
      */
@@ -218,6 +436,58 @@ public class View {
         displayDivider();
     }
 
+
+    /**
+     * Displays the high-level hotel information prompt.
+     * @param hasSelectedHotel true if a hotel is selected; false otherwise
+     * @param hotelName the name of the selected hotel
+     */
+    public void displayHighLevelHotelInfoPrompt(boolean hasSelectedHotel, String hotelName) {
+        if (hasSelectedHotel)
+            System.out.println("\nSelected hotel: " + hotelName + "\n");
+        System.out.println("[H]igh-level information");
+        System.out.println("\t- Hotel name");
+        System.out.println("\t- Total number of rooms");
+        System.out.println("\t- Estimated earnings for the month");
+    }
+
+
+    /**
+     * Displays the low-level hotel information prompt.
+     * @param hasSelectedHotel true if a hotel is selected; false otherwise
+     * @param hotelName the name of the selected hotel
+     */
+    public void displayLowLevelHotelInfoPrompt(boolean hasSelectedHotel, String hotelName) {
+        if (hasSelectedHotel)
+            System.out.println("\nSelected hotel: " + hotelName + "\n");
+        System.out.println("[L]ow-level information");
+        System.out.println("\t[1] Selected date hotel availability");
+        System.out.println("\t\t- Total number of available rooms");
+        System.out.println("\t\t- Total number of booked rooms");
+        System.out.println("\t[2] Selected room information");
+        System.out.println("\t\t- Room name");
+        System.out.println("\t\t- Price per night");
+        System.out.println("\t\t- Availability across the entire month");
+        System.out.println("\t[3] Selected reservation information");
+        System.out.println("\t\t- Guest information");
+        System.out.println("\t\t- Check-in date");
+        System.out.println("\t\t- Check-out date");
+        System.out.println("\t\t- Breakdown");
+        System.out.println("\t\t- Total price");
+        displayDivider();
+    }
+
+
+    /**
+     * Displays the hotel information prompt.
+     * @param hotelName the name of the selected hotel
+     */
+    public void displayHotelInfoPrompt(String hotelName) {
+        displayHighLevelHotelInfoPrompt(true, hotelName);
+        displayLowLevelHotelInfoPrompt(false, "");
+    }
+
+
     /**
      * Displays the view hotel prompt to the user.
      */
@@ -226,6 +496,7 @@ public class View {
         System.out.println("\nYou are viewing hotel information. Enter \"quit\" to exit the hotel information page.");
         displayDivider();
     }
+
 
     /**
      * Displays the manage hotel prompt to the user based on the given manager state.
@@ -273,8 +544,8 @@ public class View {
         for (String sentence : promptManageHotel[displayState.getID()]){
             System.out.println(sentence);
         }
-
     }
+
 
     /**
      * Displays the book reservation prompt to the user based on the given booking state.
@@ -300,6 +571,7 @@ public class View {
         }
     }
 
+
     /**
      * Displays the program termination message.
      */
@@ -311,242 +583,5 @@ public class View {
         System.out.println("Roan Cedric V. Campo - @ImaginaryLogs");
         displayDivider();
         scanner.close(); // close the scanner
-    }
-
-
-    /**
-     * Displays an invalid input warning if the input is invalid.
-     * @param isValidInput true if the input is valid; false otherwise
-     * @param warning the warning message to display
-     */
-    public void displayInvalidInputWarning(boolean isValidInput, String warning) {
-        if (isValidInput) return;
-        System.out.println("Invalid input! " + warning);
-    }
-
-    /**
-     * Displays the list of rooms for selection.
-     * @param roomList the list of rooms to display
-     */
-    public void displayRoomSelection(String hotelName, ArrayList<Room> roomList) {
-        if (roomList.isEmpty())
-            System.out.println("\nNo room currently exists.");
-        else {
-            System.out.println("\nSelected hotel: " + hotelName);
-            System.out.println("\nList of rooms:");
-            int i = 1;
-            for (Room room : roomList) {
-                if (i % 5 == 1)
-                    System.out.print("\n");
-                System.out.print(room.getName());
-                if (i % 5 != 0)
-                    System.out.print(" | ");
-                ++i;
-            }
-            System.out.print("\n");
-        }
-    }
-
-    /**
-     * Displays the list of reservations for selection.
-     * @param reservationList the list of reservations to display
-     */
-    public void displayReservationSelection(String hotelName, String roomName, ArrayList<Reservation> reservationList) {
-
-        System.out.println("\nSelected hotel: " + hotelName);
-        System.out.println("\nSelected room: " + roomName);
-
-        if (reservationList.isEmpty())
-            System.out.println("\nNo reservation currently exists.");
-        else {
-            System.out.println("\nList of reservations:");
-            int i = 1;
-            for (Reservation reservation : reservationList) {
-                System.out.println(i + ".)");
-                System.out.println("Check-in date: " + reservation.getCheckInDate());
-                System.out.println("Room: " + reservation.getRoom());
-                ++i;
-            }
-        }
-
-        displayDivider();
-    }
-
-    /**
-     * Displays the list of hotels for selection.
-     * @param hotelList the list of hotels to display
-     */
-    public void displayHotelSelection(ArrayList<Hotel> hotelList) {
-        if (hotelList.isEmpty())
-            System.out.println("\nNo hotel currently exists.");
-        else {
-            System.out.println("\nList of hotels:");
-            int i = 1;
-            for (Hotel hotel : hotelList) {
-                System.out.println(i + ".) " + hotel.getName());
-                ++i;
-            }
-        }
-        displayDivider();
-    }
-
-    /**
-     * Displays the list of rooms with their details.
-     * @param roomList the list of rooms to display
-     */
-    public void displayRoomList(ArrayList<Room> roomList) {
-        
-        if(roomList.isEmpty()){
-            displayDivider();
-            System.out.println("No Rooms currently exist.");
-        } else {
-            int i = 0;
-            for (Room room : roomList){
-                displayDivider();
-                System.out.println(i + 1 + ".)");
-                System.out.println("Room: " + room.getName());
-                System.out.println("Class: " + room.getClass());
-                System.out.println("Base Price: " + room.getBasePricePerNight());
-                ++i;
-            }
-        }
-    }
-
-    /**
-     * Displays the high-level hotel information prompt.
-     * @param hasSelectedHotel true if a hotel is selected; false otherwise
-     * @param hotelName the name of the selected hotel
-     */
-    public void displayHighLevelHotelInfoPrompt(boolean hasSelectedHotel, String hotelName) {
-        if (hasSelectedHotel)
-            System.out.println("\nSelected hotel: " + hotelName + "\n");
-        System.out.println("[H]igh-level information");
-        System.out.println("\t- Hotel name");
-        System.out.println("\t- Total number of rooms");
-        System.out.println("\t- Estimated earnings for the month");
-    }
-
-    /**
-     * Displays the high-level hotel information.
-     * @param hotel the hotel to display
-     * @param estimatedEarnings the estimated earnings of the hotel
-     */
-    public void displayHighLevelHotelInfo(Hotel hotel, double estimatedEarnings) {
-        if (hotel == null)
-            System.out.println("Error! Hotel nonexistent!");
-        displayDivider();
-        System.out.println("\nHotel name: " + hotel.getName());
-        System.out.println("Total number of rooms: " + hotel.getTotalRooms());
-        System.out.println("Estimated earnings: " + estimatedEarnings);
-    }
-
-    /**
-     * Displays the low-level hotel information prompt.
-     * @param hasSelectedHotel true if a hotel is selected; false otherwise
-     * @param hotelName the name of the selected hotel
-     */
-    public void displayLowLevelHotelInfoPrompt(boolean hasSelectedHotel, String hotelName) {
-        if (hasSelectedHotel)
-            System.out.println("\nSelected hotel: " + hotelName + "\n");
-        System.out.println("[L]ow-level information");
-        System.out.println("\t[1] Selected date hotel availability");
-        System.out.println("\t\t- Total number of available rooms");
-        System.out.println("\t\t- Total number of booked rooms");
-        System.out.println("\t[2] Selected room information");
-        System.out.println("\t\t- Room name");
-        System.out.println("\t\t- Price per night");
-        System.out.println("\t\t- Availability across the entire month");
-        System.out.println("\t[3] Selected reservation information");
-        System.out.println("\t\t- Guest information");
-        System.out.println("\t\t- Check-in date");
-        System.out.println("\t\t- Check-out date");
-        System.out.println("\t\t- Breakdown");
-        System.out.println("\t\t- Total price");
-        displayDivider();
-    }
-
-    /**
-     * Displays the hotel information prompt.
-     * @param hotelName the name of the selected hotel
-     */
-    public void displayHotelInfoPrompt(String hotelName) {
-        displayHighLevelHotelInfoPrompt(true, hotelName);
-        displayLowLevelHotelInfoPrompt(false, "");
-    }
-
-    /**
-     * Displays the selected date information for a hotel.
-     * @param hotelName the name of the hotel
-     * @param availableRooms the number of available rooms
-     * @param unavailableRooms the number of unavailable rooms
-     */
-    public void displaySelectedDateInfo(String hotelName, int availableRooms, int unavailableRooms) {
-        displayDivider();
-        System.out.println("\nHotel: " + hotelName);
-        System.out.println("Available rooms: " + availableRooms);
-        System.out.println("Unavailable rooms: " + unavailableRooms);
-    }
-
-    /**
-     * Displays the selected room information.
-     * @param roomInfo the information of the selected room
-     */
-    public void displaySelectedRoomInfo(String roomInfo) {
-        displayDivider();
-        System.out.println("\n" + roomInfo);
-    }
-
-    /**
-     * Displays the selected reservation information.
-     * @param reservation the reservation to display
-     */
-    public void displaySelectedReservationInfo(Reservation reservation) {
-        displayDivider();
-        if (reservation == null) {
-            System.out.println("\nThe reservation does not exist.");
-            return;
-        }
-        System.out.println("\nGuest: " + reservation.getGuestName());
-        System.out.println("Check-in: " + reservation.getCheckInDate());
-        System.out.println("Check-out: " + reservation.getCheckOutDate());
-        System.out.println("Price breakdown:" + reservation.getPriceBreakdown());
-        System.out.println("Total price: " + reservation.getTotalPrice());
-    }
-
-
-    /**
-     * Displays a general invalid input warning.
-     */
-    public void displayInvalidInputWarning() {
-        displayDivider();
-        System.out.println("Please provide a valid response!");
-    }
-
-    /**
-     * Clears the screen by printing several newline characters.
-     */    
-    public void clearScreen(){
-        if (Debug.DONT_CLEAR_CONSOLE)
-            System.out.println("\033\143");
-        else 
-            System.out.println("\n\n\n\n\n");
-    }
-
-    /**
-     * Prompts the user to press 'Enter' to continue.
-     */
-    public void pressEnterToContinue() {
-        System.out.print("Press 'Enter' to continue.");
-        scanner.nextLine();
-    }
-
-    /**
-     * Displays a result message to the user.
-     * @param result the result message to display
-     */
-    public void displayResultMessage(String result) {
-        displayDivider();
-        System.out.println("\n" + result);
-        pressEnterToContinue();
     }
 }
