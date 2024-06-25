@@ -839,6 +839,7 @@ public void manageHotel(){
 public void bookReservation(){
     String checkInDate = new String(), checkOutDate = new String(), guestName = new String();
     Boolean isReserving = true, isPerformingBookReservation = true, isInputtingRoom = true, isInputtingName = true, isChoosingHotel = true, isChoosingRoom = true;
+    
     int roomChoice = 0;
     Room room = new Room("");
     ArrayList<Room> listOfAvailableRooms = new ArrayList<Room>();
@@ -850,10 +851,7 @@ public void bookReservation(){
         isChoosingHotel = true;
         isPerformingBookReservation = false;
         isChoosingRoom = false;
-        isInputtingName = false;
-
-
-        
+        isInputtingName = false;   
         while (isChoosingHotel) {
             view.clearScreen();
             view.displayBookReservationPrompt(SB_HOTEL_SELECTION);
@@ -875,6 +873,7 @@ public void bookReservation(){
                 isPerformingBookReservation = false;
             } else {
                 view.clearScreen();
+                // TODO: DATE CHECKING
                 arrayLocalDatesCheckInCheckOut = selectValidCheckInAndCheckOutDates();
             
                 checkInDate = arrayLocalDatesCheckInCheckOut.get(0).getMonth() + "/" + arrayLocalDatesCheckInCheckOut.get(0).getDayOfMonth() + "/" + arrayLocalDatesCheckInCheckOut.get(0).getYear();
