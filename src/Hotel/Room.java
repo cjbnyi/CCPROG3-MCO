@@ -8,7 +8,8 @@ public class Room {
 
     private String name;
     private double basePricePerNight = 1299.0;
-    
+
+
     /**
      * Constructs a Room object with the specified name.
      * @param name the name of the room
@@ -16,6 +17,7 @@ public class Room {
     public Room(String name) {
         this.name = name;
     }
+
 
     /**
      * Returns the name of the room.
@@ -25,6 +27,7 @@ public class Room {
         return this.name;
     }
 
+
     /**
      * Returns the base price per night for the room.
      * @return the base price per night for the room
@@ -32,6 +35,7 @@ public class Room {
     public double getBasePricePerNight() {
         return this.basePricePerNight;
     }
+
 
     /**
      * Sets the base price per night for the room.

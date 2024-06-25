@@ -5,5 +5,5 @@ package Hotel;
 */
 public final class Debug {
 
-    public static boolean DONT_CLEAR_CONSOLE = true;
+    public static boolean CLEAR_CONSOLE = true;
 }
