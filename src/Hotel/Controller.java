@@ -10,112 +10,214 @@ import static Hotel.View.MANAGER_STATE.*;
 
 import static Hotel.View.SIMULATE_BOOKING.*;
 
+/**
+ * The {@code Controller} class acts as the intermediary between the {@code Model} and {@code View} in the
+ * Model-View-Controller (MVC) design pattern. It handles user input and interacts
+ * with the model and view to perform the necessary operations.
+ */
 public class Controller {
 
 private Model model;
 private View view;
 
+/**
+ * Constructs a Controller with the specified Model and View.
+ * 
+ * @param model the model to be used by the controller
+ * @param view the view to be used by the controller
+ */
 public Controller(Model model, View view) {
     this.model = model;
     this.view = view;
 }
 
+/**
+ * Creates a new hotel with a unique name and a base price for its rooms.
+ * Prompts the user for input and handles the creation process.
+ */
 public void createHotel() {
 
-    view.clearConsole();
     view.displayCreateHotelPrompt();
     view.displayHotelSelection(model.getHotelList());
 
     String hotelName;
     Hotel hotel;
-    boolean isValidHotel;
+    boolean isValidHotelName;
     do {
-        hotelName = view.getInputStr("\nName of hotel: ");
-        hotel = model.addHotel(hotelName);
-        isValidHotel = hotel != null;
+        hotelName = view.getInputStr("\nEnter the name of the hotel: ");
+        if (hotelName.equalsIgnoreCase("quit")) {
+            view.displayResultMessage("Hotel creation cancelled.");
+            return;
+        }
+        hotel = model.getHotel(hotelName);
+        isValidHotelName = hotel == null;
+        view.displayInvalidInputWarning(isValidHotelName, "Please provide a unique hotel name!");
+    } while(!isValidHotelName);
 
-        view.displayInvalidInputWarning(isValidHotel, "Please provide a unique hotel name!");
-    } while(!isValidHotel);
-
+    String buffer;
     double roomBasePrice;
     boolean isValidBasePrice;
     do {
-        roomBasePrice = view.getInputDouble("\nBase price per night per room: ");
-        isValidBasePrice = hotel.setRoomBasePrice(roomBasePrice);
-        view.displayInvalidInputWarning(isValidBasePrice, "Please provide a base price greater than 0!");
+        buffer = view.getInputStr("\nEnter the base price per night for each room: ");
+        if (buffer.equalsIgnoreCase("quit")) {
+            view.displayResultMessage("Hotel creation cancelled.");
+            return;
+        }
+        try {
+            roomBasePrice = Double.parseDouble(buffer);
+            isValidBasePrice = roomBasePrice > 0;
+            view.displayInvalidInputWarning(isValidBasePrice, "Please provide a base price greater than 0!");
+        } catch(NumberFormatException e) {
+            roomBasePrice = 0;
+            isValidBasePrice = false;
+            view.displayInvalidInputWarning(isValidBasePrice, "Please provide a numeric response!");
+        }
     } while(!isValidBasePrice);
 
-    view.displayMessage("\nHotel successfully initialized! :>");
+    if (view.confirmUserAction("creating a new hotel")) {
+        hotel = model.addHotel(hotelName);
+        hotel.setRoomBasePrice(roomBasePrice);
+        view.displayResultMessage("Hotel creation successful! :>");
+    } else {
+        view.displayResultMessage("Hotel creation cancelled.");
+    }
 }
 
-
+/**
+ * Displays detailed information about a specified hotel, including room and reservation details.
+ * Prompts the user for input and handles the information viewing process.
+ * 
+ * @param hotel the hotel for which to display information
+ */
 public void viewLowLevelInfo(Hotel hotel) {
+
+    view.displayViewHotelPrompt();
+    view.displayLowLevelHotelInfoPrompt(true, hotel.getName());
+
+    String buffer;
     char userInput;
     boolean isValidInput;
     do {
-        view.displayLowLevelHotelInfoPrompt(true, hotel.getName());
-        userInput = view.getInputChar("\nEnter a response (1/2/3): ");
+        buffer = view.getInputStr("\nEnter a response (1/2/3): ");
+        if (buffer.equalsIgnoreCase("quit")) {
+            view.displayResultMessage("Hotel information viewing cancelled.");
+            return;
+        }
+        userInput = buffer.charAt(0);
         isValidInput = userInput >= '1' && userInput <= '3';
-        view.displayInvalidInputWarning(isValidInput, "Please provide a valid response (1/2/3)!");
+        view.displayInvalidInputWarning(isValidInput, "Please provide a valid response!");
     } while (!isValidInput);
 
-    view.clearConsole();
-    view.displayDivider();
+    view.clearScreen();
+    view.displayViewHotelPrompt();
 
     String roomName;
     Room room;
     boolean isValidRoom;
 
     int day;
+    boolean isValidDay;
     LocalDate date;
 
     switch(userInput) {
         case View.SELECTED_DATE_OPTION: // selected date hotel availability
 
-            view.displayMessage("The only month in the system is July.");
-            day = view.getInputInt("\nEnter a day in July (1-31): ");
-            date = LocalDate.of(2024, View.SYSTEM_MONTH, day);
+            view.displayMessage("\nThe system month is July.");
+            do {
+                buffer = view.getInputStr("\nEnter a day in July (1-31): ");
+                if (buffer.equalsIgnoreCase("quit")) {
+                    view.displayResultMessage("Hotel information viewing cancelled.");
+                    return;
+                }
+                try {
+                    day = Integer.parseInt(buffer);
+                    isValidDay = day >= 1 && day <= 31;
+                    view.displayInvalidInputWarning(isValidDay, "Please provide a valid day!");
+                } catch(NumberFormatException e) {
+                    day = 0;
+                    isValidDay = false;
+                    view.displayInvalidInputWarning(isValidDay, "Please provide an integer response!");
+                }
+            } while (!isValidDay);
 
+            date = LocalDate.of(2024, View.SYSTEM_MONTH, day);
             int availableRooms = model.getTotalAvailableRoomsByDate(hotel, date);
-            view.displaySelectedDateInfo(availableRooms, hotel.getTotalRooms() - availableRooms);
+
+            view.clearScreen();
+            view.displaySelectedDateInfo(hotel.getName(), availableRooms, hotel.getTotalRooms() - availableRooms);
+            view.displayResultMessage("Hotel information viewing successful! :>");
             break;
         case View.SELECTED_ROOM_OPTION: // selected room information
 
-            view.displayRoomSelection(hotel.getRoomList());
+            view.displayRoomSelection(hotel.getName(), hotel.getRoomList());
+            view.displayDivider();
             do {
                 roomName = view.getInputStr("\nEnter the room name: ").toUpperCase();
+                if (roomName.equalsIgnoreCase("quit")) {
+                    view.displayResultMessage("Hotel information viewing cancelled.");
+                    return;
+                }
                 room = hotel.getRoom(roomName);
                 isValidRoom = room != null;
                 view.displayInvalidInputWarning(isValidRoom, "Please provide a valid room name!");
             } while (!isValidRoom);
 
+            view.clearScreen();
             view.displaySelectedRoomInfo(hotel.getRoomInfo(room));
+            view.displayResultMessage("Hotel information viewing successful! :>");
             break;
         case View.SELECTED_RESERVATION_OPTION: // selected reservation information
 
-            // TODO: Should I display the current hotel?
-            view.displayRoomSelection(hotel.getRoomList());
+            view.displayRoomSelection(hotel.getName(), hotel.getRoomList());
+            view.displayDivider();
             do {
                 roomName = view.getInputStr("\nEnter the room name: ").toUpperCase();
+                if (roomName.equalsIgnoreCase("quit")) {
+                    view.displayResultMessage("Hotel information viewing cancelled.");
+                    return;
+                }
                 room = hotel.getRoom(roomName);
                 isValidRoom = room != null;
                 view.displayInvalidInputWarning(isValidRoom, "Please provide a valid room name!");
             } while (!isValidRoom);
 
-            view.displayReservationSelection(hotel.filterReservationsByRoom(room));
-            day = view.getInputInt("\nEnter the check-in day of the reservation (1-31): ");
-            date = LocalDate.of(2024, View.SYSTEM_MONTH, day);
+            view.clearScreen();
+            view.displayViewHotelPrompt();
+            view.displayReservationSelection(hotel.getName(), room.getName(), hotel.filterReservationsByRoom(room));
 
+            do {
+                buffer = view.getInputStr("\nEnter the check-in day of the reservation (1-31): ");
+                if (buffer.equalsIgnoreCase("quit")) {
+                    view.displayResultMessage("Hotel information viewing cancelled.");
+                    return;
+                }
+                try {
+                    day = Integer.parseInt(buffer);
+                    isValidDay = day >= 0 && day <= 31;
+                    view.displayInvalidInputWarning(isValidDay, "Please provide a valid day!");
+                } catch(NumberFormatException e) {
+                    day = 0;
+                    isValidDay = false;
+                    view.displayInvalidInputWarning(isValidDay, "Please provide a numeric response!");
+                }
+            } while (!isValidDay);
+
+            date = LocalDate.of(2024, View.SYSTEM_MONTH, day);
             Reservation reservation = hotel.getReservation(room, date);
+
+            view.clearScreen();
             view.displaySelectedReservationInfo(reservation);
+            view.displayResultMessage("Hotel information viewing successful! :>");
             break;
-        default:
-            view.displayMessage("This can't be reached! :<");
     }
 }
 
-
+/**
+ * Allows the user to view high-level or low-level information about a selected hotel.
+ * Prompts the user for input and handles the information viewing process.
+ */
 public void viewHotel() {
+
     view.displayViewHotelPrompt();
     view.displayHotelSelection(model.getHotelList());
 
@@ -123,28 +225,40 @@ public void viewHotel() {
     Hotel hotel;
     boolean isValidHotel;
     do {
-        hotelName = view.getInputStr("\nEnter the hotel name: ");
+        hotelName = view.getInputStr("\nEnter the name of the hotel you want to view: ");
+        if (hotelName.equalsIgnoreCase("quit")) {
+            view.displayResultMessage("Hotel information viewing cancelled.");
+            return;
+        }
         hotel = model.getHotel(hotelName);
         isValidHotel = hotel != null;
         view.displayInvalidInputWarning(isValidHotel, "Please provide a valid hotel name!");
     } while (!isValidHotel);
 
-    view.clearConsole();
+    view.clearScreen();
+    view.displayViewHotelPrompt();
     view.displayHotelInfoPrompt(hotelName);
 
+    String buffer;
     char userInput;
     boolean isValidInput;
     do {
-        userInput = view.getInputStr("\nEnter a response (H/L): ").toUpperCase().charAt(0);
+        buffer = view.getInputStr("\nEnter a response (H/L): ");
+        if (buffer.equalsIgnoreCase("quit")) {
+            view.displayResultMessage("Hotel information viewing cancelled.");
+            return;
+        }
+        userInput = buffer.toUpperCase().charAt(0);
         isValidInput = userInput == View.HIGH_LEVEL_OPTION || userInput == View.LOW_LEVEL_OPTION;
-        view.displayInvalidInputWarning(isValidInput, "Please provide a valid response (H/L)!");
+        view.displayInvalidInputWarning(isValidInput, "Please provide a valid response!");
     } while(!isValidInput);
 
-    view.clearConsole();
+    view.clearScreen();
     switch(userInput) {
         case View.HIGH_LEVEL_OPTION:
             double estimatedEarnings = model.getHotelEstimatedEarnings(hotel);
             view.displayHighLevelHotelInfo(hotel, estimatedEarnings);
+            view.displayResultMessage("Hotel information viewing successful.");
             break;
         case View.LOW_LEVEL_OPTION:
             viewLowLevelInfo(hotel);
@@ -152,7 +266,12 @@ public void viewHotel() {
     }
 }
 
-
+/**
+ * Checks if the user wants to quit the current operation.
+ * 
+ * @param outsideLoop a boolean indicating the current state of the loop
+ * @return true if the user wants to quit, false otherwise
+ */
 private boolean isQuit(Boolean outsideLoop){
     String choice = "";
     choice = view.getInputStr("Continue? Type \"quit\" to stop changing names, else the program will continue.");
@@ -164,6 +283,11 @@ private boolean isQuit(Boolean outsideLoop){
         return false;
 }
 
+/**
+ * Changes the name of a hotel.
+ * Displays a list of current hotels and prompts the user for the old and new names.
+ * Confirms the action and updates the hotel's name if valid.
+ */
 private void changeHotelName() {
     ArrayList<Hotel> currentList;
     String oldHotelName = "";
@@ -176,7 +300,7 @@ private void changeHotelName() {
     oldHotelName = view.getInputStr("Please provide the name of the hotel you want to change:");
     newHotelName = view.getInputStr("Please input a new name: ");
     
-    if (view.confirmUserInput()) {
+    if (view.confirmUserAction("changing the hotel name")) {
         setHotelState = model.setHotelName(oldHotelName, newHotelName);
 
         switch(setHotelState) {
@@ -193,6 +317,11 @@ private void changeHotelName() {
     }
 }
 
+/**
+ * Adds a room to a selected hotel.
+ * Displays a list of current hotels and rooms, prompts the user for the hotel and room names.
+ * Confirms the action and adds the room if valid.
+ */
 private void addRooms(){
     ArrayList<Hotel> currentHotelList;
     ArrayList<Room> currentRoomList;
@@ -213,7 +342,7 @@ private void addRooms(){
     view.displayRoomList(currentRoomList);
 
     nameOfRoomToAdd = view.getInputStr("Please provide the name of the room you want to add:");
-    if (view.confirmUserInput()) {
+    if (view.confirmUserAction("adding a room to the selected hotel")) {
         isAddingSuccesful = model.addRoomToAHotel(nameOfHotel, nameOfRoomToAdd);
         if (isAddingSuccesful){
             view.displayMessage("Succesfully added a Room.");
@@ -223,6 +352,11 @@ private void addRooms(){
     }
 }
 
+/**
+ * Removes a room from a selected hotel.
+ * Displays a list of current hotels and rooms, prompts the user for the hotel and room names.
+ * Confirms the action and removes the room if valid.
+ */
 private void removeRooms(){
     ArrayList<Hotel> currentHotelList;
     ArrayList<Room> currentRoomList;
@@ -259,7 +393,11 @@ private void removeRooms(){
     }
 }
 
-
+/**
+ * Updates the price of rooms in a selected hotel.
+ * Displays a list of current hotels, prompts the user for the hotel name and new price.
+ * Confirms the action and updates the price if valid.
+ */
 private void updatePrice(){
     ArrayList<Hotel> currentHotelList;
     String nameOfHotel = "";
@@ -278,7 +416,7 @@ private void updatePrice(){
 
     price = view.getInputDouble("What is the new price? Price should be greater 100.");
     
-    if (view.confirmUserInput()){
+    if (view.confirmUserAction("updating the selected hotel's price per room")){
         errorState = model.updatePriceOfAHotel(nameOfHotel, price);
         switch (errorState) {
             case 0:
@@ -297,6 +435,11 @@ private void updatePrice(){
     }
 }
 
+/**
+ * Removes a reservation from a selected hotel.
+ * Prompts the user for the hotel and reservation names.
+ * Confirms the action and removes the reservation if valid.
+ */
 private void removeReservations(){
     String nameOfHotel = "", nameOfReservation = "";
     int errorState = 0;
@@ -310,7 +453,7 @@ private void removeReservations(){
 
     nameOfReservation = view.getInputStr("Name of the reservation you want to remove.");
 
-    if (view.confirmUserInput()){
+    if (view.confirmUserAction("removing the selected reservation from the hotel")){
         errorState = model.removeReservations(nameOfHotel, nameOfReservation);
         switch (errorState) {
             case 0:
@@ -328,11 +471,16 @@ private void removeReservations(){
     }
 }
 
+/**
+ * Removes a hotel.
+ * Prompts the user for the hotel name.
+ * Confirms the action and removes the hotel if valid.
+ */
 private void removeHotel(){
     String hotelName = view.getInputStr("Input name of the hotel.");
     Boolean hasDelete = false;
  
-    if (view.confirmUserInput()){
+    if (view.confirmUserAction("removing the selected hotel")){
         hasDelete = model.removeHotel(hotelName);
 
         if (hasDelete)
@@ -342,6 +490,12 @@ private void removeHotel(){
     }
 }
 
+/**
+ * Manages hotel actions based on the given manager state.
+ * Prompts the user for specific actions and executes them.
+ *
+ * @param ManageState the current state of the manager
+ */
 private void manageHotelActions(MANAGER_STATE ManageState){
     boolean isUsingAFunction = true;
     while (isUsingAFunction) { 
@@ -376,6 +530,10 @@ private void manageHotelActions(MANAGER_STATE ManageState){
     }
 }
 
+/**
+ * Main method to manage hotels.
+ * Prompts the user for actions and manages the flow of hotel management.
+ */
 public void manageHotel(){
     boolean isManaging = true;
     MANAGER_STATE CurrentState = MS_OVERVIEW;
@@ -417,6 +575,13 @@ public void manageHotel(){
     }
 }
 
+/**
+ * Selects a valid hotel based on user input.
+ * Displays a list of current hotels and prompts the user for the hotel name.
+ * Returns the selected hotel if valid.
+ *
+ * @return the selected hotel, or null if the hotel does not exist
+ */
 private Hotel selectValidHotel(){
     ArrayList<Hotel> listOfHotels;
     String nameOfHotel;
@@ -433,7 +598,13 @@ private Hotel selectValidHotel(){
 };
 
 
-
+/**
+ * Prompts the user to input valid check-in and check-out dates.
+ * Displays a date selection prompt and ensures the check-in date is before the check-out date.
+ * Returns the selected dates as an ArrayList of LocalDate.
+ *
+ * @return an ArrayList of LocalDate containing the check-in and check-out dates
+ */
 private ArrayList<LocalDate> selectValidCheckInAndCheckOutDates(){
     Boolean isSelectingDate = true;
     
@@ -459,6 +630,12 @@ private ArrayList<LocalDate> selectValidCheckInAndCheckOutDates(){
     return result;
 }
 
+
+/**
+ * Manages the process of booking a reservation.
+ * Prompts the user for hotel selection and valid check-in and check-out dates.
+ * Retrieves the total available rooms by date for the selected hotel.
+ */
 public void bookReservation(){
     String userInput;
     
@@ -480,6 +657,12 @@ public void bookReservation(){
     }
 }
 
+/**
+ * Starts the main program loop.
+ * Displays the main action prompt and handles user input for various actions:
+ * creating a hotel, viewing a hotel, managing a hotel, booking a reservation, and quitting the program.
+ * Continues running until the user decides to quit.
+ */
 public void start() {
 
     boolean isProgramRunning = true;
@@ -487,11 +670,19 @@ public void start() {
     /* program flow */
     while (isProgramRunning) {
 
+        view.clearScreen();
         view.displayMainActionPrompt();
 
-        String userInput = view.getInputStr("\nPlease provide a response: ");
+        char userInput;
+        boolean isValidInput;
+        do {
+            userInput = view.getInputChar("\nEnter a response (C/V/B/M/Q): ");
+            isValidInput = userInput == 'C' || userInput == 'V' || userInput == 'B' || userInput == 'M' || userInput == 'Q';
+            view.displayInvalidInputWarning(isValidInput, "Please provide a valid response!");
+        } while (!isValidInput);
 
-        switch(userInput.charAt(0)) {
+        view.clearScreen();
+        switch(userInput) {
             case View.CREATE_HOTEL_OPTION:
                 this.createHotel();
                 break;
@@ -506,9 +697,6 @@ public void start() {
                 break;
             case View.QUIT_OPTION:
                 isProgramRunning = false;
-                break;
-            default:
-                view.displayInvalidInputWarning();
                 break;
         }
 
