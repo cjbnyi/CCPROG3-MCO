@@ -2,15 +2,26 @@ package Hotel;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+/**
+ * The Model class manages a list of hotels and provides methods to manipulate hotel data.
+ */
 public class Model {
 
     private ArrayList<Hotel> hotelList;
 
+    /**
+     * Constructs a Model object with an empty list of hotels.
+     */
     public Model() {
         this.hotelList = new ArrayList<Hotel>();
     }
 
-
+    /**
+     * Calculates the estimated earnings for a given hotel.
+     * 
+     * @param hotel the hotel for which to calculate estimated earnings
+     * @return the total estimated earnings for the hotel
+     */
     public double getHotelEstimatedEarnings(Hotel hotel) {
         double totalEarnings = 0.0;
         for (Reservation reservation : hotel.getReservationList())
@@ -18,10 +29,24 @@ public class Model {
         return totalEarnings;
     }
 
+    /**
+     * Returns the total number of available rooms in a hotel on a specific date.
+     * 
+     * @param hotel the hotel to check
+     * @param date the date to check availability
+     * @return the total number of available rooms on the specified date
+     */
     public int getTotalAvailableRoomsByDate(Hotel hotel, LocalDate date) { // not sure if we should do these
         return hotel.filterAvailableRoomsByDate(date).size();
     }
 
+    /**
+     * Returns the total number of booked rooms in a hotel on a specific date.
+     * 
+     * @param hotel the hotel to check
+     * @param date the date to check bookings
+     * @return the total number of booked rooms on the specified date
+     */
     public int getTotalBookedRoomsByDate(Hotel hotel, LocalDate date) {
         return hotel.getTotalRooms() - hotel.filterAvailableRoomsByDate(date).size();
     }
@@ -59,7 +84,12 @@ public class Model {
         return 2;
     }
 
-
+    /**
+     * Adds a new hotel with the specified name.
+     * 
+     * @param name the name of the new hotel
+     * @return the newly created hotel, or null if a hotel with the given name already exists
+     */
     public Hotel addHotel(String name) {
         for (Hotel hotel : this.hotelList)
             if (hotel.getName().equals(name))
@@ -71,9 +101,11 @@ public class Model {
 
     
     /**
-     * Adds a room to a hotel given the hotel's name and the room.
-     * @param nameOfHotel - hotel to add rooms
-     * @return false if not added a room succesful, true if it has. 
+     * Adds a room to a hotel given the hotel's name and the room name.
+     * 
+     * @param nameOfHotel the name of the hotel
+     * @param roomToAdd the name of the room to add
+     * @return true if the room was successfully added, false otherwise
      */
     public boolean addRoomToAHotel(String nameOfHotel, String roomToAdd){
         boolean hasFoundHotel = false, hasFoundRoom = false;
@@ -90,6 +122,13 @@ public class Model {
         return hasFoundHotel && hasFoundRoom;
     }
 
+    /**
+     * Removes a room from a hotel given the hotel's name and the room name.
+     * 
+     * @param nameOfHotel the name of the hotel
+     * @param strRoomToRemove the name of the room to remove
+     * @return 0 if the hotel was not found, 1 if room has reservation, 2 if the room was successfully removed
+     */
     public int removeRoomToHotel(String nameOfHotel, String strRoomToRemove) {
         int hasFoundHotel = 0, hasSuccesfulRemoveRoom = 0;
         
@@ -107,6 +146,12 @@ public class Model {
             return hasSuccesfulRemoveRoom;
     }
 
+    /**
+     * Returns the list of rooms in a specified hotel.
+     * 
+     * @param nameOfHotel the name of the hotel
+     * @return the list of rooms in the hotel
+     */
     public ArrayList<Room> getRoomListOfAHotel(String nameOfHotel){
         ArrayList<Room> listOfRooms = null;
 
@@ -117,6 +162,12 @@ public class Model {
         return listOfRooms;
     }
     
+    /**
+     * Checks if a hotel with the specified name exists.
+     * 
+     * @param nameOfHotel the name of the hotel to check
+     * @return true if the hotel exists, false otherwise
+     */
     public boolean doesHotelExist(String nameOfHotel){
         boolean hasFoundHotel = false;
         for (Hotel hotel : this.hotelList)
@@ -197,4 +248,6 @@ public class Model {
 
         return hasRemovedHotel;
     }
+
+
 }
