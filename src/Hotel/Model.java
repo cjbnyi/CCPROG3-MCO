@@ -175,6 +175,7 @@ public class Model {
         return hasFoundHotel && hasFoundRoom;
     }
 
+
     /**
      * Removes a room from a hotel given the hotel's name and the room name.
      * 
@@ -234,7 +235,8 @@ public class Model {
         }
         return hasRemoved;
     }
-    
+
+
     /**
      * Removes a Hotel
      * @param strHotel

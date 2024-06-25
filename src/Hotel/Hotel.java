@@ -265,6 +265,7 @@ public class Hotel {
         return availableRooms;
     }
 
+
     /**
      * Filters and returns a list of reservations for a specific room.
      * 
