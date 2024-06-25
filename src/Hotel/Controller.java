@@ -308,44 +308,7 @@ private void changeHotelName(Hotel oldHotelName) {
 }
   
 
-/**
- * Changes the name of a hotel.
- * Displays a list of current hotels and prompts the user for the old and new names.
- * Confirms the action and updates the hotel's name if valid.
- */
-private void changeHotelName(Hotel oldHotelName) {
-    ArrayList<Hotel> currentList;
-    String newHotelName = "";
-    int setHotelState = 0;
-
-    view.clearScreen();
-    currentList = model.getHotelList();
-    view.displayHotelSelection(currentList);
-
-    newHotelName = view.getInputStr("Please input a new name: ");
     
-    if (view.confirmUserAction("changing the hotel name")) {
-        view.displayMessage("\n");
-        setHotelState = model.setHotelName(oldHotelName.getName(), newHotelName);
-
-        switch(setHotelState) {
-            case 0:
-                view.displayResultMessage("Hotel does not exist.");
-                break;
-            case 1:
-                view.displayResultMessage("Name is not unique, please provide a new one.");
-                break;
-            case 2:
-                view.displayResultMessage("Changed Hotel name.");
-                oldHotelName = model.getHotel(newHotelName);
-        }
-        view.clearScreen();
-    }
-    
-} 
-
-    
-}
 
 /**
  * Adds a room to a selected hotel.
@@ -478,18 +441,6 @@ private void removeRooms(Hotel hotel){
     }
 
 
-    /**
-     * Adds a room to a selected hotel.
-     * Displays a list of current hotels and rooms, prompts the user for the hotel and room names.
-     * Confirms the action and adds the room if valid.
-     */
-    private void addRooms(){
-        ArrayList<Hotel> currentHotelList;
-        ArrayList<Room> currentRoomList;
-        String nameOfHotel = "";
-        String nameOfRoomToAdd = "";
-        boolean isAddingSuccesful = false;
-
 
 
     
@@ -499,7 +450,7 @@ private void removeRooms(Hotel hotel){
  * Displays a list of current hotels, prompts the user for the hotel name and new price.
  * Confirms the action and updates the price if valid.
  */
-private void updatePrice(Hotel nameOfHotel){
+private void updatePrice(Hotel nameOfHotel) {
     double price = 0.0;
     int errorState = 0;
 
@@ -535,29 +486,6 @@ private void updatePrice(Hotel nameOfHotel){
          }
     }
 }
-=======
-        currentHotelList = model.getHotelList();
-        view.displayHotelSelection(currentHotelList);
-
-        nameOfHotel = view.getInputStr("Please provide the name of the hotel you want to change:");
-
-        if (!model.doesHotelExist(nameOfHotel)) {
-            return;
-        }
-
-        currentRoomList = model.getRoomListOfAHotel(nameOfHotel);
-        view.displayRoomList(currentRoomList);
-
-        nameOfRoomToAdd = view.getInputStr("Please provide the name of the room you want to add:");
-        if (view.confirmUserAction("adding a room to the selected hotel")) {
-            isAddingSuccesful = model.addRoomToAHotel(nameOfHotel, nameOfRoomToAdd);
-            if (isAddingSuccesful){
-                view.displayMessage("Succesfully added a Room.");
-            } else {
-                view.displayMessage("Cannot add the Room.");
-            }
-        }
-    }
 
 
     /**
@@ -822,8 +750,9 @@ public void manageHotel(){
                 isPerformingManagingHotel = false;
             }
             view.clearScreen();
-
-
+        }
+    }
+}
     /**
      * Removes a hotel.
      * Prompts the user for the hotel name.
@@ -844,92 +773,8 @@ public void manageHotel(){
     }
 
 
-    /**
-     * Manages hotel actions based on the given manager state.
-     * Prompts the user for specific actions and executes them.
-     *
-     * @param ManageState the current state of the manager
-     */
-    private void manageHotelActions(MANAGER_STATE ManageState){
-        boolean isUsingAFunction = true;
-        while (isUsingAFunction) {
-            view.displayManageHotelPrompt(ManageState);
+    
 
-
-            if (!view.confirmUserAction("Continue or Quit manager? Enter N to quit.")){
-                return;
-            }
-
-            switch (ManageState){
-                case MS_CHANGE_NAME:
-                    changeHotelName();
-                    break;
-                case MS_ADD_ROOMS:
-                    addRooms();
-                    break;
-                case MS_REMOVE_ROOMS:
-                    removeRooms();
-                    break;
-                case MS_UPDATE_PRICE:
-                    updatePrice();
-                    break;
-                case MS_REMOVE_RESERVATIONS:
-                    removeReservations();
-                    break;
-                case MS_REMOVE_HOTEL:
-                    removeHotel();
-                    break;
-                case MS_OVERVIEW:
-                    break;
-            }
-        }
-    }
-
-
-    /**
-     * Main method to manage hotels.
-     * Prompts the user for actions and manages the flow of hotel management.
-     */
-    public void manageHotel(){
-        boolean isManaging = true;
-        MANAGER_STATE CurrentState = MS_OVERVIEW;
-        while (isManaging) {
-            view.displayManageHotelPrompt(MS_OVERVIEW);
-            String userInput = view.getInputStr("Please provide a response: ");
-
-            switch (userInput) {
-                case "quit":
-                    CurrentState = MS_OVERVIEW;
-                    isManaging = false;
-                    break;
-                case "a":
-                    CurrentState = MS_CHANGE_NAME;
-                    break;
-                case "b":
-                    CurrentState = MS_ADD_ROOMS;
-                    break;
-                case "c":
-                    CurrentState = MS_REMOVE_ROOMS;
-                    break;
-                case "d":
-                    CurrentState = MS_UPDATE_PRICE;
-                    break;
-                case "e":
-                    CurrentState = MS_REMOVE_RESERVATIONS;
-                    break;
-                case "f":
-                    CurrentState = MS_REMOVE_HOTEL;
-                    break;
-                default:
-                    CurrentState = MS_OVERVIEW;
-                    view.displayInvalidInputWarning();
-            }
-
-            if (CurrentState != MS_OVERVIEW) {
-                manageHotelActions(CurrentState);
-            }
-        }
-    }
 
 
 
@@ -970,10 +815,6 @@ public void manageHotel(){
         while (isSelectingDate) {
             view.displayBookReservationPrompt(SB_DATE_SELECTION);
 
-            if (isQuit(isSelectingDate)) {
-                return result;
-            }
-
             result.add(view.getLocalDate("Please input the check-in date:"));
             result.add(view.getLocalDate("Please input the check-in date:"));
             if (result.get(0).isAfter(result.get(1))){
@@ -981,6 +822,7 @@ public void manageHotel(){
                 view.displayInvalidInputWarning();
             } else {
                 view.displayMessage("Valid Date.");
+                isSelectingDate = false;
             }
 
         }
@@ -989,29 +831,19 @@ public void manageHotel(){
     }
 
 
-    /**
-     * Manages the process of booking a reservation.
-     * Prompts the user for hotel selection and valid check-in and check-out dates.
-     * Retrieves the total available rooms by date for the selected hotel.
-     */
-    public void bookReservation(){
-        String userInput;
-
-
 /**
  * Manages the process of booking a reservation.
  * Prompts the user for hotel selection and valid check-in and check-out dates.
  * Retrieves the total available rooms by date for the selected hotel.
  */
 public void bookReservation(){
-    String buffer = new String("");
     String checkInDate = new String(), checkOutDate = new String(), guestName = new String();
-    Boolean isReserving = true, isPerformingBookReservation = true, isInputtingRoom = true, isInputtingName = true, isChoosingHotel = true, isValidDay = false, isChoosingRoom = true;
-    int day = 0, roomChoice = 0;
+    Boolean isReserving = true, isPerformingBookReservation = true, isInputtingRoom = true, isInputtingName = true, isChoosingHotel = true, isChoosingRoom = true;
+    int roomChoice = 0;
     Room room = new Room("");
     ArrayList<Room> listOfAvailableRooms = new ArrayList<Room>();
     Hotel validHotel = new Hotel("");
-    LocalDate date;
+
     ArrayList<LocalDate> arrayLocalDatesCheckInCheckOut = new ArrayList<LocalDate>();;
 
     while (isReserving){

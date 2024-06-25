@@ -171,15 +171,9 @@ public class View {
         int year = SYSTEM_YEAR;
         int month = SYSTEM_MONTH;
         System.out.print("Day: ");
-        System.out.println("Year: ");
-        int year = scanner.nextInt();
-        System.out.println("Month: ");
-        int month = scanner.nextInt();
-        System.out.println("Day: ");
         int day = scanner.nextInt();
         return LocalDate.of(year, month, day);
     }
-
 
     // ### 2. UTILITY FUNCTIONS
     /**
@@ -263,41 +257,9 @@ public class View {
 
     }
 
-
-    /**
-     * Displays an invalid input warning if the input is invalid.
-     * @param isValidInput true if the input is valid; false otherwise
-     * @param warning the warning message to display
-     */
-
-    public void displayBookReservationPrompt(SIMULATE_BOOKING displayState) {
-        final String[][] promptManageHotel = {
-            {
-                "",
-                "Welcome to Booking a Reservation.",
-                "Please input the name of the hotel.",
-                ""
-            }, {
-                "To book a reservation, please do the following: ",
-                " 1) Enter a Valid Check-In Date and a Check-out Date",
-                " 2) Enter a Room to Select"
-            }, {
-                "Please Select a Date to select from",
-                "Note: Check-in Date should be earlier than the Check-out Date."
-            }, {
-                "Please Select a Room to Reserve",
-                "Note: The room must be available for the selected dates."
-            }, {
-                "Input your name Please",
-            }, {
-                "Reservation Succesful.",
-            }
-        };
-
-        displayDivider();
-        for (String sentence : promptManageHotel[displayState.getID()]){
-            System.out.println(sentence);
-        }
+    public void displayInvalidInputWarning() {
+        System.out.println("Invalid input! ");
+    }
 
     public void displayInvalidInputWarning(boolean isValidInput, String warning) {
         if (isValidInput) return;
@@ -581,53 +543,6 @@ public class View {
     }
 
 
-    /**
-     * Displays the manage hotel prompt to the user based on the given manager state.
-     * @param displayState the manager state to display
-     */
-    public void displayManageHotelPrompt(MANAGER_STATE displayState) {
-        final String[][] promptManageHotel = {
-            {
-                "",
-                "Welcome to Hotel Manager.",
-                "Please input the name of the hotel.",
-                ""
-            },{ // 0 : Hotel
-                "Hotel Manager", 
-                "Please Choose the following Managing actions:",
-                "",
-                " [a] Change the name of the Hotel",
-                " [b] Add Rooms",
-                " [c] Remove Rooms",
-                " [d] Update the Base Price for a Room",
-                " [e] Remove Reservation",
-                " [f] Remove Hotel",
-                " [q] Quit",
-                ""
-            }, {
-                "## Change Name of the Hotel",
-                "Please provide the correct name of the hotel you want to change the name."
-            }, {    // 1 : Change
-                "## Add a Room(s)",
-                "Please provide the correct name of the hotel and the room you want to add."
-            }, {
-                "## Remove a Room(s)",
-                "Please provide the correct name of the hotel and the room you want to remove."
-            }, {
-                "## Update the Base Price",
-                "Please input the price you want to change. Change should be greater than P100."
-            }, {
-                "## Remove Reservation"
-            }, {
-                "## Remove Hotel"
-            }
-        };
-
-        displayDivider();
-        for (String sentence : promptManageHotel[displayState.getID()]){
-            System.out.println(sentence);
-        }
-    }
 
 
     /**
@@ -638,13 +553,24 @@ public class View {
         displayDivider();
         final String[][] promptManageHotel = {
             {
+                "",
+                "Welcome to Booking a Reservation.",
+                "Please input the name of the hotel.",
+                ""
+            }, {
                 "To book a reservation, please do the following: ",
-                " 1) Enter a Valid Hotel",
-                " 2) Enter a Valid Check-In Date and a Check-out Date",
-                " 3) Enter a Room to Select"
+                " 1) Enter a Valid Check-In Date and a Check-out Date",
+                " 2) Enter a Room to Select"
             }, {
                 "Please Select a Date to select from",
                 "Note: Check-in Date should be earlier than the Check-out Date."
+            }, {
+                "Please Select a Room to Reserve",
+                "Note: The room must be available for the selected dates."
+            }, {
+                "Input your name Please",
+            }, {
+                "Reservation Succesful.",
             }
         };
 
