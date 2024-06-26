@@ -68,6 +68,21 @@ public class Model {
         return hotel.filterAvailableRoomsByDate(date).size();
     }
 
+    /**
+     * Returns the Reservation List of a Hotel
+     * 
+     * @param HotelName
+     * @return
+    */
+    public ArrayList<Reservation> getReservations(String HotelName){
+        ArrayList<Reservation> listOfReservations = null;
+
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(HotelName)){
+                listOfReservations = hotel.getReservationList();
+            }
+        return listOfReservations;
+    }
 
     /**
      * Returns the list of rooms in a specified hotel.
@@ -161,6 +176,8 @@ public class Model {
     }
 
     
+
+
     /**
      * Adds a room to a hotel given the hotel's name and the room name.
      * 

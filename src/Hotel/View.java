@@ -165,13 +165,15 @@ public class View {
 
 
     public LocalDate getLocalDate(String prompt) {
-        System.out.println(prompt + " ");
-
-
+        // Boolean isNotValidDate = true;
+        int day = 0;
         int year = SYSTEM_YEAR;
         int month = SYSTEM_MONTH;
+        do{
+        System.out.println(prompt + " ");
         System.out.print("Day: ");
-        int day = scanner.nextInt();
+        day = scanner.nextInt();
+        } while (day > 31 || day < 1);
         return LocalDate.of(year, month, day);
     }
 
@@ -454,6 +456,30 @@ public class View {
         System.out.println("Total price: " + reservation.getTotalPrice());
     }
 
+    /**
+     * Displays the reservation information for a list of reservations.
+     * @param reservationList the list of reservations to display
+     * 
+    */
+    public void displayReservationInformation(ArrayList<Reservation> reservationList) {
+        if (reservationList.isEmpty()) {
+            displayDivider();
+            System.out.println("\nNo reservations currently exist.");
+        } else {
+            int i = 1;
+            for (Reservation reservation : reservationList) {
+                displayDivider();
+                System.out.println(i + ".)");
+                System.out.println("Guest: " + reservation.getGuestName());
+                System.out.println("Room: " + reservation.getRoom().getName());
+                System.out.println("Check-in: " + reservation.getCheckInDate());
+                System.out.println("Check-out: " + reservation.getCheckOutDate());
+                System.out.println("Price breakdown:" + reservation.getPriceBreakdown());
+                System.out.println("Total price: " + reservation.getTotalPrice());
+                ++i;
+            }
+        }
+    }
 
     // ### 5. PROMPT PRINTERS
     /**

@@ -545,17 +545,21 @@ private void removeReservations(Hotel hotel){
         return;
     }
     
+    view.displayReservationInformation(model.getReservations(hotel.getName()));
+
+    nameOfReservation = view.getInputStr("Input the room name of the reservation");
+
     if (view.confirmUserAction("removing the selected reservation from the hotel")){
         errorState = model.removeReservations(hotel.getName(), nameOfReservation);
         switch (errorState) {
             case 0:
-                view.displayMessage("Hotel is not found");
+                view.displayResultMessage("Hotel is not found");
                 break;
             case 1:
-                view.displayMessage("Reservation is not found");
+                view.displayResultMessage("Reservation is not found");
                 break;
             case 2:
-                view.displayMessage("Reservation succesfully deleted.");
+                view.displayResultMessage("Reservation succesfully deleted.");
                 break;
             default:
                 break;
@@ -697,9 +701,9 @@ public void manageHotel(){
             
             newHotel = selectValidHotel();
             
-            view.displayInvalidInputWarning(newHotel == null, "Please input a valid hotel name");
-            
-            if (model.doesHotelExist(newHotel.getName()) && view.confirmUserAction("\ncontinue at managing hotel with the given name?")){
+            view.displayInvalidInputWarning(newHotel != null, "Please input a valid hotel name");
+
+            if (newHotel != null && model.doesHotelExist(newHotel.getName()) && view.confirmUserAction("\ncontinue at managing hotel with the given name?")){
                 isEnteringHotel = false;
                 view.pressEnterToContinue();
             }
@@ -753,28 +757,6 @@ public void manageHotel(){
         }
     }
 }
-    /**
-     * Removes a hotel.
-     * Prompts the user for the hotel name.
-     * Confirms the action and removes the hotel if valid.
-     */
-    private void removeHotel(){
-        String hotelName = view.getInputStr("Input name of the hotel.");
-        Boolean hasDelete = false;
-
-        if (view.confirmUserAction("removing the selected hotel")){
-            hasDelete = model.removeHotel(hotelName);
-
-            if (hasDelete)
-                view.displayMessage("Succesfully remove hotel.");
-            else
-                view.displayMessage("Hotel name cannot be found.");
-        }
-    }
-
-
-    
-
 
 
 
@@ -895,9 +877,10 @@ public void bookReservation(){
                 isInputtingRoom = false;
             } else {
                 view.displayRoomList(listOfAvailableRooms);
-                roomChoice = view.getInputInt("Input room number: ");
-                view.displayInvalidInputWarning(roomChoice < 0 || roomChoice > listOfAvailableRooms.size(), "Room number not within index.");
-                if (roomChoice > 0 && roomChoice < listOfAvailableRooms.size() ){
+                roomChoice = view.getInputInt("Input room number: ") - 1;
+                roomChoice = view.getInputInt("Input room number: ") - 1;
+                view.displayInvalidInputWarning((roomChoice < 0 || roomChoice >= listOfAvailableRooms.size()), "Room number not within index.");
+                if (roomChoice >= 0 && roomChoice < listOfAvailableRooms.size() ){
                     if (view.confirmUserAction("use room " + listOfAvailableRooms.get(roomChoice).getName() + "?")){
                         room = listOfAvailableRooms.get(roomChoice);
                         isInputtingRoom = false;
