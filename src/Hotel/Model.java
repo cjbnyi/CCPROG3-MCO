@@ -68,6 +68,21 @@ public class Model {
         return hotel.filterAvailableRoomsByDate(date).size();
     }
 
+    /**
+     * Returns the Reservation List of a Hotel
+     * 
+     * @param HotelName
+     * @return
+    */
+    public ArrayList<Reservation> getReservations(String HotelName){
+        ArrayList<Reservation> listOfReservations = null;
+
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(HotelName)){
+                listOfReservations = hotel.getReservationList();
+            }
+        return listOfReservations;
+    }
 
     /**
      * Returns the list of rooms in a specified hotel.
@@ -87,7 +102,6 @@ public class Model {
 
 
     public ArrayList<Room> getListOfTotalUnreservedRoomsByDate(Hotel hotel,LocalDate date){
-
         return hotel.filterAvailableRoomsByDate(date);
     }
 
@@ -161,26 +175,35 @@ public class Model {
     }
 
     
+
+
     /**
      * Adds a room to a hotel given the hotel's name and the room name.
      * 
      * @param nameOfHotel the name of the hotel
      * @param roomToAdd the name of the room to add
-     * @return true if the room was successfully added, false otherwise
+     * @return 0 - name of hotel does not exist, 1 - cannot add room, 2 - hotel size is at max, 3 - if succesful
      */
-    public boolean addRoomToAHotel(String nameOfHotel, String roomToAdd){
+    public int addRoomToAHotel(String nameOfHotel, String roomToAdd){
         boolean hasFoundHotel = false, hasFoundRoom = false;
         Room room; 
 
         for (Hotel hotel : this.hotelList)
             if (hotel.getName().equals(nameOfHotel)){
+
                 hasFoundHotel = true;
+                if (hotel.getRoomList().size() >= 50){
+                    return 2;
+                }
+
                 room = hotel.addRoom(roomToAdd);
 
                 hasFoundRoom = (null == room) ? false : true;
             }
-
-        return hasFoundHotel && hasFoundRoom;
+        if (hasFoundHotel)
+           return 0;
+           
+        return hasFoundRoom ? 3 : 1;
     }
 
 
@@ -211,7 +234,6 @@ public class Model {
         }
 
         return hasSuccesfulRemoveRoom;
-
     }
 
     

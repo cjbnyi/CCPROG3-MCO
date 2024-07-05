@@ -51,7 +51,7 @@ public class Hotel {
      * 
      * @return the name of the hotel
      */
-    public String               getName() {
+    public String getName() {
         return this.name;
     }
 
@@ -61,7 +61,7 @@ public class Hotel {
      * 
      * @return the list of rooms
      */
-    public ArrayList<Room>      getRoomList() {
+    public ArrayList<Room> getRoomList() {
         return this.roomList;
     }
 
@@ -183,12 +183,15 @@ public class Hotel {
 
 
     // ### 3. MODIFIERS
-    // TODO: Implement makeReservation()
+    
     /**
-     * Makes a reservation for a room.
-     * 
-     * @return -1 (placeholder for future implementation)
-     */
+     * Makes a Reservation 
+     * @param GuestName - New Guest Name
+     * @param checkInDate - check in date
+     * @param checkOutDate  - check out date
+     * @param room - Room to rserve
+     * @return whether if its succesful or not.
+    */
     public boolean makeReservation(String GuestName, LocalDate checkInDate, LocalDate checkOutDate, Room room) {
         Reservation newReservation = new Reservation(GuestName, checkInDate, checkOutDate, room);
         Boolean hasNoCoincidingReservation = false;
