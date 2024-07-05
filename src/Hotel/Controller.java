@@ -320,7 +320,7 @@ private void addRooms(Hotel hotel){
     ArrayList<Room> currentRoomList;
 
     String nameOfRoomToAdd = "";
-    boolean isAddingSuccesful = false;
+    int isAddingSuccesful = 0;
 
     currentHotelList = model.getHotelList();
     view.displayHotelSelection(currentHotelList);
@@ -336,10 +336,19 @@ private void addRooms(Hotel hotel){
     nameOfRoomToAdd = view.getInputStr("Please provide the name of the room you want to add:");
     if (view.confirmUserAction("adding a room to the selected hotel")) {
         isAddingSuccesful = model.addRoomToAHotel(hotel.getName(), nameOfRoomToAdd);
-        if (isAddingSuccesful){
-            view.displayMessage("Succesfully added a Room.");
-        } else {
-            view.displayMessage("Cannot add the Room.");
+        switch (isAddingSuccesful){
+            case 0:
+                view.displayMessage("Hotel already exists.");
+                break;
+            case 1:
+                view.displayMessage("Cannot add the Room.");
+                break;
+            case 2:
+                view.displayMessage("Hotel at max size.");
+                break;
+            case 3:
+                view.displayMessage("Succesfully added a Room.");
+                break;
         }
     }
 

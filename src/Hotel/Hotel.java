@@ -51,7 +51,7 @@ public class Hotel {
      * 
      * @return the name of the hotel
      */
-    public String               getName() {
+    public String getName() {
         return this.name;
     }
 
@@ -61,7 +61,7 @@ public class Hotel {
      * 
      * @return the list of rooms
      */
-    public ArrayList<Room>      getRoomList() {
+    public ArrayList<Room> getRoomList() {
         return this.roomList;
     }
 
