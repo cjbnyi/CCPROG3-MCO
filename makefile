@@ -13,10 +13,10 @@ JC := javac
 JDOC := javadoc
 JRUN := java
 
-
-JCFLAGS = -d $(BIN_DIR)/ -cp $(SRC_DIR)/
-JDFLAGS = -d $(DOC_DIR)/ -cp $(SRCS)
-JRFLAGS = -cp $(BIN_DIR)/
+JCTESTSFLAGS := -d $(BIN_DIR)
+JCBUILDFLAGS := -d $(BIN_DIR)/ -cp $(SRC_DIR)/
+JDFLAGS := -d $(DOC_DIR)/ -cp $(SRCS)
+JRFLAGS := -cp $(BIN_DIR)/
 
 all: build doc run
 
@@ -30,7 +30,7 @@ build: $(SRCS)
 		echo "   Building... $${file}";\
 	done
 	@echo ""
-	$(JC) $(JCFLAGS) $^
+	$(JC) $(JCBUILDFLAGS) $^
 	@echo ""
 	@echo "=== Building Complete ================================="
 

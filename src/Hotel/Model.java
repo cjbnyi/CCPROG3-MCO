@@ -123,19 +123,19 @@ public class Model {
      * </pre>
      */
     public Result setHotelName(String currentName, String newName) {
-        boolean hasExistingHotel = false;
+        boolean hasExistingSameHotelName = false;
 
         for (Hotel hotel : this.hotelList) {
             String hotelName = hotel.getName();
             
             if (hotelName.equals(currentName))
-                hasExistingHotel = true;
+                hasExistingSameHotelName = true;
 
             if (hotelName.equals(newName))
                 return new Result(ER_NOT_UNIQUE_GIVENNAME);
         }
 
-        if (!hasExistingHotel)
+        if (hasExistingSameHotelName)
             return new Result(ER_EXISTING_OLD_NAME);
 
         for (Hotel hotel : this.hotelList) {

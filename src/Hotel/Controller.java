@@ -71,7 +71,7 @@ public class Controller {
             try {
                 roomBasePrice = Double.parseDouble(buffer);
                 isValidBasePrice = roomBasePrice >= 100;
-                view.displayInvalidInputWarning(isValidBasePrice, "Please provide a base price greater than 0!");
+                view.displayInvalidInputWarning(isValidBasePrice, "Please provide a base price greater than or equal to 100!");
             } catch(NumberFormatException e) {
                 roomBasePrice = 0;
                 isValidBasePrice = false;
@@ -302,6 +302,9 @@ private void changeHotelName(Hotel oldHotelName) {
         oldHotelName = model.getHotel(newHotelName);
     } else {
         switch (resSetHotelName.getCommonError()){
+            case ER_EXISTING_OLD_NAME:
+                view.displayResultMessage("New give name is same as the previous old one.");
+                break;
             case ER_NO_HOTEL:
                 view.displayResultMessage("Hotel does not exist.");
                 break;
@@ -614,8 +617,6 @@ private void removeReservations(Hotel hotel){
 }
 
 
-        
-
 
 /**
  * Removes a hotel.
@@ -721,71 +722,44 @@ private void manageHotelActions(MANAGER_STATE manageState, Hotel hotel, Boolean 
     }
 
 
-private void userChoosesAHotel(Boolean isManaging, Hotel newHotel){
-    Boolean isEnteringHotel = true;
 
-    while (isEnteringHotel) {
-        view.displayManageHotelPrompt(MS_CHOSE_HOTEL);
 
-        if (!view.confirmUserAction("managing the hotel?")){
-            isEnteringHotel = false;
-            isManaging = false;
-            return;
-        }
-        
-        newHotel = selectValidHotel();
-        
-        view.displayInvalidInputWarning(newHotel != null, "Please input a valid hotel name");
-
-        if (newHotel != null && model.doesHotelExist(newHotel.getName()) && view.confirmUserAction("\ncontinue at managing hotel with the given name?")){
-            isEnteringHotel = false;
-            view.pressEnterToContinue();
-        }
-            
-        view.clearScreen();
-    }
-}
 
 /**
  * Main method to manage hotels.
  * Prompts the user for actions and manages the flow of hotel management.
  */
 public void manageHotel(){
-    boolean isPerformingManagingHotel = true, isEnteringHotel = true, isManaging = true, hasDelete = false;
+    Boolean isPerformingManagingHotel = true, isEnteringHotel = true, isManaging = true, hasDelete = false;
     MANAGER_STATE CurrentState = MS_OVERVIEW;
 
-
     Hotel newHotel = new Hotel("");
-
     
     while (isManaging){
         isEnteringHotel = true;
         isPerformingManagingHotel = true;
         
-        // while (isEnteringHotel) {
-        //     view.displayManageHotelPrompt(MS_CHOSE_HOTEL);
+        while (isEnteringHotel) {
+            view.displayManageHotelPrompt(MS_CHOSE_HOTEL);
 
-        //     if (!view.confirmUserAction("managing the hotel?")){
-        //         isEnteringHotel = false;
-        //         isManaging = false;
-        //         return;
-        //     }
+            if (!view.confirmUserAction("managing the hotel?")){
+                isEnteringHotel = false;
+                isManaging = false;
+                return;
+            }
             
-        //     newHotel = selectValidHotel();
+            newHotel = selectValidHotel();
             
-        //     view.displayInvalidInputWarning(newHotel != null, "Please input a valid hotel name");
+            view.displayInvalidInputWarning(newHotel != null, "Please input a valid hotel name");
 
-        //     if (newHotel != null && model.doesHotelExist(newHotel.getName()) && view.confirmUserAction("\ncontinue at managing hotel with the given name?")){
-        //         isEnteringHotel = false;
-        //         view.pressEnterToContinue();
-        //     }
+            if (newHotel != null && model.doesHotelExist(newHotel.getName()) && view.confirmUserAction("\ncontinue at managing hotel with the given name?")){
+                isEnteringHotel = false;
+                view.pressEnterToContinue();
+            }
                 
-        //     view.clearScreen();
-        // }
+            view.clearScreen();
+        }
         
-        userChoosesAHotel(isManaging, newHotel);
-
-
         while (isPerformingManagingHotel) {
             view.displayManageHotelPrompt(MS_OVERVIEW);
             
@@ -856,8 +830,12 @@ public void manageHotel(){
             view.displayMessage("Hotel does not exist.");
             return null;
         }
+
         return model.getHotel(nameOfHotel);
     }
+
+
+
 
     /**
      * Prompts the user to input valid check-in and check-out dates.
@@ -904,13 +882,15 @@ public void bookReservation(){
     ArrayList<Room> listOfAvailableRooms = new ArrayList<Room>();
     Hotel validHotel = new Hotel("");
 
-    ArrayList<LocalDate> arrayLocalDatesCheckInCheckOut = new ArrayList<LocalDate>();;
+    ArrayList<LocalDate> arrayLocalDatesCheckInCheckOut = new ArrayList<LocalDate>();
 
     while (isReserving){
+
         isChoosingHotel = true;
         isPerformingBookReservation = false;
         isChoosingRoom = false;
-        isInputtingName = false;   
+        isInputtingName = false;
+
         while (isChoosingHotel) {
             view.clearScreen();
             view.displayBookReservationPrompt(SB_HOTEL_SELECTION);
