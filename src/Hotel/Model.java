@@ -2,11 +2,12 @@ package Hotel;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import static Hotel.Result.COMMON_ERRORS.*;
+
 /**
  * The Model class manages a list of hotels and provides methods to manipulate hotel data.
  */
 public class Model {
-
     private ArrayList<Hotel> hotelList;
 
 
@@ -114,21 +115,28 @@ public class Model {
      *
      * @param currentName - current name of the hotel being renamed
      * @param newName - new name of the hotel being renamed
-     * @return 0 if no hotel with the old name exists, 1 if name is not unique, 2 if renaming was successful
+     * @return 
+     * <pre>
+     * A Result object describing the outcome and success of the function, if Result is not successful, it could have the possible reasons:
+     *  - "Old hotel name exists."
+     *  - "Given name is not unique within list."
+     * </pre>
      */
-    public int setHotelName(String currentName, String newName) {
-        boolean hotelExists = false;
+    public Result setHotelName(String currentName, String newName) {
+        boolean hasExistingSameHotelName = false;
 
         for (Hotel hotel : this.hotelList) {
             String hotelName = hotel.getName();
+            
             if (hotelName.equals(currentName))
-                hotelExists = true;
+                hasExistingSameHotelName = true;
+
             if (hotelName.equals(newName))
-                return 1;
+                return new Result(ER_NOT_UNIQUE_GIVENNAME);
         }
 
-        if (!hotelExists)
-            return 0;
+        if (hasExistingSameHotelName)
+            return new Result(ER_EXISTING_OLD_NAME);
 
         for (Hotel hotel : this.hotelList) {
             String hotelName = hotel.getName();
@@ -136,7 +144,7 @@ public class Model {
                 hotel.setName(newName);
         }
 
-        return 2;
+        return new Result(ER_SUCCESSFUL);
     }
 
 
@@ -180,11 +188,18 @@ public class Model {
     /**
      * Adds a room to a hotel given the hotel's name and the room name.
      * 
-     * @param nameOfHotel the name of the hotel
+     * @param nameOfHotel the name of the hotel to which the room should be added
      * @param roomToAdd the name of the room to add
-     * @return 0 - name of hotel does not exist, 1 - cannot add room, 2 - hotel size is at max, 3 - if succesful
+     * 
+     * @return 
+     * <pre>
+     * a Result object indicating the outcome of the operation, if it is not successful, then it has the following possible messages:
+     *         - "Hotel is at Max." if the hotel already has 50 rooms;
+     *         - "Name of hotel does not exist." if the specified hotel is not found;
+     *         - "Room name not unique." If the room name is not unique in the list.
+     * <pre/>
      */
-    public int addRoomToAHotel(String nameOfHotel, String roomToAdd){
+    public Result addRoomToAHotel(String nameOfHotel, String roomToAdd){
         boolean hasFoundHotel = false, hasFoundRoom = false;
         Room room; 
 
@@ -192,18 +207,21 @@ public class Model {
             if (hotel.getName().equals(nameOfHotel)){
 
                 hasFoundHotel = true;
-                if (hotel.getRoomList().size() >= 50){
-                    return 2;
+                
+                if (hotel.getRoomList().size() >= Hotel.MAX_ROOMS){
+                    return new Result(ER_MAX_CAPACITY);
                 }
 
                 room = hotel.addRoom(roomToAdd);
-
                 hasFoundRoom = (null == room) ? false : true;
             }
-        if (hasFoundHotel)
-           return 0;
-           
-        return hasFoundRoom ? 3 : 1;
+
+        if (!hasFoundHotel)
+            return new Result(ER_NO_HOTEL);
+        else if (!hasFoundRoom)
+            return new Result(ER_NOT_UNIQUE_GIVENNAME);
+        else 
+            return new Result(ER_SUCCESSFUL);   
     }
 
 
@@ -218,59 +236,83 @@ public class Model {
 
 
     /**
-     * Removes a room from a hotel given the hotel's name and the room name.
+     * Removes a specified room from a specified hotel.
      * 
-     * @param nameOfHotel the name of the hotel
+     * @param nameOfHotel the name of the hotel from which to remove the room
      * @param strRoomToRemove the name of the room to remove
-     * @return 0 if the hotel was not found, 1 if room has reservation, 2 if the room was successfully removed
+     * @return 
+     * <pre>
+     * a Result object indicating the outcome of the operation:
+     *      - "Hotel was not found." if the hotel with the specified name is not found in the hotel list.
+     *      - "Room has a reservation." if the room has one or more reservations
+     *      - "Room does not exist." if the room with the specified name is not found
+     *      - "Removal successful." if the room was successfully removed. Has a isSuccesful Boolean of true
+     * <pre/>
      */
-    public int removeRoomToHotel(String nameOfHotel, String strRoomToRemove) {
-        int hasSuccesfulRemoveRoom = 0;
-        
+    public Result removeRoomToHotel(String nameOfHotel, String strRoomToRemove) {
+        Result resRemoveRoom;
         for (Hotel hotel: this.hotelList){
             if (hotel.getName().equals(nameOfHotel)){
-                hasSuccesfulRemoveRoom = hotel.removeRoom(strRoomToRemove);
+                resRemoveRoom = hotel.removeRoom(strRoomToRemove);
+                return resRemoveRoom;
             } 
         }
 
-        return hasSuccesfulRemoveRoom;
+        return new Result(ER_NO_HOTEL);
     }
 
     
     /**
      * Updates the price of a hotel when no reservations are made.
      * 
-     * @param strHotel
-     * @param setPrice
-     * @return 0 - hotel is not found, 1 - reservation is not empty, 2 - price is lower than 100, 3 - succesfully changed price
+     * @param strHotel the name of the hotel for which to update the price
+     * @param setPrice the new base price to set for each room in the specified hotel
+     * @return  
+     * <pre>
+     * a Result object indicating the outcome of the operation:
+     *      - "Hotel was not found." if the hotel with the specified name is not found in the hotel list.
+     *      - "Reservation list is empty." if there are existing reservations
+     *      - "Price is lower than 100." if the provided price is less than 100
+     *      - "Base price set." if the price was successfully updated
+     * 
+     * <pre/>
     */
-    public int updatePriceOfAHotel(String strHotel, double setPrice){
-        int hasPriceChanged = 0;
-
+    public Result updatePriceOfAHotel(String strHotel, double setPrice){
+        Result resUpdatePrice;
         for (Hotel hotel : this.hotelList)
             if (hotel.getName().equals(strHotel)){
-                hasPriceChanged = hotel.updatePrice(setPrice) + 1;
-            }
+                resUpdatePrice = hotel.updatePrice(setPrice);
+                return resUpdatePrice;
+            } 
 
-        return hasPriceChanged;
+        return new Result(ER_NO_HOTEL);
     }
 
     
     /**
-     * Removed Reservations based on String names.
+     * Removes a reservation from a specified room in a specified hotel.
      * 
-     * @param strHotel
-     * @param strRoomName
-     * @return 0 - if hotel not found, 1 - if reservation not found, 2 - if successful.
-    */
-    public int removeReservations(String strHotel, String strRoomName){
-        int hasRemoved = 0;
-        for (Hotel hotel : this.hotelList){
-            if (hotel.getName().equals(strHotel)){
-                hasRemoved = hotel.removeReservation(strRoomName) ? 2 : 1;
+     * @param strHotel the name of the hotel where the reservation should be removed
+     * @param strRoomName the name of the room from which the reservation should be removed
+     * @return 
+     * <pre>
+     * a Result object indicating the outcome of the operation:
+     *         - "Hotel was not found." if the specified hotel is not found
+     *         - "Reservation not found." if the specified reservation is not found in the hotel
+     *         - "Reservation was successful." if the specified reservation was done succesful. Note that is has a isSuccesful boolean of true. 
+     * </pre>  
+     */
+    public Result removeReservations(String strHotel, String strRoomName){
+        // Assume not found.
+        Boolean hasRemoveReservation = false;
+        
+        for (Hotel hotel : this.hotelList) {
+            if (hotel.getName().equals(strHotel)) {
+                hasRemoveReservation = hotel.removeReservation(strRoomName);
+                return new Result(hasRemoveReservation ? ER_SUCCESSFUL : ER_NO_RESERVATION);
             }
         }
-        return hasRemoved;
+        return new Result(ER_NO_HOTEL);
     }
 
 

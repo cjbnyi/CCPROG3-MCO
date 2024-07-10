@@ -79,13 +79,14 @@ public class View {
     } 
 
     private final Scanner scanner;
-
+    private HotelGUI gui;
 
     /**
      * Constructs a View object and initializes the scanner.
      */
     public View() {
         this.scanner = new Scanner(System.in);
+        this.gui = new HotelGUI();
     }
 
 

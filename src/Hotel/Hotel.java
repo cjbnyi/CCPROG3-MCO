@@ -2,6 +2,7 @@ package Hotel;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import static Hotel.Result.COMMON_ERRORS.*;
 /**
  * The Hotel class represents a hotel with rooms and reservations.
  */
@@ -10,7 +11,7 @@ public class Hotel {
     private String name;
     private ArrayList<Room> roomList;
     private ArrayList<Reservation> reservationList;
-    private static final int MAX_ROOMS = 50;
+    public static final int MAX_ROOMS = 50;
     private static final int DAYS_IN_MONTH = 31;
 
 
@@ -146,8 +147,8 @@ public class Hotel {
     public String getRoomInfo(Room room) { // refactor this
         StringBuilder roomInfo = new StringBuilder (
                 "Room name: " + room.getName() + "\n\n" +
-                        "Base price per night: " + room.getBasePricePerNight() + "\n\n" +
-                        "Available dates:"
+                "Base price per night: " + room.getBasePricePerNight() + "\n\n" +
+                "Available dates:"
         );
         ArrayList<LocalDate> availableDates = getRoomAvailabilityThisMonth(room);
         for (LocalDate date : availableDates)
@@ -162,7 +163,7 @@ public class Hotel {
      * 
      * @param name the new name for the hotel
      */
-    public void     setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -176,8 +177,10 @@ public class Hotel {
     public boolean setRoomBasePrice(double newPrice) {
         if (newPrice <= 0 || !this.reservationList.isEmpty())
             return false;
+
         for (Room room : this.roomList)
             room.setBasePricePerNight(newPrice);
+        
         return true;
     }
 
@@ -248,22 +251,29 @@ public class Hotel {
 
 
     /**
+     * Updates the base price per night for all rooms in the room list.
      * 
-     * @param price
-     * @return 0 - if reservation list is empty, 1 - if price is low, 2 - if base price is set
-    */
-    public int updatePrice(double price) {
+     * @param price the new base price to set for each room
+     * @return 
+     * <pre>
+     * a Result object indicating the outcome of the operation:
+     *      - "Reservation list is empty." if there are existing reservations
+     *      - "Price is lower than 100." if the provided price is less than 100
+     *      - "Base price set." if the price was successfully updated
+     * <pre/>
+     */
+    public Result updatePrice(double price) {
         if (!this.reservationList.isEmpty())
-            return 0;
+            return new Result(ER_EMPTY_RESERVATION_LIST);
         
         if (price < 100)
-            return 1;
+            return new Result(ER_LOWER_THAN_BASEPRICE);
 
         for (Room room: this.roomList){
             room.setBasePricePerNight(price);
         }
 
-        return 2;
+        return new Result("Base price set.", true);
     }
 
 
@@ -274,7 +284,7 @@ public class Hotel {
      * @param date the date to check availability for
      * @return a list of available rooms on the specified date
      */
-    public ArrayList<Room>          filterAvailableRoomsByDate(LocalDate date) {
+    public ArrayList<Room> filterAvailableRoomsByDate(LocalDate date) {
         ArrayList<Room> availableRooms = new ArrayList<Room>(this.roomList); // duplicates the ArrayList
         for (Reservation reservation : this.reservationList) {
             LocalDate checkInDate = reservation.getCheckInDate();
@@ -304,22 +314,30 @@ public class Hotel {
 
 
     /**
-     * Removes a room from the hotel's roomList[] given its name.
-     *
-     * @param name - name of the room to be removed from the hotel's roomList[]
-     * @return 0 - room does not exist; 1 - room has a reservation; 2 - removal successful
+     * Removes a room from the room list given the room's name.
+     * 
+     * @param name the name of the room to remove
+     * @return 
+     * <pre> 
+     * a Result object indicating the outcome of the operation:
+     * - "Removal successful." if the room was successfully removed
+     * - "Room has a reservation." if the room has one or more reservations
+     * - "Room does not exist." if the room with the specified name is not found
+     * <pre/>
      */
-    public int removeRoom(String name) {
+    public Result removeRoom(String name) {
         for (Room room : roomList) {
-            if (room.getName().equals(name)) {
-                if (filterReservationsByRoom(room).isEmpty()) {
-                    this.roomList.remove(room);
-                    return 2;
-                } else {
-                    return 1;
-                }
+            if (!room.getName().equals(name)) {
+                continue;
+            }
+
+            if (filterReservationsByRoom(room).isEmpty()) {
+                this.roomList.remove(room);
+                return new Result("Removal successful.", true);
+            } else {
+                return new Result(ER_ROOM_HAS_RESERVATION);
             }
         }
-        return 0;
+        return new Result(ER_NO_ROOM);
     }
 }
