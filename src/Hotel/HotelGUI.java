@@ -4,10 +4,10 @@ import javax.swing.JFrame;
 import java.applet.*;
 import java.awt.*;
 
-public class HotelGUI extends JFrame {
+public class HotelGUI extends javax.swing.JFrame {
 
     public HotelGUI() {
-        super("Pokedex");
+        super("HotelG");
         setLayout(new BorderLayout());
 
         setSize(500, 500);

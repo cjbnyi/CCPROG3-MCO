@@ -1,12 +1,12 @@
 package Hotel;
 
 public class Result{
-
+    
     public enum COMMON_ERRORS{
         ER_SUCCESSFUL               (0, "Success."),
-        ER_NO_HOTEL               (1, "Hotel does not exist."),
-        ER_NO_ROOM                (2, "Room does not exist."),
-        ER_NO_RESERVATION         (3, "Reservation does not exist."),
+        ER_NO_HOTEL                 (1, "Hotel does not exist."),
+        ER_NO_ROOM                  (2, "Room does not exist."),
+        ER_NO_RESERVATION           (3, "Reservation does not exist."),
         ER_EMPTY_RESERVATION_LIST   (4, "Reservation list is empty."),
         ER_ROOM_HAS_RESERVATION     (5, "Room has a reservation."),
         ER_LOWER_THAN_BASEPRICE     (6, "Price is lower than 100."),
