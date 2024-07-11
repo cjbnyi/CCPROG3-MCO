@@ -15,6 +15,8 @@ public class Reservation {
     private final Room room;
 
 
+
+
     /**
      * Constructs a Reservation object with the specified guest name, check-in date, 
      * check-out date, and room.
@@ -29,6 +31,18 @@ public class Reservation {
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.room = room;
+    }
+
+
+    /**
+     * Constructs a Reservation object by copying an existing instance.
+     * @param r
+     */
+    public Reservation(Reservation r) {
+        this.guestName = r.guestName;
+        this.checkInDate = r.checkInDate;
+        this.checkOutDate = r.checkOutDate;
+        this.room = r.room;
     }
 
 

@@ -8,6 +8,7 @@ import static Hotel.Result.COMMON_ERRORS.*;
  * The Model class manages a list of hotels and provides methods to manipulate hotel data.
  */
 public class Model {
+
     private ArrayList<Hotel> hotelList;
 
 
@@ -20,13 +21,15 @@ public class Model {
 
 
     // ### 1. GETTERS
+    // TODO: Modify such that no object references are returned.
     /**
      * Gets the array of hotels.
      *
      * @return An array of hotels.
      */
     public ArrayList<Hotel> getHotelList() {
-        return this.hotelList;
+        // return this.hotelList;
+        return new ArrayList<Hotel>(this.hotelList);
     }
 
 
@@ -85,6 +88,7 @@ public class Model {
         return listOfReservations;
     }
 
+
     /**
      * Returns the list of rooms in a specified hotel.
      *
@@ -92,6 +96,7 @@ public class Model {
      * @return the list of rooms in the hotel
      */
     public ArrayList<Room> getRoomListOfAHotel(String nameOfHotel){
+
         ArrayList<Room> listOfRooms = null;
 
         for (Hotel hotel : this.hotelList)
@@ -106,7 +111,18 @@ public class Model {
         return hotel.filterAvailableRoomsByDate(date);
     }
 
-    // ### 2. SETTERS
+
+    public double getRoomBasePricePerNight(Hotel hotel, Room room) {
+
+        double basePricePerNight = hotel.getBasePricePerNight();
+
+        return switch(room) {
+            case StandardRoom _ -> basePricePerNight * hotel.getStandardMultiplier();
+            case DeluxeRoom _ -> basePricePerNight * hotel.getDeluxeMultiplier();
+            case ExecutiveRoom _ -> basePricePerNight * hotel.getExecutiveMultiplier();
+            case null, default -> -1;
+        };
+    }
 
 
     // ### 2. SETTERS
@@ -123,6 +139,7 @@ public class Model {
      * </pre>
      */
     public Result setHotelName(String currentName, String newName) {
+
         boolean hasExistingSameHotelName = false;
 
         for (Hotel hotel : this.hotelList) {
