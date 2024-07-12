@@ -4,8 +4,6 @@ BIN_DIR := bin
 TST_DIR := tests
 DOC_DIR := docs/jdoc
 
-
-
 SRCS = $(wildcard $(SRC_DIR)/*.java)
 TESTS := $(wildcard $(TST_DIR)/*.java))
 
