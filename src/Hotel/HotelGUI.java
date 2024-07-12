@@ -121,7 +121,7 @@ public class HotelGUI extends JFrame {
     }
 
 
-    
+
     private void initializeComponents(){
         this.tabPane = new JTabbedPane();
         
