@@ -3,6 +3,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import static Hotel.Result.COMMON_ERRORS.*;
+import static Hotel.Discount.DISCOUNT_CODES.*;
+import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
  * The Model class manages a list of hotels and provides methods to manipulate hotel data.
@@ -199,8 +201,6 @@ public class Model {
         return newHotel;
     }
 
-    
-
 
     /**
      * Adds a room to a hotel given the hotel's name and the room name.
@@ -349,5 +349,106 @@ public class Model {
         }
 
         return hasRemovedHotel;
+    }
+
+
+    // ### DISCOUNT-RELATED METHODS
+
+    // TODO: Verify
+    /**
+     * Sets the discount code of a reservation if the code is applicable.
+     * @param reservation the reservation being discounted
+     * @param discountCode the discount code being applied
+     */
+    public Result applyDiscountCode(Reservation reservation, String discountCode) {
+
+        if (reservation.getAppliedDiscountCode() != null) {
+            return new Result(ER_EXISTING_DISCOUNT);
+        }
+
+        if (discountCode.equals(I_WORK_HERE.getStringID())) {
+            reservation.setAppliedDiscountCode(I_WORK_HERE);
+        } else if (discountCode.equals(STAY4_GET1.getStringID())) {
+            if (getNumDaysOfReservation(reservation) < 5) {
+                return new Result(ER_STAY4_GET1_INVALID);
+            }
+            reservation.setAppliedDiscountCode(STAY4_GET1);
+        } else if (discountCode.equals(PAYDAY.getStringID())) {
+
+            int checkInDay      = reservation.getCheckInDate().getDayOfMonth();
+            int checkOutDay     = reservation.getCheckOutDate().getDayOfMonth();
+            boolean has15th     = checkInDay <= 15 && 15 < checkOutDay;
+            boolean has30th     = checkInDay <= 30 && 30 < checkOutDay;
+
+            if (!(has15th || has30th)) {
+                return new Result(ER_PAYDAY_INVALID);
+            }
+            reservation.setAppliedDiscountCode(PAYDAY);
+        } else {
+            return new Result(ER_INVALID_CODE);
+        }
+
+        return new Result(ER_SUCCESSFUL);
+    }
+
+
+    /**
+     * Removes a reservation's existing applied discount code.
+     */
+    public void removeDiscountCode(Reservation reservation) {
+        reservation.setAppliedDiscountCode(null);
+    }
+
+    // ### RESERVATION-RELATED METHODS
+
+    /**
+     * Returns the number of days of a reservation.
+     *
+     * @return the number of days of the reservation
+     */
+    public int getNumDaysOfReservation(Reservation reservation) {
+        return (int) DAYS.between(reservation.getCheckInDate(), reservation.getCheckOutDate());
+    }
+
+    /**
+     * Returns the total price of a reservation.
+     *
+     * @param hotel the hotel in which the reservation was made
+     * @param reservation the reservation made
+     */
+    public double getReservationTotalPrice(Hotel hotel, Reservation reservation) {
+
+        double basePricePerNight = hotel.getBasePricePerNight();
+        double roomTypeMultiplier;
+        int checkInDay = reservation.getCheckInDate().getDayOfMonth();
+        int checkOutDay = reservation.getCheckOutDate().getDayOfMonth();
+        double totalPrice = 0f;
+        double priceRate;
+        double discount;
+        Discount.DISCOUNT_CODES appliedDiscountCode = reservation.getAppliedDiscountCode();
+
+        roomTypeMultiplier = switch(reservation.getRoom()) {
+            case StandardRoom _ -> hotel.getStandardMultiplier();
+            case DeluxeRoom _ -> hotel.getDeluxeMultiplier();
+            case ExecutiveRoom _ -> hotel.getExecutiveMultiplier();
+            case null, default -> 0f;
+        };
+
+        for (int i = checkInDay; i < checkOutDay; i++) {
+            priceRate = hotel.getPriceRateForADay(i - 1);
+            totalPrice += basePricePerNight * roomTypeMultiplier * priceRate;
+        }
+
+        discount = switch(appliedDiscountCode) {
+            case Discount.DISCOUNT_CODES.I_WORK_HERE ->
+                    totalPrice * 0.1;
+            case Discount.DISCOUNT_CODES.STAY4_GET1 ->
+                    basePricePerNight * roomTypeMultiplier * hotel.getPriceRateForADay(checkInDay - 1);
+            case Discount.DISCOUNT_CODES.PAYDAY ->
+                    totalPrice * 0.07;
+            case null -> 0f;
+        };
+
+        return totalPrice - discount;
     }
 }

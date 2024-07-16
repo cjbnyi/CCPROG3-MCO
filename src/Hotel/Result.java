@@ -17,8 +17,9 @@ public class Result {
         ER_EXISTING_DISCOUNT        (11, "Reservation already has an existing discount."),
         ER_STAY4_GET1_INVALID       (12, "Invalid code, reservation must be at least 5 days long."),
         ER_PAYDAY_INVALID           (13, "Invalid code, reservation must cover at least the 15th or the 30th day of the month (excluding check-out)."),
-        ER_INVALID_DAY              (14, "Invalid day of the month."),
-        ER_INVALID_PRICE_RATE       (15, "Invalid price rate.");
+        ER_INVALID_CODE             (14, "Given code does not exist."),
+        ER_INVALID_DAY              (15, "Invalid day of the month."),
+        ER_INVALID_PRICE_RATE       (16, "Invalid price rate.");
 
         private int errorID;
         private String errorMessage;

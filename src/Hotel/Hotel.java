@@ -16,7 +16,6 @@ public class Hotel {
     private ArrayList<Reservation> reservationList;
     private double[] priceRateList;
 
-
     private double basePricePerNight = 1299.0;
     private double standardMultiplier = 1.0;
     private double deluxeMultiplier = 1.2;
@@ -35,8 +34,8 @@ public class Hotel {
         this.roomList = new ArrayList<Room>();
         this.reservationList = new ArrayList<Reservation>();
         this.priceRateList = new double[DAYS_IN_MONTH];
-        this.initPriceRates();
         this.initRooms();
+        this.initPriceRates();
     }
 
 
@@ -347,19 +346,23 @@ public class Hotel {
     }
 
 
-    /** TODO: Modify to cater to room subclasses.
+    /**
      * Adds a room.
-     * @param name
-     * @return true if adds a room with a unique name, false if not.
+     * @param newRoom room to be added
+     * @return ER_SUCCESSFUL if room is successfully added, some corresponding error if not
     */
-    public Room addRoom(String name) {
+    public Result addRoom(Room newRoom) {
+
+        if (this.roomList.size() >= MAX_ROOMS)
+            return new Result(ER_MAX_CAPACITY);
+
         for (Room room : this.roomList)
             if (room.getName().equals(name))
-                return null;
-        // we need some way of determining what type of room is being created.
-        Room room = createRoomCopy(); // change this
-        this.roomList.add(room);
-        return room;
+                return new Result(ER_EXISTING_OLD_NAME);
+
+        /* the room can now be added */
+        this.roomList.add(newRoom);
+        return new Result(ER_SUCCESSFUL);
     }
 
 

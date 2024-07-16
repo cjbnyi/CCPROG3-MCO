@@ -13,9 +13,7 @@ public class Reservation {
     private final LocalDate checkInDate;
     private final LocalDate checkOutDate;
     private final Room room;
-
-
-
+    private Discount.DISCOUNT_CODES appliedDiscountCode = null;
 
     /**
      * Constructs a Reservation object with the specified guest name, check-in date, 
@@ -33,10 +31,9 @@ public class Reservation {
         this.room = room;
     }
 
-
     /**
      * Constructs a Reservation object by copying an existing instance.
-     * @param r
+     * @param r reservation
      */
     public Reservation(Reservation r) {
         this.guestName = r.guestName;
@@ -45,6 +42,8 @@ public class Reservation {
         this.room = r.room;
     }
 
+
+    // ### GETTERS
 
     /**
      * Returns the name of the guest who made the reservation.
@@ -55,7 +54,6 @@ public class Reservation {
         return this.guestName;
     }
 
-
     /**
      * Returns the check-in date of the reservation.
      * 
@@ -64,7 +62,6 @@ public class Reservation {
     public LocalDate getCheckInDate() {
         return this.checkInDate;
     }
-
 
     /**
      * Returns the check-out date of the reservation.
@@ -75,7 +72,7 @@ public class Reservation {
         return this.checkOutDate;
     }
 
-
+    // TODO: Modify to return a clone instead.
     /**
      * Returns the room reserved.
      * 
@@ -85,36 +82,45 @@ public class Reservation {
         return this.room;
     }
 
-
     /**
-     * Returns the number of days between the check-in date and check-out date.
-     * 
-     * @return the number of days of the reservation
+     * Returns the applied discount code of a reservation (if there exists).
      */
-    public int getNumDays() {
-        return (int) DAYS.between(this.checkInDate, this.checkOutDate);
+    public Discount.DISCOUNT_CODES getAppliedDiscountCode() {
+        return this.appliedDiscountCode;
     }
 
 
+    // ### SETTERS
+
     /**
+     * Sets the applied discount code of a reservation.
+     * @param appliedDiscountCode the discount code to be applied to the reservation
+     */
+    public void setAppliedDiscountCode(Discount.DISCOUNT_CODES appliedDiscountCode) {
+        this.appliedDiscountCode = appliedDiscountCode;
+    }
+
+
+    /* // NOTE: Deprecated.
      * Returns a breakdown of the price per night for each night of the reservation.
      * 
      * @return a string representing the price breakdown
-     */
+     *
     public String getPriceBreakdown() {
         String priceBreakdown = "";
         for (int i = 0; i < this.getNumDays(); i++)
             priceBreakdown += "\n" + this.checkInDate.plusDays(i) + " --- " + this.room.getBasePricePerNight();
         return priceBreakdown;
     }
+     */
 
-
-    /**
+    /* // NOTE: Refactored to Model.
      * Returns the total price for the entire reservation period.
      * 
      * @return the total price for the reservation
-     */
+     *
     public double getTotalPrice() {
         return this.room.getBasePricePerNight() * this.getNumDays();
     }
+     */
 }
