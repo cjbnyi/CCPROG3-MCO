@@ -13,13 +13,13 @@ JRUN := java
 
 JCTESTSFLAGS := -d $(BIN_DIR)
 JCBUILDFLAGS := -d $(BIN_DIR)/ -cp $(SRC_DIR)/
-JDFLAGS := -d $(DOC_DIR)/ -cp $(SRCS)
+JDFLAGS := -d $(DOC_DIR)/ $(SRCS)
 JRFLAGS := -cp $(BIN_DIR)/
 
 all: build doc run
 
 # Does not produce execution output.
-.SILENT:
+
 build: $(SRCS)
 	@echo "=== Building . . . ===================================="
 	@echo ""
@@ -36,6 +36,7 @@ doc: $(DOC_DIR)
 	@echo "=== Documenting Files ... ============================="
 	@echo ""
 	$(JDOC) $(JDFLAGS)
+	@echo "=== Done Documenting  ... ============================="
 
 run: $(BIN_DIR)
 	@echo "=== Running Hotel Program...========================== "

@@ -1,6 +1,7 @@
 package Hotel;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import java.applet.*;
@@ -10,11 +11,9 @@ import java.util.ArrayList;
 
 public class HotelGUI extends JFrame {
     private JTabbedPane tabPane;
-    private Button quitButton;
-    private Button createButton;
-    private Button viewButton;
-    private Button bookButton;
-    private Button manageButton;
+    
+    private ComponentFactory componentFactory;
+
     public enum PANEL_NAME{
         HOME("HomePanel"),
         CREATE("CreatePanel"),
@@ -35,51 +34,26 @@ public class HotelGUI extends JFrame {
 
     public HotelGUI() {
         super("Hotel Manager");
+        this.componentFactory = new ComponentFactory();
         setLayout(new BorderLayout());
 
         setSize(800, 600);
+        initializeComponents();
 
         // by default, the window will not be displayed
         setVisible(true);
         setResizable(false);
 
-        initializeComponents();
         // so that the program will actually stop running
         // when you press the close button
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    
-    private Panel initHomePanel(){
-        Panel homePanel = new Panel();
-        homePanel.setLayout(new FlowLayout());
-        homePanel.setBackground(Color.RED);
-
-        createButton    = new Button("Create Hotel");
-        viewButton      = new Button("View Hotel");
-        bookButton      = new Button("Book Button");
-        manageButton    = new Button("Manage Button");
-        quitButton      = new Button("Quit Manager");
-
-        homePanel.add(createButton);
-        homePanel.add(viewButton);
-        homePanel.add(bookButton);
-        homePanel.add(manageButton);
-        homePanel.add(quitButton);
-
-        return homePanel;
-    }
-
-
-
-    private Panel initCreatePanel(){
-        Panel createPanel = new Panel();
-        createPanel.setLayout(new FlowLayout());
-        createPanel.setBackground(Color.ORANGE);
-
-        Panel hotelPanel = new Panel();
-        Panel contentPanel = new Panel();
+    private JPanel initCreatePanel(){
+        JPanel createPanel  = componentFactory.createJPanel();
+        JPanel hotelPanel = new JPanel();
+        JPanel contentPanel = new JPanel();
 
 
         return createPanel;
@@ -87,23 +61,19 @@ public class HotelGUI extends JFrame {
 
 
 
-    private Panel initViewPanel(){
-        Panel viewPanel = new Panel();
-        viewPanel.setLayout(new FlowLayout());
-        viewPanel.setBackground(Color.RED);
+    private JPanel initViewPanel(){
+        JPanel viewPanel  = componentFactory.createJPanel();
 
-        Panel hotelPanel = new Panel();
-        Panel contentPanel = new Panel();
+        JPanel hotelPanel = new JPanel();
+        JPanel contentPanel = new JPanel();
 
         return viewPanel;
     }
 
 
 
-    private Panel initManagePanel(){
-        Panel managePanel = new Panel();
-        managePanel.setLayout(new FlowLayout());
-        managePanel.setBackground(Color.RED);
+    private JPanel initManagePanel(){
+        JPanel managePanel = componentFactory.createJPanel();
 
         Panel hotelPanel = new Panel();
         Panel contentPanel = new Panel();
@@ -113,10 +83,8 @@ public class HotelGUI extends JFrame {
 
 
 
-    private Panel initBookPanel(){
-        Panel homePanel = new Panel();
-        homePanel.setLayout(new FlowLayout());
-        homePanel.setBackground(Color.RED);
+    private JPanel initBookPanel(){
+        JPanel homePanel = componentFactory.createJPanel();
         return homePanel;
     }
 
@@ -125,19 +93,17 @@ public class HotelGUI extends JFrame {
     private void initializeComponents(){
         this.tabPane = new JTabbedPane();
         
-        Panel homePanel = initHomePanel();
-        tabPane.addTab(PANEL_NAME.HOME.getPanelName(), homePanel);
+        tabPane.addTab(PANEL_NAME.HOME.getPanelName(),  new PanelHome(this.componentFactory));
 
-        Panel createPanel = initCreatePanel();
-        tabPane.addTab(PANEL_NAME.CREATE.getPanelName(), createPanel);
+        tabPane.addTab(PANEL_NAME.CREATE.getPanelName(), new PanelCreateHotel(this.componentFactory));
 
-        Panel viewPanel = initViewPanel();
+        JPanel viewPanel = initViewPanel();
         tabPane.addTab(PANEL_NAME.VIEW.getPanelName(), viewPanel);
 
-        Panel managePanel = initManagePanel();
+        JPanel managePanel = initManagePanel();
         tabPane.addTab(PANEL_NAME.MANAGE.getPanelName(), managePanel);
         
-        Panel bookPanel = initBookPanel();
+        JPanel bookPanel = initBookPanel();
         tabPane.addTab(PANEL_NAME.BOOK.getPanelName(), bookPanel);
 
         tabPane.setMnemonicAt(0, KeyEvent.VK_0);
