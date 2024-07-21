@@ -1,10 +1,20 @@
 package Hotel;
+import static Hotel.Discount.DISCOUNT_CODES.I_WORK_HERE;
+import static Hotel.Discount.DISCOUNT_CODES.PAYDAY;
+import static Hotel.Discount.DISCOUNT_CODES.STAY4_GET1;
+import static Hotel.Result.COMMON_ERRORS.ER_EXISTING_DISCOUNT;
+import static Hotel.Result.COMMON_ERRORS.ER_HOTEL_EXISTS;
+import static Hotel.Result.COMMON_ERRORS.ER_INVALID_CODE;
+import static Hotel.Result.COMMON_ERRORS.ER_MAX_CAPACITY;
+import static Hotel.Result.COMMON_ERRORS.ER_NOT_UNIQUE_GIVENNAME;
+import static Hotel.Result.COMMON_ERRORS.ER_NO_HOTEL;
+import static Hotel.Result.COMMON_ERRORS.ER_PAYDAY_INVALID;
+import static Hotel.Result.COMMON_ERRORS.ER_STAY4_GET1_INVALID;
+import static Hotel.Result.COMMON_ERRORS.ER_SUCCESSFUL;
+import static java.time.temporal.ChronoUnit.DAYS;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
-
-import static Hotel.Result.COMMON_ERRORS.*;
-import static Hotel.Discount.DISCOUNT_CODES.*;
-import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
  * The Model class manages a list of hotels and provides methods to manipulate hotel data.
@@ -63,9 +73,9 @@ public class Model {
      */
     private Room createRoomCopy(Room room) {
         return switch (room) {
-            case StandardRoom _ -> new StandardRoom(room);
-            case DeluxeRoom _ -> new DeluxeRoom(room);
-            case ExecutiveRoom _ -> new ExecutiveRoom(room);
+            case StandardRoom r -> new StandardRoom(room);
+            case DeluxeRoom r -> new DeluxeRoom(room);
+            case ExecutiveRoom r -> new ExecutiveRoom(room);
             case null, default -> null;
         };
     }
@@ -102,9 +112,9 @@ public class Model {
         Discount.DISCOUNT_CODES appliedDiscountCode = reservation.getAppliedDiscountCode();
 
         roomTypeMultiplier = switch(reservation.getRoom()) {
-            case StandardRoom _ -> hotel.getStandardMultiplier();
-            case DeluxeRoom _ -> hotel.getDeluxeMultiplier();
-            case ExecutiveRoom _ -> hotel.getExecutiveMultiplier();
+            case StandardRoom r -> hotel.getStandardMultiplier();
+            case DeluxeRoom r -> hotel.getDeluxeMultiplier();
+            case ExecutiveRoom r -> hotel.getExecutiveMultiplier();
             case null, default -> 0f;
         };
 
@@ -317,9 +327,9 @@ public class Model {
     public double getRoomBasePricePerNight(Hotel hotel, Room room) {
         double basePricePerNight = hotel.getBasePricePerNight();
         return switch(room) {
-            case StandardRoom _ -> basePricePerNight * hotel.getStandardMultiplier();
-            case DeluxeRoom _ -> basePricePerNight * hotel.getDeluxeMultiplier();
-            case ExecutiveRoom _ -> basePricePerNight * hotel.getExecutiveMultiplier();
+            case StandardRoom r -> basePricePerNight * hotel.getStandardMultiplier();
+            case DeluxeRoom r -> basePricePerNight * hotel.getDeluxeMultiplier();
+            case ExecutiveRoom r -> basePricePerNight * hotel.getExecutiveMultiplier();
             case null, default -> -1;
         };
     }

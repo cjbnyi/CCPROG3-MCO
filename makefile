@@ -4,8 +4,6 @@ BIN_DIR := bin
 TST_DIR := tests
 DOC_DIR := docs/jdoc
 
-
-
 SRCS = $(wildcard $(SRC_DIR)/*.java)
 TESTS := $(wildcard $(TST_DIR)/*.java))
 
@@ -15,13 +13,13 @@ JRUN := java
 
 JCTESTSFLAGS := -d $(BIN_DIR)
 JCBUILDFLAGS := -d $(BIN_DIR)/ -cp $(SRC_DIR)/
-JDFLAGS := -d $(DOC_DIR)/ -cp $(SRCS)
+JDFLAGS := -d $(DOC_DIR)/ $(SRCS) -Xdoclint:none
 JRFLAGS := -cp $(BIN_DIR)/
 
 all: build doc run
 
 # Does not produce execution output.
-.SILENT:
+
 build: $(SRCS)
 	@echo "=== Building . . . ===================================="
 	@echo ""
@@ -38,6 +36,7 @@ doc: $(DOC_DIR)
 	@echo "=== Documenting Files ... ============================="
 	@echo ""
 	$(JDOC) $(JDFLAGS)
+	@echo "=== Done Documenting  ... ============================="
 
 run: $(BIN_DIR)
 	@echo "=== Running Hotel Program...========================== "

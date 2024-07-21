@@ -1,8 +1,15 @@
 package Hotel;
+import static Hotel.Result.COMMON_ERRORS.ER_HOTEL_HAS_RESERVATION;
+import static Hotel.Result.COMMON_ERRORS.ER_INVALID_DAY;
+import static Hotel.Result.COMMON_ERRORS.ER_INVALID_PRICE_RATE;
+import static Hotel.Result.COMMON_ERRORS.ER_LOWER_THAN_BASEPRICE;
+import static Hotel.Result.COMMON_ERRORS.ER_NO_RESERVATION;
+import static Hotel.Result.COMMON_ERRORS.ER_NO_ROOM;
+import static Hotel.Result.COMMON_ERRORS.ER_ROOM_HAS_RESERVATION;
+import static Hotel.Result.COMMON_ERRORS.ER_SUCCESSFUL;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
-
-import static Hotel.Result.COMMON_ERRORS.*;
 /**
  * The Hotel class represents a hotel with rooms and reservations.
  */
@@ -96,9 +103,9 @@ public class Hotel {
      */
     private Room createRoomCopy(Room room) {
         return switch (room) {
-            case StandardRoom _ -> new StandardRoom(room);
-            case DeluxeRoom _ -> new DeluxeRoom(room);
-            case ExecutiveRoom _ -> new ExecutiveRoom(room);
+            case StandardRoom r -> new StandardRoom(room);
+            case DeluxeRoom r -> new DeluxeRoom(room);
+            case ExecutiveRoom r -> new ExecutiveRoom(room);
             case null, default -> null;
         };
     }
@@ -321,9 +328,9 @@ public class Hotel {
 
         /* filter existing reservations based on the room type */
         ArrayList<Reservation> filteredReservations = switch(room) {
-            case StandardRoom _ -> filterStandardReservations();
-            case DeluxeRoom _ -> filterDeluxeReservations();
-            case ExecutiveRoom _ -> filterExecutiveReservations();
+            case StandardRoom r -> filterStandardReservations();
+            case DeluxeRoom r -> filterDeluxeReservations();
+            case ExecutiveRoom r -> filterExecutiveReservations();
             case null, default -> null;
         };
 
