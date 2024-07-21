@@ -1,7 +1,8 @@
 package Hotel;
 
-import java.time.LocalDate;
 import static java.time.temporal.ChronoUnit.DAYS;
+
+import java.time.LocalDate;
 
 /**
  * The Reservation class represents a reservation for a hotel room.
@@ -89,9 +90,9 @@ public class Reservation {
      */
     public Room getRoom() {
         return switch (room) {
-            case StandardRoom _ -> new StandardRoom(room);
-            case DeluxeRoom _ -> new DeluxeRoom(room);
-            case ExecutiveRoom _ -> new ExecutiveRoom(room);
+            case StandardRoom r -> new StandardRoom(room);
+            case DeluxeRoom r -> new DeluxeRoom(room);
+            case ExecutiveRoom r -> new ExecutiveRoom(room);
             case null, default -> null;
         };
     }

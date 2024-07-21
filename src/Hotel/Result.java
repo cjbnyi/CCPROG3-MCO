@@ -21,7 +21,7 @@ public class Result {
         ER_INVALID_DAY              (15, "Invalid day of the month."),
         ER_INVALID_PRICE_RATE       (16, "Invalid price rate."),
         ER_INVALID_ROOM_TYPE        (17, "Invalid room type."),
-        ER_HOTEL_EXISTS             (18, "Hotel already exists.";
+        ER_HOTEL_EXISTS             (18, "Hotel already exists.");
 
         private int errorID;
         private String errorMessage;
