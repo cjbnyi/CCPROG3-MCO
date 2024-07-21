@@ -295,7 +295,7 @@ public class Hotel {
      * @param checkOutDate check out date being compared with the reservation
      * @return true if date coincides reservation; false, otherwise
      */
-    public boolean datesCoincideReservation(Reservation reservation, LocalDate checkInDate, LocalDate checkOutDate) {
+    private boolean datesCoincideReservation(Reservation reservation, LocalDate checkInDate, LocalDate checkOutDate) {
 
         LocalDate reservationCheckInDate = reservation.getCheckInDate();
         LocalDate reservationCheckOutDate = reservation.getCheckOutDate();
@@ -412,7 +412,7 @@ public class Hotel {
      * @param room the room to filter reservations for
      * @return a list of reservations for the specified room
      */
-    public ArrayList<Reservation> filterReservationsByRoom(Room room) {
+    private ArrayList<Reservation> filterReservationsByRoom(Room room) {
         ArrayList<Reservation> reservationList = new ArrayList<Reservation>();
         for (Reservation reservation : this.reservationList) {
             if (reservation.getRoom().equals(room)) {

@@ -381,19 +381,27 @@ public class View {
      * Displays the list of rooms with their details.
      * @param roomList the list of rooms to display
      */
-    public void displayRoomList(ArrayList<Room> roomList) {
+    public void displayRoomList(Hotel hotel, ArrayList<Room> roomList) {
 
         if(roomList.isEmpty()){
             displayDivider();
             System.out.println("No Rooms currently exist.");
         } else {
             int i = 0;
-            for (Room room : roomList){
+            for (Room room : roomList) {
+                double basePricePerNight = hotel.getBasePricePerNight();
+                double multiplier = switch(room) {
+                    case StandardRoom r -> hotel.getStandardMultiplier();
+                    case DeluxeRoom r -> hotel.getDeluxeMultiplier();
+                    case ExecutiveRoom r -> hotel.getExecutiveMultiplier();
+                    case null, default -> 0f;
+                };
                 displayDivider();
                 System.out.println(i + 1 + ".)");
+                assert room != null;
                 System.out.println("Room: " + room.getName());
                 System.out.println("Class: " + room.getClass());
-                System.out.println("Base Price: " + room.getBasePricePerNight());
+                System.out.println("Base Price: ₱" + (basePricePerNight * multiplier));
                 ++i;
             }
         }
@@ -432,29 +440,27 @@ public class View {
 
     /**
      * Displays the selected room information.
-     * @param roomInfo the information of the selected room
+     * @param roomName name of the room
+     * @param roomType type of the room
      */
-    public void displaySelectedRoomInfo(String roomInfo) {
+    public void displaySelectedRoomInfo(String roomName, String roomType) {
         displayDivider();
-        System.out.println("\n" + roomInfo);
+        System.out.printf("\nName: %s", roomName);
+        System.out.printf("\nType: %s\n", roomType);
+        System.out.println("\n" );
     }
 
 
     /**
      * Displays the selected reservation information.
-     * @param reservation the reservation to display
      */
-    public void displaySelectedReservationInfo(Reservation reservation) {
+    public void displaySelectedReservationInfo(String guestName, int checkInDay, int checkOutDay, String priceBreakDown, double totalPrice) {
         displayDivider();
-        if (reservation == null) {
-            System.out.println("\nThe reservation does not exist.");
-            return;
-        }
-        System.out.println("\nGuest: " + reservation.getGuestName());
-        System.out.println("Check-in: " + reservation.getCheckInDate());
-        System.out.println("Check-out: " + reservation.getCheckOutDate());
-        System.out.println("Price breakdown:" + reservation.getPriceBreakdown());
-        System.out.println("Total price: " + reservation.getTotalPrice());
+        System.out.println("\nGuest: " + guestName);
+        System.out.println("Check-in: July " + checkInDay + ", 2024");
+        System.out.println("Check-out: July " + checkOutDay + ", 2024");
+        System.out.println("Price breakdown:" + priceBreakDown);
+        System.out.println("Total price: " + totalPrice);
     }
 
     /**
@@ -475,8 +481,6 @@ public class View {
                 System.out.println("Room: " + reservation.getRoom().getName());
                 System.out.println("Check-in: " + reservation.getCheckInDate());
                 System.out.println("Check-out: " + reservation.getCheckOutDate());
-                System.out.println("Price breakdown:" + reservation.getPriceBreakdown());
-                System.out.println("Total price: " + reservation.getTotalPrice());
                 ++i;
             }
         }
