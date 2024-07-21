@@ -49,6 +49,21 @@ public class Model {
         return null;
     }
 
+    /**
+     * Gets an existing hotel with a specified name.
+     * Note: Equivalent to getHotel() but for outside usage.
+     * @param name
+     * @return The instance of the hotel with the corresponding name; otherwise, null.
+     */
+    public Hotel getHotelClone(String name) {
+        for (Hotel hotel : this.hotelList) {
+            if (hotel.getName().equals(name)) {
+                return new Hotel(hotel);
+            }
+        }
+        return null;
+    }
+
 
     // ### GETTERS
 
@@ -80,6 +95,21 @@ public class Model {
         };
     }
 
+    // TODO: DONE! (remove)
+    /**
+     * Gets the type of room.
+     * @param room the room being checked
+     * @return type of the room
+     */
+    public String getRoomTypeString(Room room) {
+        return switch(room) {
+            case StandardRoom _ -> "Standard";
+            case DeluxeRoom _ -> "Deluxe";
+            case ExecutiveRoom _ -> "Executive";
+            case null, default -> null;
+        };
+    }
+
 
     // ### RESERVATION-RELATED METHODS
 
@@ -95,18 +125,44 @@ public class Model {
 
     // TODO: DONE! (remove)
     /**
+     * Returns the price of a reservation at a particular day.
+     * @return the price of a reservation at a particular day
+     */
+    public double getReservationPriceForADay(Hotel hotel, Reservation reservation, int day) {
+        double basePricePerNight = hotel.getBasePricePerNight();
+        double roomTypeMultiplier = switch(reservation.getRoom()) {
+            case StandardRoom r -> hotel.getStandardMultiplier();
+            case DeluxeRoom r -> hotel.getDeluxeMultiplier();
+            case ExecutiveRoom r -> hotel.getExecutiveMultiplier();
+            case null, default -> 0f;
+        };
+        double priceRate = hotel.getPriceRateForADay(day);
+        return basePricePerNight * roomTypeMultiplier * priceRate;
+    }
+
+    // TODO: DONE! (remove)
+    public double getReservationDiscount(Hotel hotel, Reservation reservation, double totalPrice) {
+        int firstDay = reservation.getCheckInDate().getDayOfMonth();
+        return switch(reservation.getAppliedDiscountCode()) {
+            case Discount.DISCOUNT_CODES.I_WORK_HERE -> totalPrice * 0.1;
+            case Discount.DISCOUNT_CODES.STAY4_GET1 -> getReservationPriceForADay(hotel, reservation, firstDay);
+            case Discount.DISCOUNT_CODES.PAYDAY -> totalPrice * 0.07;
+            case null -> 0f;
+        };
+    }
+
+    // TODO: Refactor this.
+    /**
      * Returns the total price of a reservation.
      *
      * @param hotel the hotel in which the reservation was made
      * @param reservation the reservation made
      */
     public double getReservationTotalPrice(Hotel hotel, Reservation reservation) {
-
-        double basePricePerNight = hotel.getBasePricePerNight();
-        double roomTypeMultiplier;
         int checkInDay = reservation.getCheckInDate().getDayOfMonth();
         int checkOutDay = reservation.getCheckOutDate().getDayOfMonth();
         double totalPrice = 0f;
+<<<<<<< Updated upstream
         double priceRate;
         double discount;
         Discount.DISCOUNT_CODES appliedDiscountCode = reservation.getAppliedDiscountCode();
@@ -118,26 +174,56 @@ public class Model {
             case null, default -> 0f;
         };
 
+=======
+>>>>>>> Stashed changes
         for (int i = checkInDay; i < checkOutDay; i++) {
-            priceRate = hotel.getPriceRateForADay(i - 1);
-            totalPrice += basePricePerNight * roomTypeMultiplier * priceRate;
+            totalPrice += getReservationPriceForADay(hotel, reservation, i);
+        }
+        return totalPrice - getReservationDiscount(hotel, reservation, totalPrice);
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Return the price breakdown of a reservation in string.
+     */
+    public String getReservationPriceBreakdown(Hotel hotel, Reservation reservation) {
+
+        String priceBreakdown = "";
+        double dayPrice;
+        double totalPrice = 0f;
+
+        int firstDay = reservation.getCheckInDate().getDayOfMonth();
+        for (int i = 0; i < getNumDaysOfReservation(reservation); i++) {
+            dayPrice = getReservationPriceForADay(hotel, reservation, i + 1);
+            priceBreakdown += "July " + (firstDay + i) + ", 2024 | ₱" + dayPrice + "\n";
+            totalPrice += dayPrice;
         }
 
-        discount = switch(appliedDiscountCode) {
-            case Discount.DISCOUNT_CODES.I_WORK_HERE ->
-                    totalPrice * 0.1;
-            case Discount.DISCOUNT_CODES.STAY4_GET1 ->
-                    basePricePerNight * roomTypeMultiplier * hotel.getPriceRateForADay(checkInDay - 1);
-            case Discount.DISCOUNT_CODES.PAYDAY ->
-                    totalPrice * 0.07;
-            case null -> 0f;
-        };
-
-        return totalPrice - discount;
+        double discount = getReservationDiscount(hotel, reservation, totalPrice);
+        priceBreakdown += "Discount | ₱" + discount + "\n";
+        priceBreakdown += "Total | ₱" + (totalPrice - discount);
+        return priceBreakdown;
     }
 
 
     // ### HOTEL-RELATED METHODS
+
+    // TODO: DONE! (remove)
+    /**
+     * Filters and returns a list of reservations for a specific room.
+     *
+     * @param room the room to filter reservations for
+     * @return a list of reservations for the specified room
+     */
+    public ArrayList<Reservation> filterHotelReservationsByRoom(Hotel hotel, Room room) {
+        ArrayList<Reservation> reservationList = new ArrayList<Reservation>();
+        for (Reservation reservation : hotel.getReservationList()) {
+            if (reservation.getRoom().equals(room)) {
+                reservationList.add(reservation);
+            }
+        }
+        return reservationList;
+    }
 
     // TODO: DONE! (remove)
     public Reservation getReservation(String hotelName, String roomName, LocalDate checkInDate) {
@@ -182,22 +268,6 @@ public class Model {
             }
         }
 
-        return null;
-    }
-
-    // TODO: DONE! (remove)
-    /**
-     * Gets an existing hotel with a specified name.
-     * Note: Equivalent to getHotel() but for outside usage.
-     * @param name
-     * @return The instance of the hotel with the corresponding name; otherwise, null.
-     */
-    public Hotel getHotelClone(String name) {
-        for (Hotel hotel : this.hotelList) {
-            if (hotel.getName().equals(name)) {
-                return new Hotel(hotel);
-            }
-        }
         return null;
     }
 
