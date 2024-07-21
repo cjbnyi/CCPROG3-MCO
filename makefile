@@ -13,7 +13,7 @@ JRUN := java
 
 JCTESTSFLAGS := -d $(BIN_DIR)
 JCBUILDFLAGS := -d $(BIN_DIR)/ -cp $(SRC_DIR)/
-JDFLAGS := -d $(DOC_DIR)/ $(SRCS)
+JDFLAGS := -d $(DOC_DIR)/ $(SRCS) -Xdoclint:none
 JRFLAGS := -cp $(BIN_DIR)/
 
 all: build doc run

@@ -97,21 +97,14 @@ public class HotelGUI extends JFrame {
 
         tabPane.addTab(PANEL_NAME.CREATE.getPanelName(), new PanelCreateHotel(this.componentFactory));
 
-        JPanel viewPanel = initViewPanel();
-        tabPane.addTab(PANEL_NAME.VIEW.getPanelName(), viewPanel);
+        tabPane.addTab(PANEL_NAME.VIEW.getPanelName(), new PanelViewHotel(this.componentFactory));
 
-        JPanel managePanel = initManagePanel();
-        tabPane.addTab(PANEL_NAME.MANAGE.getPanelName(), managePanel);
+        tabPane.addTab(PANEL_NAME.MANAGE.getPanelName(), new PanelManageHotel(this.componentFactory));
         
-        JPanel bookPanel = initBookPanel();
-        tabPane.addTab(PANEL_NAME.BOOK.getPanelName(), bookPanel);
+        tabPane.addTab(PANEL_NAME.BOOK.getPanelName(), new PanelBookReservation(this.componentFactory));
 
-        tabPane.setMnemonicAt(0, KeyEvent.VK_0);
-        tabPane.setMnemonicAt(1, KeyEvent.VK_1);
-        tabPane.setMnemonicAt(2, KeyEvent.VK_2);
-        tabPane.setMnemonicAt(3, KeyEvent.VK_3);
-        tabPane.setMnemonicAt(4, KeyEvent.VK_4);
-        this.add(this.tabPane);
-        
+        tabPane.addTab("Enable", new PanelEnable(this.componentFactory, "Are you sure you want to continue?"));
+
+        this.add(this.tabPane); 
     }
 }

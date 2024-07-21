@@ -4,55 +4,154 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.FlowLayout;
 import java.awt.Panel;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentListener;
+
+import Hotel.ComponentBuilderState;
+import static Hotel.ComponentBuilderState.*;
 
 public class PanelCreateHotel extends JPanel {
     private JButton createButton;
+    private JLabel hotelInfo;
     private JTextField nameField;
     private JTextField priceField;
+    private JPanel confirmationPanel;
+    private final String defaultHotelInfoText = "Register name of hotel and its price per night";
     
     PanelCreateHotel(ComponentFactory compFactory){
-        this.setLayout(new BorderLayout());
-        this.setBackground(compFactory.getRandomColor());
-        ComponentBuilderBoxCenter compBuildBoxCenter = new ComponentBuilderBoxCenter(CENTER_ALIGNMENT);
-        compBuildBoxCenter.setSpacing(50);
-        compBuildBoxCenter.setAutoSpace(false);
-
-        // Hotel Selection Panel;
-        JPanel hotelSelectionPanel = compFactory.createJPanel();
-
-        compBuildBoxCenter.setParent(hotelSelectionPanel);
-        compBuildBoxCenter.assignComponent(compFactory.createJLabelHeading("Hotels:"));
-        compBuildBoxCenter.assignComponent(compFactory.createJLabelBody("No hotels created."));
-
-        // Content Panel
-        JPanel contentPanel = compFactory.createJPanel();
-        compBuildBoxCenter.setParent(contentPanel);
-        compBuildBoxCenter.setAutoSpace(true);
-        compBuildBoxCenter.assignComponent(compFactory.createJLabelHeading("Create Hotel"));
-
-
-
-        JTextField nameField = compFactory.createJTextField(50, 50);
-        this.nameField = nameField;
-        compBuildBoxCenter.assignComponent(nameField);
-
-        JTextField priceField = compFactory.createJTextField(50, 50);
-        this.priceField = priceField;
-        compBuildBoxCenter.assignComponent(priceField);
-
-        JButton createButton = compFactory.createSingleJButton("CreateButton", 200, 50);
-        compBuildBoxCenter.assignComponent(createButton);
-        this.createButton = createButton;
-
-        this.add(hotelSelectionPanel, BorderLayout.WEST);
-        this.add(contentPanel, BorderLayout.CENTER);
+        init(compFactory);
         this.setVisible(true);
     }
+    
+    private void init(ComponentFactory compFactory){
+        ComponentBuilderDirector director = new ComponentBuilderDirector(ComponentBuilderState.LAY_BOX_VERTICAL);
+
+        this.setLayout(new BorderLayout());
+        this.setBackground(compFactory.getRandomColor());
+
+        CompBuilderBoxLayout boxBuildVert = ((CompBuilderBoxLayout) director.getBuilder());
+        boxBuildVert.setSpacing(50);
+
+        boxBuildVert.setAutoSpace(false);
+        JPanel hotelSelectionPanel = new PanelHotelSelection(compFactory);
+
+        boxBuildVert.setAutoSpace(true);
+        JPanel contentPanel = initContentPanel(boxBuildVert, compFactory);
+    
+        this.add(hotelSelectionPanel, BorderLayout.WEST);
+        this.add(contentPanel, BorderLayout.CENTER);
+    }
+
+    public JPanel initPricePanel(ComponentFactory compFactory){
+        JPanel inputPanel = compFactory.createJPanel();
+        GroupLayout layout = new GroupLayout(inputPanel);
+        inputPanel.setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+        
+        JLabel nameFieldLabel = compFactory.createJLabelBody("Name of Hotel: ");
+        JTextField nameField = compFactory.createJTextField(36, 12*15); // Letter size * 30 
+        this.nameField = nameField;
+
+        JLabel priceFieldLabel = compFactory.createJLabelBody("Price of Stay: ");
+        JTextField priceField = compFactory.createJTextField(36, 12*15);
+        this.priceField = priceField;
+
+
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                .addComponent(nameFieldLabel)
+                .addComponent(priceFieldLabel)
+            )
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                .addComponent(nameField)
+                .addComponent(priceField)
+            )
+        );  
+
+        layout.setVerticalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(nameFieldLabel)
+                .addComponent(nameField)   
+            )
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(priceFieldLabel)
+                .addComponent(priceField)
+            )
+        );
+
+        return inputPanel;
+    }
+
+    // public JPanel initHotelSelectionPanel(CompBuilderBoxLayout boxBuildVert, ComponentFactory compFactory){
+    //     JPanel hotelSelectionPanel = compFactory.createJPanel();
+
+    //     boxBuildVert.setParent(hotelSelectionPanel);
+    //     boxBuildVert.setChild(compFactory.createJLabelHeading("Hotels:"));
+    //     boxBuildVert.setChild(compFactory.createJLabelBody("No hotels created."));
+
+    //     return hotelSelectionPanel;
+    // }
+
+    public JPanel initContentPanel(CompBuilderBoxLayout boxBuildVert, ComponentFactory compFactory){
+        JPanel contentPanel = compFactory.createJPanel();
+
+        JLabel contentTitle = compFactory.createJLabelHeading("Create Hotel");
+        
+        JLabel hotelInfo = compFactory.createJLabelBody(this.defaultHotelInfoText);
+        this.hotelInfo = hotelInfo;
+        
+        JButton createButton = compFactory.createSingleJButton("Create Hotel", 200, 50);
+        this.createButton = createButton;
+        
+        JPanel inputPanel = initPricePanel(compFactory);
+        
+        JPanel confirmatioPanel = new PanelEnable(compFactory, "Are you sure you want to create this hotel?");
+        confirmatioPanel.setVisible(false);
+
+        this.confirmationPanel = new PanelEnable(compFactory, "Are you sure?");
+
+        boxBuildVert.setParent(contentPanel);
+        boxBuildVert.setChild(contentTitle);
+        boxBuildVert.setChild(inputPanel);
+        boxBuildVert.setChild(confirmatioPanel);
+        boxBuildVert.setChild(createButton);
+        boxBuildVert.setChild(this.confirmationPanel);
+        
+        return contentPanel;
+    }
+
+    public void setActionListener(ActionListener listener){
+        createButton.addActionListener(listener);
+    }
+    
+    public void setDocumentListener(DocumentListener listener){
+        nameField.getDocument().addDocumentListener(listener);
+        priceField.getDocument().addDocumentListener(listener);
+    }
+
+    public void setHotelInfoText(String text){
+        this.hotelInfo.setText(text);
+    }
+
+    public void resetHotelInfoText(String text){
+        this.hotelInfo.setText(defaultHotelInfoText);
+    }
+
+    public void setCreateButtonEnable(boolean enabled){
+        this.createButton.setEnabled(enabled);
+    }
+
+    public void setConfirmatonPanel(boolean enabled){
+        this.confirmationPanel.setEnabled(enabled);
+    }
+    
 }

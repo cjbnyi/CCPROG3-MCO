@@ -197,7 +197,7 @@ public class Model {
      *         - "Hotel is at Max." if the hotel already has 50 rooms;
      *         - "Name of hotel does not exist." if the specified hotel is not found;
      *         - "Room name not unique." If the room name is not unique in the list.
-     * <pre/>
+     * </pre>
      */
     public Result addRoomToAHotel(String nameOfHotel, String roomToAdd){
         boolean hasFoundHotel = false, hasFoundRoom = false;
@@ -247,7 +247,7 @@ public class Model {
      *      - "Room has a reservation." if the room has one or more reservations
      *      - "Room does not exist." if the room with the specified name is not found
      *      - "Removal successful." if the room was successfully removed. Has a isSuccesful Boolean of true
-     * <pre/>
+     * </pre>
      */
     public Result removeRoomToHotel(String nameOfHotel, String strRoomToRemove) {
         Result resRemoveRoom;
@@ -275,7 +275,7 @@ public class Model {
      *      - "Price is lower than 100." if the provided price is less than 100
      *      - "Base price set." if the price was successfully updated
      * 
-     * <pre/>
+     * </pre>
     */
     public Result updatePriceOfAHotel(String strHotel, double setPrice){
         Result resUpdatePrice;

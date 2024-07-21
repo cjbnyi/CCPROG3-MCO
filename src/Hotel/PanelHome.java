@@ -34,18 +34,18 @@ public class PanelHome extends JPanel {
         };
 
         ArrayList<JButton> homeButtons = componentFactory.createMultipleJButtons(names, 200, 50);
-        ComponentBuilderBoxCenter cbBoxCenter = new ComponentBuilderBoxCenter(CENTER_ALIGNMENT);
+        CompBuilderBoxLayout cbBoxCenter = new CompBuilderBoxLayout(CENTER_ALIGNMENT);
         cbBoxCenter.setParent(this);
         cbBoxCenter.setSpacing(25);
         cbBoxCenter.setAutoSpace(true);
         
         cbBoxCenter.addSpacing();
-        cbBoxCenter.assignComponent(componentFactory.createJLabelHeading("Menu:"));
+        cbBoxCenter.setChild(componentFactory.createJLabelHeading("Menu:"));
 
         int i = 0;
         for (JButton button : homeButtons){
             assignButtons(button, i);
-            cbBoxCenter.assignComponent(button);
+            cbBoxCenter.setChild(button);
         }
 
     }

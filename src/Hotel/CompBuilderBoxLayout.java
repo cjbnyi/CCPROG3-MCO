@@ -8,20 +8,37 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 
-public class ComponentBuilderBoxCenter {
+public class CompBuilderBoxLayout extends ComponentBuilder{
     private float alignment;
-    private JComponent parent;
     private int spacing;
     private boolean doesNextComponentHasSpacing;
+    private int preferredAxis;
     
-    ComponentBuilderBoxCenter(float alignment) {
+    CompBuilderBoxLayout(float alignment) {
+        super();
+        this.preferredAxis = BoxLayout.PAGE_AXIS;
         this.alignment = alignment;
         this.spacing = 0;
         this.doesNextComponentHasSpacing = true;
     }
 
+    CompBuilderBoxLayout(float alignment, int preferredAxis) {
+        super();
+        this.preferredAxis = preferredAxis;
+        this.alignment = alignment;
+        this.spacing = 0;
+        this.doesNextComponentHasSpacing = true;
+    }
 
-    public void assignComponent(JComponent child) {
+    public void setPreferredAxis(int preferredAxis) {
+        this.preferredAxis = preferredAxis;
+    }
+
+    public void resetBuilder(){
+        this.parent = null;
+    }
+
+    public void setChild(JComponent child) {
         child.setAlignmentX(this.alignment);
         this.parent.add(child);
 
@@ -29,14 +46,13 @@ public class ComponentBuilderBoxCenter {
             this.parent.add(Box.createRigidArea(new Dimension(0, spacing)));
     }
 
-    public void addSpacing(){
-        this.parent.add(Box.createRigidArea(new Dimension(0, spacing)));
+    public void setParent(JComponent parent){
+        parent.setLayout(new BoxLayout(parent, this.preferredAxis));
+        this.parent = parent;
     }
 
-
-    public void setParent(JComponent parent){
-        parent.setLayout(new BoxLayout(parent, BoxLayout.PAGE_AXIS));
-        this.parent = parent;
+    public void addSpacing(){
+        this.parent.add(Box.createRigidArea(new Dimension(0, spacing)));
     }
 
     public void setSpacing(int height) {

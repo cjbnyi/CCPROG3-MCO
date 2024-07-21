@@ -7,7 +7,6 @@ import static Hotel.Result.COMMON_ERRORS.*;
  * The Hotel class represents a hotel with rooms and reservations.
  */
 public class Hotel {
-
     private String name;
     private ArrayList<Room> roomList;
     private ArrayList<Reservation> reservationList;
