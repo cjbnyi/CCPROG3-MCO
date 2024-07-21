@@ -61,18 +61,6 @@ public class Hotel {
 
     // ### HELPERS
 
-    // TODO: DONE! (remove)
-    /**
-     * Initializes the price rates of rooms in the hotel.
-     * Price rates are set to a default of 1.0.
-     */
-    private void initPriceRates() {
-        for (int i = 0; i < DAYS_IN_MONTH; i++) {
-            priceRateList[i] = 1.0;
-        }
-    }
-
-    // TODO: DONE! (remove)
     /**
      * Initializes rooms in the hotel.
      * Rooms are named from 'A0' to 'E9'.
@@ -95,7 +83,16 @@ public class Hotel {
         }
     }
 
-    // TODO: DONE! (remove)
+    /**
+     * Initializes the price rates of rooms in the hotel.
+     * Price rates are set to a default of 1.0.
+     */
+    private void initPriceRates() {
+        for (int i = 0; i < DAYS_IN_MONTH; i++) {
+            priceRateList[i] = 1.0;
+        }
+    }
+
     /**
      * Creates a copy of a room instance.
      *
@@ -110,10 +107,33 @@ public class Hotel {
         };
     }
 
+    /**
+     * Checks if the provided check in and check out dates coincide with that of a reservation.
+     *
+     * @param reservation reservation being compared
+     * @param checkInDate check in date being compared with the reservation
+     * @param checkOutDate check out date being compared with the reservation
+     * @return true if date coincides reservation; false, otherwise
+     */
+    private boolean datesCoincideReservation(Reservation reservation, LocalDate checkInDate, LocalDate checkOutDate) {
 
-    // ### 2. GETTERS
+        LocalDate reservationCheckInDate = reservation.getCheckInDate();
+        LocalDate reservationCheckOutDate = reservation.getCheckOutDate();
 
-    // TODO: DONE! (remove)
+        boolean checkInCoincides =
+                checkInDate.isEqual(reservationCheckInDate) || checkInDate.isAfter(reservationCheckInDate) &&
+                        checkInDate.isBefore(reservationCheckOutDate);
+
+        boolean checkOutCoincides =
+                checkOutDate.isEqual(reservationCheckInDate) || checkOutDate.isAfter(reservationCheckInDate) &&
+                        checkOutDate.isBefore(reservationCheckOutDate);
+
+        return checkInCoincides || checkOutCoincides;
+    }
+
+
+    // ### GETTERS
+
     /**
      * Gets the name of the hotel.
      * 
@@ -123,7 +143,6 @@ public class Hotel {
         return this.name;
     }
 
-    // TODO: DONE! (remove)
     /**
      * Gets the list of rooms in the hotel.
      * 
@@ -133,7 +152,6 @@ public class Hotel {
         return new ArrayList<Room>(this.roomList);
     }
 
-    // TODO: DONE! (remove)
     /**
      * Gets the list of reservations in the hotel.
      * 
@@ -143,7 +161,6 @@ public class Hotel {
         return new ArrayList<Reservation>(this.reservationList);
     }
 
-    // TODO: DONE! (remove)
     /**
      * Gets a list of price rates for the month.
      * @return the list of price rates for the month
@@ -154,7 +171,6 @@ public class Hotel {
         return priceRateList;
     }
 
-    // TODO: DONE! (remove)
     /**
      *
      */
@@ -162,7 +178,6 @@ public class Hotel {
         return this.basePricePerNight;
     }
 
-    // TODO: DONE! (remove)
     /**
      *
      */
@@ -170,7 +185,6 @@ public class Hotel {
         return this.standardMultiplier;
     }
 
-    // TODO: DONE! (remove)
     /**
      *
      */
@@ -178,7 +192,6 @@ public class Hotel {
         return deluxeMultiplier;
     }
 
-    // TODO: DONE! (remove)
     /**
      *
      */
@@ -186,23 +199,10 @@ public class Hotel {
         return executiveMultiplier;
     }
 
-
-    // ### 3. FILTERS
-
-    // TODO: DONE! (remove)
-    /**
-     * Gets the total number of rooms in the hotel.
-     * 
-     * @return the total number of rooms
-     */
-    public int getTotalRooms() {
-        return this.roomList.size();
-    }
-
-    // TODO: DONE! (remove)
+    // TODO: Can be refactored to Model.
     /**
      * Determines the availability of a room in the current month.
-     * 
+     *
      * @param room the room to check availability for
      * @return a list of available dates for the room in the current month
      */
@@ -224,23 +224,15 @@ public class Hotel {
         return availableDates;
     }
 
-    // TODO: DONE! (remove)
     /**
-     * Retrieves a room from the hotel's roomList given its name.
+     * Gets the total number of rooms in the hotel.
      *
-     * @param roomName the name of the room to retrieve
-     * @return the room object with the specified name, or null if no such room exists
+     * @return the total number of rooms
      */
-    public Room getRoom(String roomName) {
-        for (Room room : this.roomList) {
-            if (room.getName().equals(roomName)) {
-                return createRoomCopy(room);
-            }
-        }
-        return null;
+    public int getTotalRooms() {
+        return this.roomList.size();
     }
 
-    // TODO: DONE! (remove)
     /**
      * Gets the price rate for a particular day of the month.
      *
@@ -253,17 +245,15 @@ public class Hotel {
 
     // ### SETTERS
 
-    // TODO: DONE! (remove)
     /**
      * Sets the name of the hotel.
-     * 
+     *
      * @param name the new name for the hotel
      */
     public void setName(String name) {
         this.name = name;
     }
 
-    // TODO: DONE! (remove)
     /**
      * Sets the price rate for a day.
      *
@@ -286,33 +276,6 @@ public class Hotel {
 
     // ### MODIFIERS
 
-    // TODO: DONE! (remove)
-    /**
-     * Checks if the provided check in and check out dates coincide with that of a reservation.
-     *
-     * @param reservation reservation being compared
-     * @param checkInDate check in date being compared with the reservation
-     * @param checkOutDate check out date being compared with the reservation
-     * @return true if date coincides reservation; false, otherwise
-     */
-    private boolean datesCoincideReservation(Reservation reservation, LocalDate checkInDate, LocalDate checkOutDate) {
-
-        LocalDate reservationCheckInDate = reservation.getCheckInDate();
-        LocalDate reservationCheckOutDate = reservation.getCheckOutDate();
-
-        boolean checkInCoincides =
-            checkInDate.isEqual(reservationCheckInDate) || checkInDate.isAfter(reservationCheckInDate) &&
-            checkInDate.isBefore(reservationCheckOutDate);
-
-        boolean checkOutCoincides =
-            checkOutDate.isEqual(reservationCheckInDate) || checkOutDate.isAfter(reservationCheckInDate) &&
-            checkOutDate.isBefore(reservationCheckOutDate);
-
-        return checkInCoincides || checkOutCoincides;
-    }
-
-
-    // TODO: DONE! (remove)
     /**
      * Makes a Reservation
      * @param guestName - New Guest Name
@@ -355,12 +318,10 @@ public class Hotel {
         return null;
     }
 
-    // TODO: DONE! (remove)
     /**
      * Adds a room to the hotel.
      * @param roomName room to be added
      * @param roomType type of the room
-     * @return ER_SUCCESSFUL if room is successfully added, some corresponding error if not
     */
     public void addRoom(String roomName, Room.ROOM_TYPE roomType) {
 
@@ -374,7 +335,6 @@ public class Hotel {
         this.roomList.add(newRoom);
     }
 
-    // TODO: DONE! (remove)
     /**
      * Updates the base price per night for all rooms in the room list.
      * 
@@ -402,69 +362,12 @@ public class Hotel {
         return new Result("Base price set.", true);
     }
 
-
-    // ### FILTERS
-
-    // TODO: DONE! (remove)
-    /**
-     * Filters and returns a list of reservations for a specific room.
-     *
-     * @param room the room to filter reservations for
-     * @return a list of reservations for the specified room
-     */
-    private ArrayList<Reservation> filterReservationsByRoom(Room room) {
-        ArrayList<Reservation> reservationList = new ArrayList<Reservation>();
-        for (Reservation reservation : this.reservationList) {
-            if (reservation.getRoom().equals(room)) {
-                reservationList.add(reservation);
-            }
-        }
-        return reservationList;
-    }
-
-    // TODO: DONE! (remove)
-    public ArrayList<Reservation> filterStandardReservations() {
-        ArrayList<Reservation> rList = new ArrayList<Reservation>();
-        for (Reservation r : this.reservationList) {
-            if (r.getRoom() instanceof StandardRoom) {
-                rList.add(r);
-            }
-        }
-        return rList;
-    }
-
-    // TODO: DONE! (remove)
-    public ArrayList<Reservation> filterDeluxeReservations() {
-        ArrayList<Reservation> rList = new ArrayList<Reservation>();
-        for (Reservation r : this.reservationList) {
-            if (r.getRoom() instanceof DeluxeRoom) {
-                rList.add(r);
-            }
-        }
-        return rList;
-    }
-
-    // TODO: DONE! (remove)
-    public ArrayList<Reservation> filterExecutiveReservations() {
-        ArrayList<Reservation> rList = new ArrayList<Reservation>();
-        for (Reservation r : this.reservationList) {
-            if (r.getRoom() instanceof ExecutiveRoom) {
-                rList.add(r);
-            }
-        }
-        return rList;
-    }
-
-
-    // ### MODIFIERS
-
-    // TODO: DONE! (remove)
     /**
      * Removes a room from the room list given the room's name.
-     * 
+     *
      * @param roomName the name of the room to remove
-     * @return 
-     * <pre> 
+     * @return
+     * <pre>
      * a Result object indicating the outcome of the operation:
      * - "Removal successful." if the room was successfully removed
      * - "Room has a reservation." if the room has one or more reservations
@@ -494,7 +397,6 @@ public class Hotel {
         return new Result(ER_NO_ROOM);
     }
 
-    // TODO: DONE! (remove)
     /**
      * Removes a reservation.
      * @param roomName name of the room
@@ -518,14 +420,52 @@ public class Hotel {
         return new Result(ER_NO_RESERVATION);
     }
 
-    // TODO: Implement when needed.
-    /*
-    /**
-     * Updates a room instance in the hotel based on a copy instance.
-     * @param room updated room instance
-     *
-    public Result updateRoom(Room room) {
 
+    // ### FILTERS
+
+    /**
+     * Filters and returns a list of reservations for a specific room.
+     *
+     * @param room the room to filter reservations for
+     * @return a list of reservations for the specified room
+     */
+    private ArrayList<Reservation> filterReservationsByRoom(Room room) {
+        ArrayList<Reservation> reservationList = new ArrayList<Reservation>();
+        for (Reservation reservation : this.reservationList) {
+            if (reservation.getRoom().equals(room)) {
+                reservationList.add(reservation);
+            }
+        }
+        return reservationList;
     }
-    */
+
+    public ArrayList<Reservation> filterStandardReservations() {
+        ArrayList<Reservation> rList = new ArrayList<Reservation>();
+        for (Reservation r : this.reservationList) {
+            if (r.getRoom() instanceof StandardRoom) {
+                rList.add(r);
+            }
+        }
+        return rList;
+    }
+
+    public ArrayList<Reservation> filterDeluxeReservations() {
+        ArrayList<Reservation> rList = new ArrayList<Reservation>();
+        for (Reservation r : this.reservationList) {
+            if (r.getRoom() instanceof DeluxeRoom) {
+                rList.add(r);
+            }
+        }
+        return rList;
+    }
+
+    public ArrayList<Reservation> filterExecutiveReservations() {
+        ArrayList<Reservation> rList = new ArrayList<Reservation>();
+        for (Reservation r : this.reservationList) {
+            if (r.getRoom() instanceof ExecutiveRoom) {
+                rList.add(r);
+            }
+        }
+        return rList;
+    }
 }

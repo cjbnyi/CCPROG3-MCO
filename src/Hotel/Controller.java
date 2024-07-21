@@ -373,6 +373,7 @@ public class Controller {
      * Confirms the action and updates the hotel's name if valid.
      */
     private void changeHotelName(Hotel oldHotelName) {
+
         ArrayList<Hotel> currentList;
         String newHotelName;
         Result resSetHotelName;

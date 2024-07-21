@@ -23,7 +23,6 @@ public class Discount {
             return codeID;
         }
 
-
         /**
          * Returns the discount code's string ID.
          */
