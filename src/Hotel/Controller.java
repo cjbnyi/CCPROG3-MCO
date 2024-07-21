@@ -377,6 +377,7 @@ public class Controller {
         String newHotelName;
         Result resSetHotelName;
 
+<<<<<<< Updated upstream
     /**
      * Changes the name of a hotel.
      * Displays a list of current hotels and prompts the user for the old and new names.
@@ -410,6 +411,7 @@ public class Controller {
 
         if (resSetHotelName.isSuccesful()){
             view.displayResultMessage("Changed Hotel name.");
+<<<<<<< Updated upstream
             oldHotelName = model.getHotel(newHotelName);
         } else {
             switch (resSetHotelName.getCommonError()){
@@ -426,6 +428,7 @@ public class Controller {
                     break;
                 case ER_NOT_UNIQUE_GIVENNAME:
                     view.displayResultMessage("Name is not unique, please provide a new one.");
+<<<<<<< Updated upstream
                     break;      
 =======
                     break;
@@ -439,6 +442,7 @@ public class Controller {
     }
     
 
+<<<<<<< Updated upstream
         
 
     /**
@@ -474,6 +478,7 @@ public class Controller {
         }
 
         currentRoomList = model.getRoomListOfAHotel(hotel.getName());
+<<<<<<< Updated upstream
         view.displayRoomList(currentRoomList);
 
         nameOfRoomToAdd = view.getInputStr("Please provide the name of the room you want to add:");
@@ -489,6 +494,7 @@ public class Controller {
             return;
         }
 
+<<<<<<< Updated upstream
         resAddRoom = model.addRoomToAHotel(hotel.getName(), nameOfRoomToAdd);
 
         if (resAddRoom.isSuccesful()){
@@ -509,6 +515,7 @@ public class Controller {
         switch (resAddRoom.getCommonError()){
             case ER_MAX_CAPACITY:
                 view.displayMessage("Hotel already exists.");
+<<<<<<< Updated upstream
                 break; 
             case ER_NO_HOTEL:
                 view.displayMessage("Name of hotel does not exist.");    
@@ -534,6 +541,7 @@ public class Controller {
      * Displays a list of current hotels and rooms, prompts the user for the hotel and room names.
      * Confirms the action and removes the room if valid.
      */
+<<<<<<< Updated upstream
     private void removeRooms(Hotel hotel){
         ArrayList<Room> currentRoomList;
 =======
@@ -811,6 +819,7 @@ private void removeRooms(Hotel hotel){
      * Prompts the user for the hotel and reservation names.
      * Confirms the action and removes the reservation if valid.
      */
+<<<<<<< Updated upstream
     private void removeReservations(Hotel hotel){
         String nameOfReservation = "";
         Result resRemoveReservation;
@@ -830,6 +839,7 @@ private void removeRooms(Hotel hotel){
         
         view.displayReservationInformation(model.getReservations(hotel.getName()));
 
+<<<<<<< Updated upstream
         nameOfReservation = view.getInputStr("Input the room name of the reservation");
 =======
         view.displayReservationInformation(model.getReservations(hotel.getName()));
@@ -887,6 +897,7 @@ private void removeRooms(Hotel hotel){
             hasDelete = model.removeHotel(hotel.getName());
 
             if (hasDelete){
+<<<<<<< Updated upstream
                 view.displayMessage("Succesfully remove hotel.");
             } else
                 view.displayMessage("Hotel name cannot be found.");
