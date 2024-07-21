@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import Hotel.View.MANAGER_STATE;
 
 
-import static Hotel.Result.COMMON_ERRORS.*;
-import static Hotel.View.MANAGER_STATE;
 import static Hotel.View.MANAGER_STATE.*;
 
 import static Hotel.View.SIMULATE_BOOKING.*;
@@ -80,7 +78,7 @@ public class Controller {
         } while(!isValidBasePrice);
 
         if (view.confirmUserAction("creating a new hotel")) {
-            hotel = model.addHotel(hotelName);
+            model.addHotel(hotel);
             hotel.setRoomBasePrice(roomBasePrice);
             view.displayResultMessage("Hotel creation successful! :>");
         } else {
@@ -209,7 +207,7 @@ public class Controller {
                 } while (!isValidDay);
 
                 date = LocalDate.of(2024, View.SYSTEM_MONTH, day);
-                Reservation reservation = hotel.getReservation(room, date);
+                Reservation reservation = model.getReservation(hotel.getName(), roomName, date);
 
                 view.clearScreen();
                 view.displaySelectedReservationInfo(reservation);
@@ -327,7 +325,7 @@ private void changeHotelName(Hotel oldHotelName) {
  * Displays a list of current hotels and rooms, prompts the user for the hotel and room names.
  * Confirms the action and adds the room if valid.
  */
-private void addRooms(Hotel hotel){
+private void addRooms(Hotel hotel) {
     ArrayList<Hotel> currentHotelList;
     ArrayList<Room> currentRoomList;
 
@@ -342,6 +340,7 @@ private void addRooms(Hotel hotel){
         return;
     }
 
+    // TODO: Test out
     currentRoomList = model.getRoomListOfAHotel(hotel.getName());
     view.displayRoomList(currentRoomList);
 
@@ -407,7 +406,7 @@ private void removeRooms(Hotel hotel){
         return;
     }
 
-    resRemoveRoom = model.removeRoomToHotel(hotel.getName(), nameOfRoomToDelete);
+    resRemoveRoom = model.removeRoomOfHotel(hotel.getName(), nameOfRoomToDelete);
     
     if (resRemoveRoom.isSuccesful()){
         view.displayResultMessage("Room succesfully deleted.");
@@ -552,7 +551,7 @@ private void updatePrice(Hotel nameOfHotel) {
         view.displayRoomList(currentRoomList);
 
         nameOfRoomToAdd = view.getInputStr("Please provide the name of the room you want to add:");
-        resRemoveHotel = model.removeRoomToHotel(nameOfHotel, nameOfRoomToAdd);
+        resRemoveHotel = model.removeRoomOfHotel(nameOfHotel, nameOfRoomToAdd);
 
         if (resRemoveHotel.isSuccesful()) {
             view.displayMessage("Room succesfully deleted.");
@@ -596,7 +595,7 @@ private void removeReservations(Hotel hotel){
     if (!view.confirmUserAction("removing the selected reservation from the hotel")){
         return;
     }
-    resRemoveReservation = model.removeReservations(hotel.getName(), nameOfReservation);
+    resRemoveReservation = model.removeReservation(hotel.getName(), nameOfReservation);
     
     if (resRemoveReservation.isSuccesful()){
         view.displayResultMessage("Reservation succesfully deleted.");
@@ -704,7 +703,7 @@ private void manageHotelActions(MANAGER_STATE manageState, Hotel hotel, Boolean 
             return;
         }
 
-        errorState = model.removeReservations(nameOfHotel, nameOfReservation);
+        errorState = model.removeReservation(nameOfHotel, nameOfReservation);
 
         if (errorState.isSuccesful())
             view.displayMessage("Reservation succesfully deleted.");
@@ -920,7 +919,7 @@ public void bookReservation(){
                 
                 if (view.confirmUserAction("\nuse the date On " + checkInDate + "\n" + checkOutDate + "?")) {
                     model.getTotalAvailableRoomsByDate(validHotel, arrayLocalDatesCheckInCheckOut.get(0));
-                    listOfAvailableRooms = model.getListOfTotalUnreservedRoomsByDate(validHotel, arrayLocalDatesCheckInCheckOut.get(0));
+                    listOfAvailableRooms = model.getAvailableRoomsByDate(validHotel, arrayLocalDatesCheckInCheckOut.get(0));
                     isPerformingBookReservation = false;
                     isInputtingRoom = true;
                 }
