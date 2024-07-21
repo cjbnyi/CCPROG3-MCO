@@ -19,7 +19,9 @@ public class Result {
         ER_PAYDAY_INVALID           (13, "Invalid code, reservation must cover at least the 15th or the 30th day of the month (excluding check-out)."),
         ER_INVALID_CODE             (14, "Given code does not exist."),
         ER_INVALID_DAY              (15, "Invalid day of the month."),
-        ER_INVALID_PRICE_RATE       (16, "Invalid price rate.");
+        ER_INVALID_PRICE_RATE       (16, "Invalid price rate."),
+        ER_INVALID_ROOM_TYPE        (17, "Invalid room type."),
+        ER_HOTEL_EXISTS             (18, "Hotel already exists.";
 
         private int errorID;
         private String errorMessage;

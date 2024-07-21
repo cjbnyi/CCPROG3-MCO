@@ -11,7 +11,7 @@ public class Discount {
         private final int codeID;
         private final String stringID;
 
-        private DISCOUNT_CODES(int codeID, String stringID) {
+        DISCOUNT_CODES(int codeID, String stringID) {
             this.codeID = codeID;
             this.stringID = stringID;
         }

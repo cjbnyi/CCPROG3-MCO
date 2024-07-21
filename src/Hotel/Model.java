@@ -13,7 +13,6 @@ public class Model {
 
     private ArrayList<Hotel> hotelList;
 
-
     /**
      * Constructs a Model object with an empty list of hotels.
      */
@@ -22,385 +21,59 @@ public class Model {
     }
 
 
-    // ### 1. GETTERS
-    // TODO: Modify such that no object references are returned.
+    // ### HELPERS
+
+    // TODO: DONE! (remove)
+    /**
+     * Gets an existing hotel with a specified name.
+     * Note: Helper function for the Model.
+     * @param name
+     * @return The instance of the hotel with the corresponding name; otherwise, null.
+     */
+    private Hotel getHotel(String name) {
+        for (Hotel hotel : this.hotelList) {
+            if (hotel.getName().equals(name)) {
+                return hotel;
+            }
+        }
+        return null;
+    }
+
+
+    // ### GETTERS
+
+    // TODO: DONE! (remove)
     /**
      * Gets the array of hotels.
      *
      * @return An array of hotels.
      */
     public ArrayList<Hotel> getHotelList() {
-        // return this.hotelList;
         return new ArrayList<Hotel>(this.hotelList);
     }
 
 
+    // ### ROOM-RELATED METHODS
+
+    // TODO: DONE! (remove)
     /**
-     * Gets an existing hotel with a specified name.
+     * Creates a copy of a room instance.
      *
-     * @param name
-     * @return The instance of the hotel with the corresponding name; otherwise, null.
+     * @return a copy of the room instance
      */
-    public Hotel getHotel(String name) {
-        for (Hotel hotel : this.hotelList)
-            if (hotel.getName().equals(name))
-                return hotel;
-        return null;
-    }
-
-
-    /**
-     * Calculates the estimated earnings for a given hotel.
-     * 
-     * @param hotel the hotel for which to calculate estimated earnings
-     * @return the total estimated earnings for the hotel
-     */
-    public double getHotelEstimatedEarnings(Hotel hotel) {
-        double totalEarnings = 0.0;
-        for (Reservation reservation : hotel.getReservationList())
-            totalEarnings += reservation.getTotalPrice();
-        return totalEarnings;
-    }
-
-
-    /**
-     * Returns the total number of available rooms in a hotel on a specific date.
-     * 
-     * @param hotel the hotel to check
-     * @param date the date to check availability
-     * @return the total number of available rooms on the specified date
-     */
-    public int getTotalAvailableRoomsByDate(Hotel hotel, LocalDate date) { // not sure if we should do these
-        return hotel.filterAvailableRoomsByDate(date).size();
-    }
-
-    /**
-     * Returns the Reservation List of a Hotel
-     * 
-     * @param HotelName
-     * @return
-    */
-    public ArrayList<Reservation> getReservations(String HotelName){
-        ArrayList<Reservation> listOfReservations = null;
-
-        for (Hotel hotel : this.hotelList)
-            if (hotel.getName().equals(HotelName)){
-                listOfReservations = hotel.getReservationList();
-            }
-        return listOfReservations;
-    }
-
-
-    /**
-     * Returns the list of rooms in a specified hotel.
-     *
-     * @param nameOfHotel the name of the hotel
-     * @return the list of rooms in the hotel
-     */
-    public ArrayList<Room> getRoomListOfAHotel(String nameOfHotel){
-
-        ArrayList<Room> listOfRooms = null;
-
-        for (Hotel hotel : this.hotelList)
-            if (hotel.getName().equals(nameOfHotel)){
-                listOfRooms = hotel.getRoomList();
-            }
-        return listOfRooms;
-    }
-
-
-    public ArrayList<Room> getListOfTotalUnreservedRoomsByDate(Hotel hotel,LocalDate date){
-        return hotel.filterAvailableRoomsByDate(date);
-    }
-
-
-    public double getRoomBasePricePerNight(Hotel hotel, Room room) {
-
-        double basePricePerNight = hotel.getBasePricePerNight();
-
-        return switch(room) {
-            case StandardRoom _ -> basePricePerNight * hotel.getStandardMultiplier();
-            case DeluxeRoom _ -> basePricePerNight * hotel.getDeluxeMultiplier();
-            case ExecutiveRoom _ -> basePricePerNight * hotel.getExecutiveMultiplier();
-            case null, default -> -1;
+    private Room createRoomCopy(Room room) {
+        return switch (room) {
+            case StandardRoom _ -> new StandardRoom(room);
+            case DeluxeRoom _ -> new DeluxeRoom(room);
+            case ExecutiveRoom _ -> new ExecutiveRoom(room);
+            case null, default -> null;
         };
     }
 
 
-    // ### 2. SETTERS
-    /**
-     * Sets the name of a hotel object given its current name.
-     *
-     * @param currentName - current name of the hotel being renamed
-     * @param newName - new name of the hotel being renamed
-     * @return 
-     * <pre>
-     * A Result object describing the outcome and success of the function, if Result is not successful, it could have the possible reasons:
-     *  - "Old hotel name exists."
-     *  - "Given name is not unique within list."
-     * </pre>
-     */
-    public Result setHotelName(String currentName, String newName) {
-
-        boolean hasExistingSameHotelName = false;
-
-        for (Hotel hotel : this.hotelList) {
-            String hotelName = hotel.getName();
-            
-            if (hotelName.equals(currentName))
-                hasExistingSameHotelName = true;
-
-            if (hotelName.equals(newName))
-                return new Result(ER_NOT_UNIQUE_GIVENNAME);
-        }
-
-        if (hasExistingSameHotelName)
-            return new Result(ER_EXISTING_OLD_NAME);
-
-        for (Hotel hotel : this.hotelList) {
-            String hotelName = hotel.getName();
-            if (hotelName.equals(currentName))
-                hotel.setName(newName);
-        }
-
-        return new Result(ER_SUCCESSFUL);
-    }
-
-
-    // ### 3. FILTERS
-    /**
-     * Checks if a hotel with the specified name exists.
-     *
-     * @param nameOfHotel the name of the hotel to check
-     * @return true if the hotel exists, false otherwise
-     */
-    public boolean doesHotelExist(String nameOfHotel){
-        boolean hasFoundHotel = false;
-        for (Hotel hotel : this.hotelList)
-            if (hotel.getName().equals(nameOfHotel)){
-                hasFoundHotel = true;
-            }
-
-        return hasFoundHotel;
-    }
-
-
-    // ### 4. MODIFIERS
-    /**
-     * Adds a new hotel with the specified name.
-     * 
-     * @param name the name of the new hotel
-     * @return the newly created hotel, or null if a hotel with the given name already exists
-     */
-    public Hotel addHotel(String name) {
-        for (Hotel hotel : this.hotelList)
-            if (hotel.getName().equals(name))
-                return null;
-        Hotel newHotel = new Hotel(name);
-        this.hotelList.add(newHotel);
-        return newHotel;
-    }
-
-
-    /**
-     * Adds a room to a hotel given the hotel's name and the room name.
-     * 
-     * @param nameOfHotel the name of the hotel to which the room should be added
-     * @param roomToAdd the name of the room to add
-     * 
-     * @return 
-     * <pre>
-     * a Result object indicating the outcome of the operation, if it is not successful, then it has the following possible messages:
-     *         - "Hotel is at Max." if the hotel already has 50 rooms;
-     *         - "Name of hotel does not exist." if the specified hotel is not found;
-     *         - "Room name not unique." If the room name is not unique in the list.
-     * <pre/>
-     */
-    public Result addRoomToAHotel(String nameOfHotel, String roomToAdd){
-        boolean hasFoundHotel = false, hasFoundRoom = false;
-        Room room; 
-
-        for (Hotel hotel : this.hotelList)
-            if (hotel.getName().equals(nameOfHotel)){
-
-                hasFoundHotel = true;
-                
-                if (hotel.getRoomList().size() >= Hotel.MAX_ROOMS){
-                    return new Result(ER_MAX_CAPACITY);
-                }
-
-                room = hotel.addRoom(roomToAdd);
-                hasFoundRoom = (null == room) ? false : true;
-            }
-
-        if (!hasFoundHotel)
-            return new Result(ER_NO_HOTEL);
-        else if (!hasFoundRoom)
-            return new Result(ER_NOT_UNIQUE_GIVENNAME);
-        else 
-            return new Result(ER_SUCCESSFUL);   
-    }
-
-
-    public boolean makeReservation(String nameOfHotel, String GuestName, LocalDate checkInDate, LocalDate checkOutDate, Room room){
-        boolean hasMadeReservation = false;
-        for (Hotel hotel : this.hotelList)
-            if (hotel.getName().equals(nameOfHotel)){
-                hasMadeReservation = hotel.makeReservation(GuestName, checkInDate, checkOutDate, room);
-            }
-        return hasMadeReservation;
-    }
-
-
-    /**
-     * Removes a specified room from a specified hotel.
-     * 
-     * @param nameOfHotel the name of the hotel from which to remove the room
-     * @param strRoomToRemove the name of the room to remove
-     * @return 
-     * <pre>
-     * a Result object indicating the outcome of the operation:
-     *      - "Hotel was not found." if the hotel with the specified name is not found in the hotel list.
-     *      - "Room has a reservation." if the room has one or more reservations
-     *      - "Room does not exist." if the room with the specified name is not found
-     *      - "Removal successful." if the room was successfully removed. Has a isSuccesful Boolean of true
-     * <pre/>
-     */
-    public Result removeRoomToHotel(String nameOfHotel, String strRoomToRemove) {
-        Result resRemoveRoom;
-        for (Hotel hotel: this.hotelList){
-            if (hotel.getName().equals(nameOfHotel)){
-                resRemoveRoom = hotel.removeRoom(strRoomToRemove);
-                return resRemoveRoom;
-            } 
-        }
-
-        return new Result(ER_NO_HOTEL);
-    }
-
-    
-    /**
-     * Updates the price of a hotel when no reservations are made.
-     * 
-     * @param strHotel the name of the hotel for which to update the price
-     * @param setPrice the new base price to set for each room in the specified hotel
-     * @return  
-     * <pre>
-     * a Result object indicating the outcome of the operation:
-     *      - "Hotel was not found." if the hotel with the specified name is not found in the hotel list.
-     *      - "Reservation list is empty." if there are existing reservations
-     *      - "Price is lower than 100." if the provided price is less than 100
-     *      - "Base price set." if the price was successfully updated
-     * 
-     * <pre/>
-    */
-    public Result updatePriceOfAHotel(String strHotel, double setPrice){
-        Result resUpdatePrice;
-        for (Hotel hotel : this.hotelList)
-            if (hotel.getName().equals(strHotel)){
-                resUpdatePrice = hotel.updatePrice(setPrice);
-                return resUpdatePrice;
-            } 
-
-        return new Result(ER_NO_HOTEL);
-    }
-
-    
-    /**
-     * Removes a reservation from a specified room in a specified hotel.
-     * 
-     * @param strHotel the name of the hotel where the reservation should be removed
-     * @param strRoomName the name of the room from which the reservation should be removed
-     * @return 
-     * <pre>
-     * a Result object indicating the outcome of the operation:
-     *         - "Hotel was not found." if the specified hotel is not found
-     *         - "Reservation not found." if the specified reservation is not found in the hotel
-     *         - "Reservation was successful." if the specified reservation was done succesful. Note that is has a isSuccesful boolean of true. 
-     * </pre>  
-     */
-    public Result removeReservations(String strHotel, String strRoomName){
-        // Assume not found.
-        Boolean hasRemoveReservation = false;
-        
-        for (Hotel hotel : this.hotelList) {
-            if (hotel.getName().equals(strHotel)) {
-                hasRemoveReservation = hotel.removeReservation(strRoomName);
-                return new Result(hasRemoveReservation ? ER_SUCCESSFUL : ER_NO_RESERVATION);
-            }
-        }
-        return new Result(ER_NO_HOTEL);
-    }
-
-
-    /**
-     * Removes a Hotel
-     * @param strHotel
-     * @return true if removed succesful false, if not.
-    */
-    public boolean removeHotel(String strHotel){
-        boolean hasRemovedHotel = false;
-
-        for (Hotel hotel : this.hotelList) {
-            if (hotel.getName().equals(strHotel)){
-                this.hotelList.remove(hotel);
-                hasRemovedHotel = true;
-            }
-        }
-
-        return hasRemovedHotel;
-    }
-
-
-    // ### DISCOUNT-RELATED METHODS
-
-    // TODO: Verify
-    /**
-     * Sets the discount code of a reservation if the code is applicable.
-     * @param reservation the reservation being discounted
-     * @param discountCode the discount code being applied
-     */
-    public Result applyDiscountCode(Reservation reservation, String discountCode) {
-
-        if (reservation.getAppliedDiscountCode() != null) {
-            return new Result(ER_EXISTING_DISCOUNT);
-        }
-
-        if (discountCode.equals(I_WORK_HERE.getStringID())) {
-            reservation.setAppliedDiscountCode(I_WORK_HERE);
-        } else if (discountCode.equals(STAY4_GET1.getStringID())) {
-            if (getNumDaysOfReservation(reservation) < 5) {
-                return new Result(ER_STAY4_GET1_INVALID);
-            }
-            reservation.setAppliedDiscountCode(STAY4_GET1);
-        } else if (discountCode.equals(PAYDAY.getStringID())) {
-
-            int checkInDay      = reservation.getCheckInDate().getDayOfMonth();
-            int checkOutDay     = reservation.getCheckOutDate().getDayOfMonth();
-            boolean has15th     = checkInDay <= 15 && 15 < checkOutDay;
-            boolean has30th     = checkInDay <= 30 && 30 < checkOutDay;
-
-            if (!(has15th || has30th)) {
-                return new Result(ER_PAYDAY_INVALID);
-            }
-            reservation.setAppliedDiscountCode(PAYDAY);
-        } else {
-            return new Result(ER_INVALID_CODE);
-        }
-
-        return new Result(ER_SUCCESSFUL);
-    }
-
-
-    /**
-     * Removes a reservation's existing applied discount code.
-     */
-    public void removeDiscountCode(Reservation reservation) {
-        reservation.setAppliedDiscountCode(null);
-    }
-
     // ### RESERVATION-RELATED METHODS
 
+    // TODO: DONE! (remove)
     /**
      * Returns the number of days of a reservation.
      *
@@ -410,6 +83,7 @@ public class Model {
         return (int) DAYS.between(reservation.getCheckInDate(), reservation.getCheckOutDate());
     }
 
+    // TODO: DONE! (remove)
     /**
      * Returns the total price of a reservation.
      *
@@ -450,5 +124,397 @@ public class Model {
         };
 
         return totalPrice - discount;
+    }
+
+
+    // ### HOTEL-RELATED METHODS
+
+    // TODO: DONE! (remove)
+    public Reservation getReservation(String hotelName, String roomName, LocalDate checkInDate) {
+
+        Room room = getRoomOfAHotel(hotelName, roomName);
+
+        if (null == room) {
+            return null;
+        }
+
+        Hotel hotel = getHotel(hotelName);
+        assert hotel != null;
+        ArrayList<Reservation> reservationList = hotel.getReservationList();
+
+        for (Reservation r : reservationList) {
+            if (r.getCheckInDate().equals(checkInDate)) {
+                return r;
+            }
+        }
+
+        return null;
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     *
+     * @param hotelName the name of the hotel
+     * @param roomName the name of the room
+     * @return room instance if the hotel and the room exist; null, otherwise
+     */
+    public Room getRoomOfAHotel(String hotelName, String roomName) {
+
+        Hotel hotel = getHotel(hotelName);
+        if (null == hotel) {
+            return null;
+        }
+
+        ArrayList<Room> roomList = hotel.getRoomList();
+        for (Room room : roomList) {
+            if (room.getName().equals(roomName)) {
+                return room;
+            }
+        }
+
+        return null;
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Gets an existing hotel with a specified name.
+     * Note: Equivalent to getHotel() but for outside usage.
+     * @param name
+     * @return The instance of the hotel with the corresponding name; otherwise, null.
+     */
+    public Hotel getHotelClone(String name) {
+        for (Hotel hotel : this.hotelList) {
+            if (hotel.getName().equals(name)) {
+                return new Hotel(hotel);
+            }
+        }
+        return null;
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Filters and returns a list of available rooms by a specified date.
+     *
+     * @param date the date to check availability for
+     * @return a list of available rooms on the specified date
+     */
+    public ArrayList<Room> getAvailableRoomsByDate(Hotel hotel, LocalDate date) {
+
+        ArrayList<Room> availableRooms = hotel.getRoomList();
+        ArrayList<Reservation> reservationList = hotel.getReservationList();
+
+        for (Reservation reservation : reservationList) {
+            LocalDate checkInDate = reservation.getCheckInDate();
+            LocalDate checkOutDate = reservation.getCheckOutDate();
+            if ((date.isAfter(checkInDate) || date.isEqual(checkInDate)) && date.isBefore(checkOutDate)) {
+                availableRooms.remove(reservation.getRoom());
+            }
+        }
+
+        return availableRooms;
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Returns the total number of available rooms in a hotel on a specific date.
+     *
+     * @param hotel the hotel to check
+     * @param date the date to check availability
+     * @return the total number of available rooms on the specified date
+     */
+    public int getNumOfAvailableRoomsByDate(Hotel hotel, LocalDate date) {
+        return getAvailableRoomsByDate(hotel, date).size();
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Calculates the estimated earnings for a given hotel.
+     *
+     * @param hotel the hotel for which to calculate estimated earnings
+     * @return the total estimated earnings for the hotel
+     */
+    public double getHotelEstimatedEarnings(Hotel hotel) {
+        double totalEarnings = 0.0;
+        for (Reservation reservation : hotel.getReservationList()) {
+            totalEarnings += getReservationTotalPrice(hotel, reservation);
+        }
+        return totalEarnings;
+    }
+
+    // TODO: Decide whether to keep (ignore for now).
+    /*
+     * Returns the Reservation List of a Hotel
+     *
+     * @param hotelName the name of the hotel
+     * @return
+    */
+    public ArrayList<Reservation> getReservations(String hotelName) {
+
+        ArrayList<Reservation> listOfReservations = null;
+
+        for (Hotel hotel : this.hotelList)
+            if (hotel.getName().equals(hotelName)){
+                listOfReservations = hotel.getReservationList();
+            }
+
+        return listOfReservations;
+    }
+
+    // TODO: Decide whether to keep (ignore for now).
+    /**
+     * Returns the list of rooms in a specified hotel.
+     *
+     * @param nameOfHotel the name of the hotel
+     * @return the list of rooms in the hotel
+     */
+    public ArrayList<Room> getRoomListOfAHotel(String nameOfHotel) {
+
+        ArrayList<Room> listOfRooms = null;
+
+        for (Hotel hotel : this.hotelList) {
+            if (hotel.getName().equals(nameOfHotel)) {
+                listOfRooms = hotel.getRoomList();
+            }
+        }
+        return listOfRooms;
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Adds a room to a hotel given the hotel's name and the room name.
+     *
+     * @param hotelName the name of the hotel to which the room will be added
+     * @param roomName the name of the room to be added
+     * @param roomType the type of room to be added
+     *
+     * @return
+     * <pre>
+     * a Result object indicating the outcome of the operation, if it is not successful, then it has the following possible messages:
+     *         - "Hotel is at Max." if the hotel already has 50 rooms;
+     *         - "Name of hotel does not exist." if the specified hotel is not found;
+     *         - "Room name not unique." If the room name is not unique in the list.
+     * <pre/>
+     */
+    public Result addRoomToAHotel(String hotelName, String roomName, Room.ROOM_TYPE roomType) {
+
+        Hotel hotel = getHotel(hotelName);
+
+        if (null == hotel) {
+            return new Result(ER_NO_HOTEL);
+        }
+        if (hotel.getTotalRooms() >= Hotel.MAX_ROOMS) {
+            return new Result(ER_MAX_CAPACITY);
+        }
+        if (getRoomOfAHotel(hotelName, roomName) != null) {
+            return new Result(ER_NOT_UNIQUE_GIVENNAME);
+        }
+
+        hotel.addRoom(roomName, roomType);
+        return new Result(ER_SUCCESSFUL);
+    }
+
+    // TODO: DONE! (remove)
+    public double getRoomBasePricePerNight(Hotel hotel, Room room) {
+        double basePricePerNight = hotel.getBasePricePerNight();
+        return switch(room) {
+            case StandardRoom _ -> basePricePerNight * hotel.getStandardMultiplier();
+            case DeluxeRoom _ -> basePricePerNight * hotel.getDeluxeMultiplier();
+            case ExecutiveRoom _ -> basePricePerNight * hotel.getExecutiveMultiplier();
+            case null, default -> -1;
+        };
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Checks if a hotel with the specified name exists.
+     *
+     * @param hotelName the name of the hotel to check
+     * @return true if the hotel exists, false otherwise
+     */
+    public boolean doesHotelExist(String hotelName) {
+        for (Hotel hotel : this.hotelList) {
+            if (hotel.getName().equals(hotelName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Sets the name of a hotel object given its current name.
+     *
+     * @param currentName - current name of the hotel being renamed
+     * @param newName - new name of the hotel being renamed
+     * @return 
+     * <pre>
+     * A Result object describing the outcome and success of the function, if Result is not successful, it could have the possible reasons:
+     *  - "Old hotel name exists."
+     *  - "Given name is not unique within list."
+     * </pre>
+     */
+    public Result setHotelName(String currentName, String newName) {
+
+        if (!doesHotelExist(currentName)) {
+            return new Result(ER_NO_HOTEL);
+        }
+
+        if (doesHotelExist(newName)) {
+            return new Result(ER_NOT_UNIQUE_GIVENNAME);
+        }
+
+        Hotel hotel = getHotel(currentName);
+        assert hotel != null;
+        hotel.setName(newName);
+        return new Result(ER_SUCCESSFUL);
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Adds a new hotel with the specified name.
+     * 
+     * @param newHotel the new hotel instance
+     * @return the newly created hotel, or null if a hotel with the given name already exists
+     */
+    public Result addHotel(Hotel newHotel) {
+        if (doesHotelExist(newHotel.getName())) {
+            return new Result(ER_HOTEL_EXISTS);
+        }
+        this.hotelList.add(newHotel);
+        return new Result(ER_SUCCESSFUL);
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Sets the base price per night for all rooms in the hotel if there are no reservations.
+     *
+     * @param hotelName the hotel name string whose base price is being modified
+     * @param newBasePrice the new base price per night
+     */
+    public Result setHotelBasePrice(String hotelName, double newBasePrice) {
+        Hotel hotel = getHotel(hotelName);
+        if (null == hotel) {
+            return new Result(ER_NO_HOTEL);
+        }
+        return hotel.setBasePrice(newBasePrice);
+    }
+
+    // TODO: DONE! (remove)
+    public boolean makeReservation(String hotelName, String guestName, LocalDate checkInDate, LocalDate checkOutDate, Room room) {
+        Hotel hotel = getHotel(hotelName);
+        if (null == hotel) {
+            return false;
+        }
+        hotel.makeReservation(guestName, checkInDate, checkOutDate, room);
+        return true;
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Removes a specified room from a specified hotel.
+     * 
+     * @param hotelName the name of the hotel from which to remove the room
+     * @param roomName the name of the room to remove
+     * @return 
+     * <pre>
+     * a Result object indicating the outcome of the operation:
+     *      - "Hotel was not found." if the hotel with the specified name is not found in the hotel list.
+     *      - "Room has a reservation." if the room has one or more reservations
+     *      - "Room does not exist." if the room with the specified name is not found
+     *      - "Removal successful." if the room was successfully removed. Has a isSuccessful Boolean of true
+     * <pre/>
+     */
+    public Result removeRoomOfHotel(String hotelName, String roomName) {
+        Hotel hotel = getHotel(hotelName);
+        if (null == hotel) {
+            return new Result(ER_NO_HOTEL);
+        }
+        hotel.removeRoom(roomName);
+        return new Result(ER_SUCCESSFUL);
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Removes a reservation from a specified room in a specified hotel.
+     * 
+     * @param hotelName the name of the hotel where the reservation should be removed
+     * @param roomName the name of the room from which the reservation should be removed
+     * @return 
+     * <pre>
+     * a Result object indicating the outcome of the operation:
+     *         - "Hotel was not found." if the specified hotel is not found
+     *         - "Reservation not found." if the specified reservation is not found in the hotel
+     *         - "Reservation was successful." if the specified reservation was done succesful. Note that is has a isSuccesful boolean of true. 
+     * </pre>  
+     */
+    public Result removeReservation(String hotelName, String roomName, LocalDate checkInDate) {
+        Hotel hotel = getHotel(hotelName);
+        if (null == hotel) {
+            return new Result(ER_NO_HOTEL);
+        }
+        return hotel.removeReservation(roomName, checkInDate);
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Removes a Hotel
+     * @param hotelName name of the hotel
+     * @return true if removed successful; false, if not.
+    */
+    public boolean removeHotel(String hotelName) {
+        Hotel hotel = getHotel(hotelName);
+        if (null == hotel) {
+            return false;
+        }
+        this.hotelList.remove(hotel);
+        return true;
+    }
+
+
+    // ### DISCOUNT-RELATED METHODS
+
+    // TODO: DONE! (remove)
+    /**
+     * Sets the discount code of a reservation if the code is applicable.
+     * @param reservation the reservation being discounted
+     * @param discountCode the discount code being applied
+     */
+    public Result applyDiscountCode(Reservation reservation, String discountCode) {
+
+        if (reservation.getAppliedDiscountCode() != null) {
+            return new Result(ER_EXISTING_DISCOUNT);
+        }
+
+        if (discountCode.equals(I_WORK_HERE.getStringID())) {
+            reservation.setAppliedDiscountCode(I_WORK_HERE);
+        } else if (discountCode.equals(STAY4_GET1.getStringID())) {
+            if (getNumDaysOfReservation(reservation) < 5) {
+                return new Result(ER_STAY4_GET1_INVALID);
+            }
+            reservation.setAppliedDiscountCode(STAY4_GET1);
+        } else if (discountCode.equals(PAYDAY.getStringID())) {
+
+            int checkInDay      = reservation.getCheckInDate().getDayOfMonth();
+            int checkOutDay     = reservation.getCheckOutDate().getDayOfMonth();
+            boolean has15th     = checkInDay <= 15 && 15 < checkOutDay;
+            boolean has30th     = checkInDay <= 30 && 30 < checkOutDay;
+
+            if (!(has15th || has30th)) {
+                return new Result(ER_PAYDAY_INVALID);
+            }
+            reservation.setAppliedDiscountCode(PAYDAY);
+        } else {
+            return new Result(ER_INVALID_CODE);
+        }
+
+        return new Result(ER_SUCCESSFUL);
+    }
+
+    // TODO: DONE! (remove)
+    /**
+     * Removes a reservation's existing applied discount code.
+     */
+    public void removeDiscountCode(Reservation reservation) {
+        reservation.setAppliedDiscountCode(null);
     }
 }

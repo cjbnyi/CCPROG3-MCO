@@ -6,7 +6,6 @@ public final class StandardRoom extends Room {
         super(name);
     }
 
-
     public StandardRoom(Room r) {
         super(r);
     }

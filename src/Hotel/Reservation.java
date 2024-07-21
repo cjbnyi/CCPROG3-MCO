@@ -40,6 +40,7 @@ public class Reservation {
         this.checkInDate = r.checkInDate;
         this.checkOutDate = r.checkOutDate;
         this.room = r.room;
+        this.appliedDiscountCode = r.appliedDiscountCode;
     }
 
 
@@ -72,14 +73,27 @@ public class Reservation {
         return this.checkOutDate;
     }
 
-    // TODO: Modify to return a clone instead.
+    /**
+     * Returns the number of days of a reservation.
+     *
+     * @return the number of days of the reservation
+     */
+    public int getNumDays() {
+        return (int) DAYS.between(getCheckInDate(), getCheckOutDate());
+    }
+
     /**
      * Returns the room reserved.
      * 
      * @return the room reserved
      */
     public Room getRoom() {
-        return this.room;
+        return switch (room) {
+            case StandardRoom _ -> new StandardRoom(room);
+            case DeluxeRoom _ -> new DeluxeRoom(room);
+            case ExecutiveRoom _ -> new ExecutiveRoom(room);
+            case null, default -> null;
+        };
     }
 
     /**
@@ -99,28 +113,4 @@ public class Reservation {
     public void setAppliedDiscountCode(Discount.DISCOUNT_CODES appliedDiscountCode) {
         this.appliedDiscountCode = appliedDiscountCode;
     }
-
-
-    /* // NOTE: Deprecated.
-     * Returns a breakdown of the price per night for each night of the reservation.
-     * 
-     * @return a string representing the price breakdown
-     *
-    public String getPriceBreakdown() {
-        String priceBreakdown = "";
-        for (int i = 0; i < this.getNumDays(); i++)
-            priceBreakdown += "\n" + this.checkInDate.plusDays(i) + " --- " + this.room.getBasePricePerNight();
-        return priceBreakdown;
-    }
-     */
-
-    /* // NOTE: Refactored to Model.
-     * Returns the total price for the entire reservation period.
-     * 
-     * @return the total price for the reservation
-     *
-    public double getTotalPrice() {
-        return this.room.getBasePricePerNight() * this.getNumDays();
-    }
-     */
 }

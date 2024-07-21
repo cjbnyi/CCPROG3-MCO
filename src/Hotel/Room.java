@@ -6,6 +6,12 @@ package Hotel;
  */
 public abstract class Room {
 
+    public enum ROOM_TYPE {
+        STANDARD,
+        DELUXE,
+        EXECUTIVE
+    }
+
     private String name;
 
     Room(String name) {
