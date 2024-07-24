@@ -19,7 +19,7 @@ JRFLAGS := -cp $(BIN_DIR)/
 all: build doc run
 
 # Does not produce execution output.
-
+.SILENT:
 build: $(SRCS)
 	@echo "=== Building . . . ===================================="
 	@echo ""

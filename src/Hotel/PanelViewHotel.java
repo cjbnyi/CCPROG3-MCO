@@ -1,6 +1,7 @@
 package Hotel;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -12,6 +13,7 @@ public class PanelViewHotel extends JPanel{
     private JButton viewLowLevel1;
     private JButton viewLowLevel2;
     private JButton viewLowLevel3;
+    private PanelHotelSelection hotelSelectionPanel;
     private JLabel viewInfo;
 
     PanelViewHotel(ComponentFactory compFactory){
@@ -30,10 +32,10 @@ public class PanelViewHotel extends JPanel{
         boxBuildVert.setAutoSpace(false);
 
         // Hotel Selection Panel;
-        JPanel hotelSelectionPanel = new PanelHotelSelection(compFactory);
+        PanelHotelSelection hotelSelectionPanel = new PanelHotelSelection(compFactory);
         JPanel contentPanel = initContentPanel(boxBuildVert, compFactory);
         JPanel settingsPanel = initSettingsPanel(boxBuildVert, compFactory);
-
+        this.hotelSelectionPanel = hotelSelectionPanel;
         this.add(hotelSelectionPanel, BorderLayout.WEST);
         this.add(contentPanel, BorderLayout.CENTER);
         this.add(settingsPanel, BorderLayout.EAST);
@@ -79,7 +81,20 @@ public class PanelViewHotel extends JPanel{
         return contentPanel;
     }
 
-
-
+    public void setActionListener(ActionListener listener){
+        viewHighLevel.addActionListener(listener);
+        viewLowLevel1.addActionListener(listener);
+        viewLowLevel2.addActionListener(listener);
+        viewLowLevel3.addActionListener(listener);
+        hotelSelectionPanel.setActionListener(listener);
+    }
+    
+    public void setViewInfo(String text){
+        this.viewInfo.setText(text);
+    }
+   
+    public PanelHotelSelection getHotelPanel(){
+        return this.hotelSelectionPanel;
+    }
 
 }

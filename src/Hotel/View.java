@@ -86,9 +86,9 @@ public class View {
      */
     public View() {
         this.scanner = new Scanner(System.in);
-        this.gui = new HotelGUI();
     }
 
+    
 
     // ### 1. INPUT GETTERS
     /**

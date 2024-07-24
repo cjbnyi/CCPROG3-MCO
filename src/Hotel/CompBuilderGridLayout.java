@@ -69,10 +69,6 @@ public class CompBuilderGridLayout extends ComponentBuilder{
     }
     
     public void finalize(){
-        // this.horizontalGroup.addGroup(this.horParallelGroup);
-        // //this.horParallelGroup = null;
-        // this.verticalGroup.addGroup(this.vertParallelGroup);
-        //this.vertParallelGroup = null;
         this.hasHorizonalNotMadeOneParallelGroup = true;
         this.hasVerticalNotMadeOneParallelGroup = true;
         groupLayout.setHorizontalGroup(this.horizontalGroup);

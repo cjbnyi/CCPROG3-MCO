@@ -6,7 +6,8 @@ public class Main {
         /* initialize MVC instances */
         Model model = new Model();
         View  view  = new View();
-        Controller controller = new Controller(model, view);
+        HotelGUI hotelGUI = new HotelGUI();
+        Controller controller = new Controller(model, view, hotelGUI);
 
         /* execute program flow */
         controller.start();

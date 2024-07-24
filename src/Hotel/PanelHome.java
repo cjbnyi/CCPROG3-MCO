@@ -44,13 +44,31 @@ public class PanelHome extends JPanel {
 
         int i = 0;
         for (JButton button : homeButtons){
-            assignButtons(button, i);
+
+            switch(i) {
+                case 0:
+                    this.createButton = button;
+                    break;
+                case 1:
+                    this.viewButton = button;
+                    break;
+                case 2:
+                    this.manageButton = button;
+                    break;
+                case 3:
+                    this.bookButton = button;
+                    break;
+                case 4:
+                    this.quitButton = button;
+                    break;
+            }
+            i++;
             cbBoxCenter.setChild(button);
         }
 
     }
 
-    private void assignButtons(JButton button, int whichButton){
+    private void assignButtons(JButton button, Integer whichButton){
         switch(whichButton) {
             case 0:
                 this.createButton = button;
@@ -74,8 +92,9 @@ public class PanelHome extends JPanel {
     public void setActionListener(ActionListener listener){
         createButton.addActionListener(listener);
         viewButton.addActionListener(listener);
-        bookButton.addActionListener(listener);
         manageButton.addActionListener(listener);
+        bookButton.addActionListener(listener);
         quitButton.addActionListener(listener);
-    };
+    }
+
 }

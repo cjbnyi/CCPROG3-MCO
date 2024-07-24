@@ -23,7 +23,8 @@ public class PanelCreateHotel extends JPanel {
     private JLabel hotelInfo;
     private JTextField nameField;
     private JTextField priceField;
-    private JPanel confirmationPanel;
+    private PanelHotelSelection hotelSelectionPanel;
+    private PanelEnable confirmationPanel;
     private final String defaultHotelInfoText = "Register name of hotel and its price per night";
     
     PanelCreateHotel(ComponentFactory compFactory){
@@ -41,8 +42,8 @@ public class PanelCreateHotel extends JPanel {
         boxBuildVert.setSpacing(50);
 
         boxBuildVert.setAutoSpace(false);
-        JPanel hotelSelectionPanel = new PanelHotelSelection(compFactory);
-
+        PanelHotelSelection hotelSelectionPanel = new PanelHotelSelection(compFactory);
+        this.hotelSelectionPanel = hotelSelectionPanel;
         boxBuildVert.setAutoSpace(true);
         JPanel contentPanel = initContentPanel(boxBuildVert, compFactory);
     
@@ -109,20 +110,18 @@ public class PanelCreateHotel extends JPanel {
         JLabel hotelInfo = compFactory.createJLabelBody(this.defaultHotelInfoText);
         this.hotelInfo = hotelInfo;
         
-        JButton createButton = compFactory.createSingleJButton("Create Hotel", 200, 50);
+        JButton createButton = compFactory.createSingleJButton("Create Hotel Instance", 200, 50);
         this.createButton = createButton;
         
         JPanel inputPanel = initPricePanel(compFactory);
-        
-        JPanel confirmatioPanel = new PanelEnable(compFactory, "Are you sure you want to create this hotel?");
-        confirmatioPanel.setVisible(false);
 
-        this.confirmationPanel = new PanelEnable(compFactory, "Are you sure?");
+        this.confirmationPanel = new PanelEnable(compFactory, "Are you sure you want to create this hotel?");
+        this.confirmationPanel.setVisible(false);
 
         boxBuildVert.setParent(contentPanel);
         boxBuildVert.setChild(contentTitle);
+        boxBuildVert.setChild(hotelInfo);
         boxBuildVert.setChild(inputPanel);
-        boxBuildVert.setChild(confirmatioPanel);
         boxBuildVert.setChild(createButton);
         boxBuildVert.setChild(this.confirmationPanel);
         
@@ -131,11 +130,21 @@ public class PanelCreateHotel extends JPanel {
 
     public void setActionListener(ActionListener listener){
         createButton.addActionListener(listener);
+        hotelSelectionPanel.setActionListener(listener);
+        confirmationPanel.setActionListener(listener);
     }
     
     public void setDocumentListener(DocumentListener listener){
         nameField.getDocument().addDocumentListener(listener);
         priceField.getDocument().addDocumentListener(listener);
+    }
+
+    public JTextField getNameField(){
+        return this.nameField;
+    }
+
+    public JTextField getPriceField(){
+        return this.priceField;
     }
 
     public void setHotelInfoText(String text){
@@ -150,8 +159,16 @@ public class PanelCreateHotel extends JPanel {
         this.createButton.setEnabled(enabled);
     }
 
-    public void setConfirmatonPanel(boolean enabled){
-        this.confirmationPanel.setEnabled(enabled);
+    public PanelEnable getConfirmationPanel(){
+        return this.confirmationPanel;
     }
-    
+
+    public void setConfirmationPanelEnable(Boolean enable){
+        this.confirmationPanel.setVisible(enable);
+        return;
+    }
+
+    public PanelHotelSelection getHotelPanel(){
+        return this.hotelSelectionPanel;
+    }
 }

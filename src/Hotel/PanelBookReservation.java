@@ -12,6 +12,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 
 public class PanelBookReservation extends JPanel{
@@ -20,7 +21,8 @@ public class PanelBookReservation extends JPanel{
     JList<String> jListDatesEnd;
     JTextField tfRoomName;
     JButton btnBook;
-    private JPanel confirmationPanel;
+    private PanelEnable confirmationPanel;
+    PanelHotelSelection hotelSelectionPanel;
 
 
     PanelBookReservation(ComponentFactory compFactory){
@@ -40,9 +42,11 @@ public class PanelBookReservation extends JPanel{
         boxBuildVert.setAutoSpace(false);
 
         // Hotel Selection Panel;
-        JPanel hotelSelectionPanel = new PanelHotelSelection(compFactory);
+        
+        PanelHotelSelection hotelSelectionPanel = new PanelHotelSelection(compFactory);
         JPanel contentPanel = initContentPanel(boxBuildVert, compFactory);
         JPanel settingsPanel = initSettingsPanel(boxBuildVert, compFactory);
+        this.hotelSelectionPanel = hotelSelectionPanel;
         this.add(hotelSelectionPanel, BorderLayout.WEST);
         this.add(contentPanel, BorderLayout.CENTER);
         this.add(settingsPanel, BorderLayout.EAST);
@@ -89,7 +93,7 @@ public class PanelBookReservation extends JPanel{
 
         JList<String> jListDatesStart = compFactory.createJList(dates);
         JList<String> jListDatesEnd = compFactory.createJList(dates);
-        
+
         this.jListDatesStart = jListDatesStart;
         this.jListDatesEnd = jListDatesEnd;
 
@@ -116,16 +120,30 @@ public class PanelBookReservation extends JPanel{
         return settingsPanel;
     }
 
-    public void addActionListener(ActionListener listener) {
+    public void setActionListener(ActionListener listener) {
         btnBook.addActionListener(listener);
+        hotelSelectionPanel.setActionListener(listener);
+        confirmationPanel.setActionListener(listener);
     }
 
-    public void addListSelectionListener(ListSelectionListener listener){
+    public void setDocumentListener(DocumentListener listener){
+        tfRoomName.getDocument().addDocumentListener(listener);
+    }
+
+    public void setListSelectionListener(ListSelectionListener listener){
         jListDatesStart.addListSelectionListener(listener);
         jListDatesEnd.addListSelectionListener(listener);
     }
 
     public void setBookInfo(String text){
         this.bookInfo.setText(text);
+    }
+
+    public PanelHotelSelection getHotelPanel(){
+        return this.hotelSelectionPanel;
+    }
+
+    public PanelEnable getConfirmationPanel(){
+        return this.confirmationPanel;
     }
 }

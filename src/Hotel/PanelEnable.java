@@ -63,5 +63,8 @@ public class PanelEnable extends JPanel {
         return this.hasUserAccepted;
     }
 
+    public void setPromptText(String text){
+        this.promptMesssage.setText(text);
+    }
 
 }

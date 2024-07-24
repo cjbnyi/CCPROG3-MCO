@@ -5,6 +5,7 @@ import static Hotel.Discount.DISCOUNT_CODES.STAY4_GET1;
 import static Hotel.Result.COMMON_ERRORS.ER_EXISTING_DISCOUNT;
 import static Hotel.Result.COMMON_ERRORS.ER_HOTEL_EXISTS;
 import static Hotel.Result.COMMON_ERRORS.ER_INVALID_CODE;
+import static Hotel.Result.COMMON_ERRORS.ER_INVALID_PRICE_RATE;
 import static Hotel.Result.COMMON_ERRORS.ER_MAX_CAPACITY;
 import static Hotel.Result.COMMON_ERRORS.ER_NOT_UNIQUE_GIVENNAME;
 import static Hotel.Result.COMMON_ERRORS.ER_NO_HOTEL;
@@ -162,20 +163,17 @@ public class Model {
         int checkInDay = reservation.getCheckInDate().getDayOfMonth();
         int checkOutDay = reservation.getCheckOutDate().getDayOfMonth();
         double totalPrice = 0f;
-<<<<<<< Updated upstream
         double priceRate;
         double discount;
         Discount.DISCOUNT_CODES appliedDiscountCode = reservation.getAppliedDiscountCode();
 
-        roomTypeMultiplier = switch(reservation.getRoom()) {
+        double roomTypeMultiplier = switch(reservation.getRoom()) {
             case StandardRoom r -> hotel.getStandardMultiplier();
             case DeluxeRoom r -> hotel.getDeluxeMultiplier();
             case ExecutiveRoom r -> hotel.getExecutiveMultiplier();
             case null, default -> 0f;
         };
 
-=======
->>>>>>> Stashed changes
         for (int i = checkInDay; i < checkOutDay; i++) {
             totalPrice += getReservationPriceForADay(hotel, reservation, i);
         }
@@ -463,6 +461,30 @@ public class Model {
         this.hotelList.add(newHotel);
         return new Result(ER_SUCCESSFUL);
     }
+
+    /**
+     * Adds a new hotel with the specified name.
+     * 
+     * @param newHotel the new hotel instance
+     * @return the newly created hotel, or null if a hotel with the given name already exists
+     */
+    public Result addHotel(String name, Double price) {
+        
+        if (doesHotelExist(name)) {
+            return new Result(ER_HOTEL_EXISTS);
+        }  
+
+        if (price < 100) {
+            return new Result(ER_INVALID_PRICE_RATE);
+        }
+
+        Hotel newHotel = new Hotel(name);
+        newHotel.setBasePrice(price);
+
+        this.hotelList.add(newHotel);
+        return new Result(ER_SUCCESSFUL);
+    }
+
 
     // TODO: DONE! (remove)
     /**

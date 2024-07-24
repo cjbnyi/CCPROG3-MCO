@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentListener;
 
 public class PanelManageHotel extends JPanel {
-    JPanel hotelSelectionPanel;
+    PanelHotelSelection hotelSelectionPanel;
     private JLabel manageHotelInfo;
     private JButton btnChangeHotelName;
     private JButton btnAddRooms;
@@ -26,7 +26,7 @@ public class PanelManageHotel extends JPanel {
     private JTextField tfRemoveRoomName;
     private JTextField tfUpdatePrice;
     private JTextField tfRemoveReservation;
-    private JPanel confirmationPanel;
+    private PanelEnable confirmationPanel;
 
 
     PanelManageHotel(ComponentFactory compFactory){
@@ -47,7 +47,7 @@ public class PanelManageHotel extends JPanel {
         boxBuildVert.setAutoSpace(false);
 
         // Hotel Selection Panel;
-        JPanel hotelSelectionPanel = new PanelHotelSelection(compFactory);
+        PanelHotelSelection hotelSelectionPanel = new PanelHotelSelection(compFactory);
         this.hotelSelectionPanel = hotelSelectionPanel;
         JPanel contentPanel = initContentPanel(director, compFactory);
 
@@ -144,6 +144,8 @@ public class PanelManageHotel extends JPanel {
         btnUpdatePrice.addActionListener(listener);
         btnRemoveReservation.addActionListener(listener);
         btnRemoveHotel.addActionListener(listener);
+        hotelSelectionPanel.setActionListener(listener);
+        confirmationPanel.setActionListener(listener);
     };
 
     public void setDocumentListener(DocumentListener listener){
@@ -158,4 +160,12 @@ public class PanelManageHotel extends JPanel {
         this.manageHotelInfo.setText(text);
     }
 
+    public PanelHotelSelection getHotelPanel(){
+        return this.hotelSelectionPanel;
+    }
+
+    public PanelEnable getConfirmationPanel(){
+        return this.confirmationPanel;
+    }
+    
 }

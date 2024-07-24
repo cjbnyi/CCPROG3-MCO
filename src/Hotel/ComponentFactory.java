@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
 public class ComponentFactory {
@@ -63,9 +64,18 @@ public class ComponentFactory {
         return newJList;
     }
 
+    public JTextPane createJTextPane(){
+        return new JTextPane();
+    }
+
+    public JScrollPane createJScrollPane(JTextPane inputTextPane){
+        return new JScrollPane(inputTextPane);
+    }
+
     public JScrollPane createJScrollPane(JList<String> stringListInput){
         return new JScrollPane(stringListInput);
     }
+
 
     public JTextField createJTextField(int height, int width){
         JTextField newJTextField = new JTextField();
