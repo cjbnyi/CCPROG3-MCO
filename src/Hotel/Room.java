@@ -14,11 +14,11 @@ public abstract class Room {
 
     private String name;
 
-    Room(String name) {
+    public Room(String name) {
         this.name = name;
     }
 
-    Room(Room room) {
+    public Room(Room room) {
         this.name = room.name;
     }
 

@@ -6,7 +6,7 @@ public final class ExecutiveRoom extends Room {
         super(name);
     }
 
-    public ExecutiveRoom(Room r) {
-        super(r);
+    public ExecutiveRoom(Room room) {
+        super(room);
     }
 }

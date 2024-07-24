@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class Hotel {
 
     public static final int MAX_ROOMS = 50;
-    private static final int DAYS_IN_MONTH = 31;
+    public static final int DAYS_IN_MONTH = 31;
 
     private String name;
     private ArrayList<Room> roomList;
@@ -91,20 +91,6 @@ public class Hotel {
         for (int i = 0; i < DAYS_IN_MONTH; i++) {
             priceRateList[i] = 1.0;
         }
-    }
-
-    /**
-     * Creates a copy of a room instance.
-     *
-     * @return a copy of the room instance
-     */
-    private Room createRoomCopy(Room room) {
-        return switch (room) {
-            case StandardRoom r -> new StandardRoom(room);
-            case DeluxeRoom r -> new DeluxeRoom(room);
-            case ExecutiveRoom r -> new ExecutiveRoom(room);
-            case null, default -> null;
-        };
     }
 
     /**
@@ -199,7 +185,6 @@ public class Hotel {
         return executiveMultiplier;
     }
 
-    // TODO: Can be refactored to Model.
     /**
      * Determines the availability of a room in the current month.
      *
@@ -255,6 +240,33 @@ public class Hotel {
     }
 
     /**
+     * Updates the base price per night for all rooms in the room list.
+     *
+     * @param newBasePrice the new base price to set for each room
+     * @return
+     * <pre>
+     * a Result object indicating the outcome of the operation:
+     *      - "Reservation list is empty." if there are existing reservations
+     *      - "Price is lower than 100." if the provided price is less than 100
+     *      - "Base price set." if the price was successfully updated
+     * <pre/>
+     */
+    public Result setBasePrice(double newBasePrice) {
+
+        if (!this.reservationList.isEmpty()) {
+            return new Result(ER_HOTEL_HAS_RESERVATION);
+        }
+
+        if (newBasePrice < 100) {
+            return new Result(ER_LOWER_THAN_BASEPRICE);
+        }
+
+        this.basePricePerNight = newBasePrice;
+
+        return new Result("Base price set.", true);
+    }
+
+    /**
      * Sets the price rate for a day.
      *
      * @return a Result object describing the outcome
@@ -277,48 +289,6 @@ public class Hotel {
     // ### MODIFIERS
 
     /**
-     * Makes a Reservation
-     * @param guestName - New Guest Name
-     * @param checkInDate - check in date
-     * @param checkOutDate  - check out date
-     * @param room - particular room to reserve
-     * @return reservation instance if a reservation is successful; null, otherwise
-    */
-    public Reservation makeReservation(String guestName, LocalDate checkInDate, LocalDate checkOutDate, Room room) {
-
-        // boolean hasNoCoincidingReservation = false; ### Removed because we may need to process the reservation
-        ArrayList<Room> availableRooms = new ArrayList<Room>(this.roomList);
-
-        /* filter existing reservations based on the room type */
-        ArrayList<Reservation> filteredReservations = switch(room) {
-            case StandardRoom r -> filterStandardReservations();
-            case DeluxeRoom r -> filterDeluxeReservations();
-            case ExecutiveRoom r -> filterExecutiveReservations();
-            case null, default -> null;
-        };
-
-        /* filter available rooms based on the provided dates */
-        assert filteredReservations != null;
-        for (Reservation reservation : filteredReservations) {
-            if (datesCoincideReservation(reservation, checkInDate, checkOutDate)) {
-                availableRooms.remove(reservation.getRoom());
-            }
-        }
-
-        /* check if the desired room is available */
-        for (Room availableRoom : availableRooms) {
-            if (availableRoom.equals(room)) {
-                // hasNoCoincidingReservation = true;
-                Reservation newReservation = new Reservation(guestName, checkInDate, checkOutDate, room);
-                this.reservationList.add(newReservation);
-                return newReservation;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Adds a room to the hotel.
      * @param roomName room to be added
      * @param roomType type of the room
@@ -333,33 +303,6 @@ public class Hotel {
 
         /* the room can be added */
         this.roomList.add(newRoom);
-    }
-
-    /**
-     * Updates the base price per night for all rooms in the room list.
-     * 
-     * @param newBasePrice the new base price to set for each room
-     * @return 
-     * <pre>
-     * a Result object indicating the outcome of the operation:
-     *      - "Reservation list is empty." if there are existing reservations
-     *      - "Price is lower than 100." if the provided price is less than 100
-     *      - "Base price set." if the price was successfully updated
-     * <pre/>
-     */
-    public Result setBasePrice(double newBasePrice) {
-
-        if (!this.reservationList.isEmpty()) {
-            return new Result(ER_HOTEL_HAS_RESERVATION);
-        }
-        
-        if (newBasePrice < 100) {
-            return new Result(ER_LOWER_THAN_BASEPRICE);
-        }
-
-        this.basePricePerNight = newBasePrice;
-
-        return new Result("Base price set.", true);
     }
 
     /**
@@ -395,6 +338,48 @@ public class Hotel {
         }
 
         return new Result(ER_NO_ROOM);
+    }
+
+    /**
+     * Makes a Reservation
+     * @param guestName - New Guest Name
+     * @param checkInDate - check in date
+     * @param checkOutDate  - check out date
+     * @param room - particular room to reserve
+     * @return reservation instance if a reservation is successful; null, otherwise
+     */
+    public Reservation makeReservation(String guestName, LocalDate checkInDate, LocalDate checkOutDate, Room room) {
+
+        // boolean hasNoCoincidingReservation = false; ### Removed because we may need to process the reservation
+        ArrayList<Room> availableRooms = new ArrayList<Room>(this.roomList);
+
+        /* filter existing reservations based on the room type */
+        ArrayList<Reservation> filteredReservations = switch(room) {
+            case StandardRoom r -> filterStandardReservations();
+            case DeluxeRoom r -> filterDeluxeReservations();
+            case ExecutiveRoom r -> filterExecutiveReservations();
+            case null, default -> null;
+        };
+
+        /* filter available rooms based on the provided dates */
+        assert filteredReservations != null;
+        for (Reservation reservation : filteredReservations) {
+            if (datesCoincideReservation(reservation, checkInDate, checkOutDate)) {
+                availableRooms.remove(reservation.getRoom());
+            }
+        }
+
+        /* check if the desired room is available */
+        for (Room availableRoom : availableRooms) {
+            if (availableRoom.equals(room)) {
+                // hasNoCoincidingReservation = true;
+                Reservation newReservation = new Reservation(guestName, checkInDate, checkOutDate, room);
+                this.reservationList.add(newReservation);
+                return newReservation;
+            }
+        }
+
+        return null;
     }
 
     /**

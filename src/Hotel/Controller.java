@@ -1,9 +1,5 @@
 package Hotel;
 
-import static Hotel.Result.COMMON_ERRORS.ER_MAX_CAPACITY;
-import static Hotel.Result.COMMON_ERRORS.ER_NOT_UNIQUE_GIVENNAME;
-import static Hotel.Result.COMMON_ERRORS.ER_NO_HOTEL;
-import static Hotel.Result.COMMON_ERRORS.ER_NO_RESERVATION;
 import static Hotel.View.MANAGER_STATE.MS_ADD_ROOMS;
 import static Hotel.View.MANAGER_STATE.MS_CHANGE_NAME;
 import static Hotel.View.MANAGER_STATE.MS_CHOSE_HOTEL;
@@ -50,7 +46,7 @@ public class Controller {
      *
      * @return null if the user quit midway; the hotel instance, otherwise
      */
-    public Hotel repeatPromptHotelName() {
+    private Hotel repeatPromptHotelName() {
         String hotelName;
         Hotel hotel;
         boolean isValidHotelName;
@@ -72,7 +68,7 @@ public class Controller {
      *
      * @return 0 if the user quit midway; the base price per night, otherwise
      */
-    public double repeatPromptHotelBasePrice() {
+    private double repeatPromptHotelBasePrice() {
         String buffer;
         double hotelBasePrice;
         boolean isValidBasePrice;
@@ -99,7 +95,7 @@ public class Controller {
      * Creates a new hotel with a unique name and a base price for its rooms.
      * Prompts the user for input and handles the creation process.
      */
-    public void createHotel() {
+    private void createHotel() {
 
         view.displayCreateHotelPrompt();
         view.displayHotelSelection(model.getHotelList());
@@ -130,7 +126,7 @@ public class Controller {
      *
      * @return '0' if the user quit midway; a char from 1-3, otherwise
      */
-    public char repeatPromptHotelInfo() {
+    private char repeatPromptHotelInfo() {
         String buffer;
         char userInput;
         boolean isValidInput;
@@ -152,7 +148,7 @@ public class Controller {
      *
      * @return an integer from 1-31; 0 if the user quit midway
      */
-    public int repeatPromptDayOfMonth() {
+    private int repeatPromptDayOfMonth() {
         String buffer;
         int day;
         boolean isValidDay;
@@ -181,7 +177,7 @@ public class Controller {
      *
      * @return the room name; "" if the user quits midway
      */
-    public String repeatPromptRoomName(String hotelName) {
+    private String repeatPromptRoomName(String hotelName) {
         String roomName;
         Room room;
         boolean isValidRoom;
@@ -203,7 +199,7 @@ public class Controller {
      *
      * @return the check in day; 0 if the user quits midway
      */
-    public int repeatPromptReservationCheckInDay() {
+    private int repeatPromptReservationCheckInDay() {
         String buffer;
         int day;
         boolean isValidDay;
@@ -232,7 +228,7 @@ public class Controller {
      *
      * @param hotel the hotel for which to display information
      */
-    public void viewLowLevelInfo(Hotel hotel) {
+    private void viewLowLevelInfo(Hotel hotel) {
 
         view.displayViewHotelPrompt();
         view.displayLowLevelHotelInfoPrompt(true, hotel.getName());
@@ -317,7 +313,7 @@ public class Controller {
      * Allows the user to view high-level or low-level information about a selected hotel.
      * Prompts the user for input and handles the information viewing process.
      */
-    public void viewHotel() {
+    private void viewHotel() {
 
         view.displayViewHotelPrompt();
         view.displayHotelSelection(model.getHotelList());
@@ -372,7 +368,7 @@ public class Controller {
      * Displays a list of current hotels and prompts the user for the old and new names.
      * Confirms the action and updates the hotel's name if valid.
      */
-    private void changeHotelName(Hotel oldHotelName) {
+    private void changeHotelName(Hotel oldHotel) {
 
         ArrayList<Hotel> currentList;
         String newHotelName;
@@ -389,11 +385,11 @@ public class Controller {
         }
 
         view.displayMessage("\n");
-        resSetHotelName = model.setHotelName(oldHotelName.getName(), newHotelName);
+        resSetHotelName = model.setHotelName(oldHotel.getName(), newHotelName);
 
         if (resSetHotelName.isSuccesful()){
             view.displayResultMessage("Changed Hotel name.");
-            oldHotelName = model.getHotelClone(newHotelName);
+            oldHotel = model.getHotelClone(newHotelName);
         } else {
             switch (resSetHotelName.getCommonError()) {
                 case ER_EXISTING_OLD_NAME:
@@ -587,7 +583,7 @@ public class Controller {
             return;
         }
         
-        view.displayReservationInformation(model.getReservations(hotel.getName()));
+        view.displayReservationInformation(model.getHotelReservations(hotel.getName()));
 
         roomName = view.getInputStr("Input the room name of the reservation");
 
@@ -682,7 +678,7 @@ public class Controller {
      * Main method to manage hotels.
      * Prompts the user for actions and manages the flow of hotel management.
      */
-    public void manageHotel() {
+    private void manageHotel() {
         Boolean isPerformingManagingHotel = true, isEnteringHotel = true, isManaging = true, hasDelete = false;
         MANAGER_STATE CurrentState = MS_OVERVIEW;
 
@@ -820,7 +816,7 @@ public class Controller {
      * Prompts the user for hotel selection and valid check-in and check-out dates.
      * Retrieves the total available rooms by date for the selected hotel.
      */
-    public void bookReservation() {
+    private void bookReservation() {
         String checkInDate = new String(), checkOutDate = new String(), guestName = new String();
         Boolean isReserving = true, isPerformingBookReservation = true, isInputtingRoom = true, isInputtingName = true, isChoosingHotel = true, isChoosingRoom = true;
 

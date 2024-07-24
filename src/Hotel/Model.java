@@ -63,6 +63,20 @@ public class Model {
         return null;
     }
 
+    /**
+     * Creates a copy of a room instance.
+     *
+     * @return a copy of the room instance
+     */
+    private Room createRoomCopy(Room room) {
+        return switch (room) {
+            case StandardRoom r -> new StandardRoom(room);
+            case DeluxeRoom r -> new DeluxeRoom(room);
+            case ExecutiveRoom r -> new ExecutiveRoom(room);
+            case null, default -> null;
+        };
+    }
+
 
     // ### GETTERS
 
@@ -120,7 +134,6 @@ public class Model {
     public void removeDiscountCode(Reservation reservation) {
         reservation.setAppliedDiscountCode(null);
     }
-
 
 
     // ### HOTEL-RELATED METHODS
@@ -210,29 +223,6 @@ public class Model {
             return new Result(ER_NO_HOTEL);
         }
         return hotel.setBasePrice(newBasePrice);
-    }
-
-    /**
-     * Removes a specified room from a specified hotel.
-     *
-     * @param hotelName the name of the hotel from which to remove the room
-     * @param roomName the name of the room to remove
-     * @return
-     * <pre>
-     * a Result object indicating the outcome of the operation:
-     *      - "Hotel was not found." if the hotel with the specified name is not found in the hotel list.
-     *      - "Room has a reservation." if the room has one or more reservations
-     *      - "Room does not exist." if the room with the specified name is not found
-     *      - "Removal successful." if the room was successfully removed. Has a isSuccessful Boolean of true
-     * <pre/>
-     */
-    public Result removeRoomOfHotel(String hotelName, String roomName) {
-        Hotel hotel = getHotel(hotelName);
-        if (null == hotel) {
-            return new Result(ER_NO_HOTEL);
-        }
-        hotel.removeRoom(roomName);
-        return new Result(ER_SUCCESSFUL);
     }
 
     /**
@@ -368,7 +358,7 @@ public class Model {
      * @param hotelName the name of the hotel
      * @return
      */
-    public ArrayList<Reservation> getReservations(String hotelName) {
+    public ArrayList<Reservation> getHotelReservations(String hotelName) {
 
         ArrayList<Reservation> listOfReservations = null;
 
@@ -486,15 +476,15 @@ public class Model {
     /**
      * Returns the list of rooms in a specified hotel.
      *
-     * @param nameOfHotel the name of the hotel
+     * @param hotelName the name of the hotel
      * @return the list of rooms in the hotel
      */
-    public ArrayList<Room> getRoomListOfAHotel(String nameOfHotel) {
+    public ArrayList<Room> getRoomListOfAHotel(String hotelName) {
 
         ArrayList<Room> listOfRooms = null;
 
         for (Hotel hotel : this.hotelList) {
-            if (hotel.getName().equals(nameOfHotel)) {
+            if (hotel.getName().equals(hotelName)) {
                 listOfRooms = hotel.getRoomList();
             }
         }
@@ -531,6 +521,29 @@ public class Model {
         }
 
         hotel.addRoom(roomName, roomType);
+        return new Result(ER_SUCCESSFUL);
+    }
+
+    /**
+     * Removes a specified room from a specified hotel.
+     *
+     * @param hotelName the name of the hotel from which to remove the room
+     * @param roomName the name of the room to remove
+     * @return
+     * <pre>
+     * a Result object indicating the outcome of the operation:
+     *      - "Hotel was not found." if the hotel with the specified name is not found in the hotel list.
+     *      - "Room has a reservation." if the room has one or more reservations
+     *      - "Room does not exist." if the room with the specified name is not found
+     *      - "Removal successful." if the room was successfully removed. Has a isSuccessful Boolean of true
+     * <pre/>
+     */
+    public Result removeRoomOfHotel(String hotelName, String roomName) {
+        Hotel hotel = getHotel(hotelName);
+        if (null == hotel) {
+            return new Result(ER_NO_HOTEL);
+        }
+        hotel.removeRoom(roomName);
         return new Result(ER_SUCCESSFUL);
     }
 

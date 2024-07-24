@@ -275,10 +275,7 @@ public class View {
      * Clears the screen by printing several newline characters.
      */
     public void clearScreen(){
-        if (Debug.CLEAR_CONSOLE)
-            System.out.println("\033\143");
-        else
-            System.out.println("\n\n\n\n\n");
+        System.out.println("\n\n\n\n\n");
     }
 
 
@@ -367,8 +364,8 @@ public class View {
             int i = 1;
             for (Reservation reservation : reservationList) {
                 System.out.println(i + ".)");
-                System.out.println("Check-in date: " + reservation.getCheckInDate());
-                System.out.println("Room: " + reservation.getRoom());
+                System.out.println("Check-in date: " + reservation.getCHECK_IN_DATE());
+                System.out.println("Room: " + reservation.getROOM());
                 ++i;
             }
         }
@@ -477,10 +474,10 @@ public class View {
             for (Reservation reservation : reservationList) {
                 displayDivider();
                 System.out.println(i + ".)");
-                System.out.println("Guest: " + reservation.getGuestName());
-                System.out.println("Room: " + reservation.getRoom().getName());
-                System.out.println("Check-in: " + reservation.getCheckInDate());
-                System.out.println("Check-out: " + reservation.getCheckOutDate());
+                System.out.println("Guest: " + reservation.getGUEST_NAME());
+                System.out.println("Room: " + reservation.getROOM().getName());
+                System.out.println("Check-in: " + reservation.getCHECK_IN_DATE());
+                System.out.println("Check-out: " + reservation.getCHECK_OUT_DATE());
                 ++i;
             }
         }

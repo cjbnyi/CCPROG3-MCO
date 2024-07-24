@@ -6,7 +6,7 @@ public final class DeluxeRoom extends Room {
         super(name);
     }
 
-    public DeluxeRoom(Room r) {
-        super(r);
+    public DeluxeRoom(Room room) {
+        super(room);
     }
 }
