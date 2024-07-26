@@ -491,13 +491,12 @@ public class Model {
     }
 
     // TODO: DONE! (remove)
-    public boolean makeReservation(String hotelName, String guestName, LocalDate checkInDate, LocalDate checkOutDate, Room room) {
+    public Reservation makeReservation(String hotelName, String guestName, LocalDate checkInDate, LocalDate checkOutDate, Room room) {
         Hotel hotel = getHotel(hotelName);
         if (null == hotel) {
-            return false;
+            return null;
         }
-        hotel.makeReservation(guestName, checkInDate, checkOutDate, room);
-        return true;
+        return hotel.makeReservation(guestName, checkInDate, checkOutDate, room);
     }
 
     // TODO: DONE! (remove)
