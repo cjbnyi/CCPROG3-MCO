@@ -2,16 +2,7 @@ package Hotel;
 import static Hotel.Discount.DISCOUNT_CODES.I_WORK_HERE;
 import static Hotel.Discount.DISCOUNT_CODES.PAYDAY;
 import static Hotel.Discount.DISCOUNT_CODES.STAY4_GET1;
-import static Hotel.Result.COMMON_ERRORS.ER_EXISTING_DISCOUNT;
-import static Hotel.Result.COMMON_ERRORS.ER_HOTEL_EXISTS;
-import static Hotel.Result.COMMON_ERRORS.ER_INVALID_CODE;
-import static Hotel.Result.COMMON_ERRORS.ER_INVALID_PRICE_RATE;
-import static Hotel.Result.COMMON_ERRORS.ER_MAX_CAPACITY;
-import static Hotel.Result.COMMON_ERRORS.ER_NOT_UNIQUE_GIVENNAME;
-import static Hotel.Result.COMMON_ERRORS.ER_NO_HOTEL;
-import static Hotel.Result.COMMON_ERRORS.ER_PAYDAY_INVALID;
-import static Hotel.Result.COMMON_ERRORS.ER_STAY4_GET1_INVALID;
-import static Hotel.Result.COMMON_ERRORS.ER_SUCCESSFUL;
+import static Hotel.Result.COMMON_ERRORS.*;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.time.LocalDate;
@@ -152,7 +143,6 @@ public class Model {
         };
     }
 
-    // TODO: Refactor this.
     /**
      * Returns the total price of a reservation.
      *
@@ -464,8 +454,7 @@ public class Model {
 
     /**
      * Adds a new hotel with the specified name.
-     * 
-     * @param newHotel the new hotel instance
+     *
      * @return the newly created hotel, or null if a hotel with the given name already exists
      */
     public Result addHotel(String name, Double price) {
@@ -531,8 +520,7 @@ public class Model {
         if (null == hotel) {
             return new Result(ER_NO_HOTEL);
         }
-        hotel.removeRoom(roomName);
-        return new Result(ER_SUCCESSFUL);
+        return hotel.removeRoom(roomName);
     }
 
     // TODO: DONE! (remove)
