@@ -2,7 +2,16 @@ package Hotel;
 import static Hotel.Discount.DISCOUNT_CODES.I_WORK_HERE;
 import static Hotel.Discount.DISCOUNT_CODES.PAYDAY;
 import static Hotel.Discount.DISCOUNT_CODES.STAY4_GET1;
-import static Hotel.Result.COMMON_ERRORS.*;
+import static Hotel.Result.COMMON_ERRORS.ER_EXISTING_DISCOUNT;
+import static Hotel.Result.COMMON_ERRORS.ER_HOTEL_EXISTS;
+import static Hotel.Result.COMMON_ERRORS.ER_INVALID_CODE;
+import static Hotel.Result.COMMON_ERRORS.ER_INVALID_PRICE_RATE;
+import static Hotel.Result.COMMON_ERRORS.ER_MAX_CAPACITY;
+import static Hotel.Result.COMMON_ERRORS.ER_NOT_UNIQUE_GIVENNAME;
+import static Hotel.Result.COMMON_ERRORS.ER_NO_HOTEL;
+import static Hotel.Result.COMMON_ERRORS.ER_PAYDAY_INVALID;
+import static Hotel.Result.COMMON_ERRORS.ER_STAY4_GET1_INVALID;
+import static Hotel.Result.COMMON_ERRORS.ER_SUCCESSFUL;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.time.LocalDate;
@@ -95,9 +104,9 @@ public class Model {
      */
     public String getRoomTypeString(Room room) {
         return switch(room) {
-            case StandardRoom _ -> "Standard";
-            case DeluxeRoom _ -> "Deluxe";
-            case ExecutiveRoom _ -> "Executive";
+            case StandardRoom r -> "Standard";
+            case DeluxeRoom r -> "Deluxe";
+            case ExecutiveRoom r -> "Executive";
             case null, default -> null;
         };
     }
@@ -139,7 +148,7 @@ public class Model {
             case Discount.DISCOUNT_CODES.I_WORK_HERE -> totalPrice * 0.1;
             case Discount.DISCOUNT_CODES.STAY4_GET1 -> getReservationPriceForADay(hotel, reservation, firstDay);
             case Discount.DISCOUNT_CODES.PAYDAY -> totalPrice * 0.07;
-            case null -> 0f;
+            case null, default -> 0f;
         };
     }
 
@@ -259,6 +268,7 @@ public class Model {
         return null;
     }
 
+
     // TODO: DONE! (remove)
     /**
      * Filters and returns a list of available rooms by a specified date.
@@ -280,6 +290,37 @@ public class Model {
         }
 
         return availableRooms;
+    }
+
+
+    // TODO: Undocumented
+    // !: Please check if its correct and fit MVC.
+    /**
+     * Filters and returns a list of available rooms by a specified date.
+     *
+     * @param date the date to check availability for
+     * @return a list of available rooms on the specified date
+     */
+    public Room getAvailableRoomByDateAndRoom(Hotel hotel, LocalDate date, String roomName) {
+
+        ArrayList<Room> availableRooms = hotel.getRoomList();
+        ArrayList<Reservation> reservationList = hotel.getReservationList();
+
+        for (Reservation reservation : reservationList) {
+            LocalDate checkInDate = reservation.getCheckInDate();
+            LocalDate checkOutDate = reservation.getCheckOutDate();
+            if ((date.isAfter(checkInDate) || date.isEqual(checkInDate)) && date.isBefore(checkOutDate)) {
+                availableRooms.remove(reservation.getRoom());
+            }
+        }
+
+        for (Room availableRoom: availableRooms){
+            if (availableRoom.getName().equals(roomName)){
+                return availableRoom;
+            }
+        }
+
+        return null;
     }
 
     // TODO: DONE! (remove)

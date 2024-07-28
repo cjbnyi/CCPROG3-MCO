@@ -1,10 +1,8 @@
 package Hotel;
 
 import javax.swing.GroupLayout;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JComponent;
 
 public class CompBuilderGridLayout extends ComponentBuilder{
     
@@ -68,7 +66,7 @@ public class CompBuilderGridLayout extends ComponentBuilder{
         this.vertParallelGroup.addComponent(component);
     }
     
-    public void finalize(){
+    public void finalizeLayout(){
         this.hasHorizonalNotMadeOneParallelGroup = true;
         this.hasVerticalNotMadeOneParallelGroup = true;
         groupLayout.setHorizontalGroup(this.horizontalGroup);

@@ -79,7 +79,7 @@ public class View {
     } 
 
     private final Scanner scanner;
-    private HotelGUI gui;
+
 
     /**
      * Constructs a View object and initializes the scanner.

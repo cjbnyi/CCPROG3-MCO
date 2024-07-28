@@ -1,16 +1,10 @@
 package Hotel;
 
-import java.awt.Button;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Panel;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class PanelHome extends JPanel {

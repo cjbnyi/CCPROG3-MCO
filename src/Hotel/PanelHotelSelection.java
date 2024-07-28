@@ -1,19 +1,18 @@
 package Hotel;
 
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.border.EmptyBorder;
+import javax.swing.JTextArea;
 
 public class PanelHotelSelection extends JPanel{
     private JLabel selectedHotel;
-    private JTextPane hotelList;
+    private JTextArea hotelList;
+    private JLabel selectionMode;
     private JButton btnSelectHotel;
     private JButton btnNextHotel;
     private JButton btnPrevHotel;
@@ -31,16 +30,21 @@ public class PanelHotelSelection extends JPanel{
         this.setBackground(compFactory.getRandomColor());
         this.setBorder(compFactory.createPadding());
         JPanel responsePanel = compFactory.createJPanel();
-        JTextPane hotelList = compFactory.createJTextPane();
+        JTextArea hotelList = compFactory.createJTextArea();
         JScrollPane hotelListScrollPane = compFactory.createJScrollPane(hotelList);
 
         JLabel selectedHotel = compFactory.createJLabelBody("None selected");
+        JLabel selectionMode = compFactory.createJLabelBody("Hotel above Selected");
         JButton btnSelectHotel = compFactory.createSingleJButton("Select Hotel");
         JButton btnNextButton = compFactory.createSingleJButton(">");
         JButton btnPrevButton = compFactory.createSingleJButton("<");
+        
+        selectionMode.setVisible(false);
+        hotelList.setEditable(false);
 
         this.hotelList = hotelList;
         this.selectedHotel = selectedHotel;
+        this.selectionMode = selectionMode;
 
         btnSelectHotel.setEnabled(false);
         btnNextButton.setEnabled(false);
@@ -69,9 +73,14 @@ public class PanelHotelSelection extends JPanel{
         boxBuildVert.setChild(selectedHotel);
         boxBuildVert.setChild(responsePanel);
         boxBuildVert.setChild(btnSelectHotel);
+        boxBuildVert.setChild(selectionMode);
         boxBuildVert.setChild(compFactory.createJLabelHeading("Hotels:"));
         boxBuildVert.setChild(hotelListScrollPane);
         
+    }
+
+    public void setSelectionVisible(boolean enabled){
+        this.selectionMode.setVisible(enabled);
     }
 
     public void setActionListener(ActionListener listener){

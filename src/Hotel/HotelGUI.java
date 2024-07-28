@@ -1,16 +1,15 @@
 package Hotel;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 
-import java.applet.*;
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
+import Hotel.View.MANAGER_STATE;
 
 public class HotelGUI extends JFrame {
     private JTabbedPane tabPane;
@@ -106,6 +105,19 @@ public class HotelGUI extends JFrame {
         return this.panelCreateHotel;
     }
 
+    public PanelViewHotel getPanelViewHotel(){
+        return this.panelViewHotel;
+    }
+
+    public PanelManageHotel getPanelManageHotel() {
+        return this.panelManageHotel;
+    }
+
+    public PanelBookReservation getPanelBookReservation() {
+        return this.panelBookReservation;
+    }
+
+
     public void setHotelList(String text){
         this.panelCreateHotel.getHotelPanel().setHotelList(text);
         this.panelViewHotel.getHotelPanel().setHotelList(text);
@@ -155,7 +167,7 @@ public class HotelGUI extends JFrame {
         }
         this.tabPane.setSelectedIndex(this.enableOnly);
         int i = 0;
-        for (PANEL_NAME _ : PANEL_NAME.values()){
+        for (PANEL_NAME p : PANEL_NAME.values()){
             if (i != this.enableOnly)
                 tabPane.setEnabledAt(i, false);
             i++;
@@ -166,7 +178,7 @@ public class HotelGUI extends JFrame {
         this.isEnableOnly = false;
         this.enableOnly = -1;
         int i = 0;
-        for (PANEL_NAME _ : PANEL_NAME.values()){
+        for (PANEL_NAME p : PANEL_NAME.values()){
             if (i != this.enableOnly)
                 tabPane.setEnabledAt(i, true);
             i++;
@@ -185,6 +197,8 @@ public class HotelGUI extends JFrame {
         return this.panelHotelSelectionList;
     }
 
+
+
     public void selectJtabbedPanelView(int i){
         this.tabPane.setSelectedIndex(i);
     }
@@ -192,5 +206,55 @@ public class HotelGUI extends JFrame {
 
     public int getViewedPanel(){
         return this.tabPane.getSelectedIndex();
+    }
+
+    /**
+     * Displays a general invalid input warning.
+     */
+
+    public void displayManageHotelPrompt(MANAGER_STATE displayState) {
+        final String[][] promptManageHotel = {
+            {
+                "",
+                "Welcome to Hotel Manager.",
+                "Please input the name of the hotel.",
+                ""
+            },{ // 0 : Hotel
+                "Hotel Manager", 
+                "Please Choose the following Managing actions:",
+                "",
+                " [a] Change the name of the Hotel",
+                " [b] Add Rooms",
+                " [c] Remove Rooms",
+                " [d] Update the Base Price for a Room",
+                " [e] Remove Reservation",
+                " [f] Remove Hotel",
+                " [q] Quit",
+                ""
+            }, {
+                "## Change Name of the Hotel",
+                "Please provide a valid name of the hotel you want to change the name."
+            }, {    // 1 : Change
+                "## Add a Room(s)",
+                "Adds a room to to the selected hotel.",
+                "Please provide the correct name for the additional room."
+            }, {
+                "## Remove a Room(s)",
+                "Please provide the room you want to remove.",
+                "Make sure that it does not have a reservation"
+            }, {
+                "## Update the Base Price",
+                "Please input the price you want to change. Change should be greater than P100."
+            }, {
+                "## Remove Reservation"
+            }, {
+                "## Remove Hotel"
+            }
+        };
+
+        for (String sentence : promptManageHotel[displayState.getID()]){
+            panelManageHotel.addContentInfo(sentence);
+        }
+
     }
 }

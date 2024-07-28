@@ -1,9 +1,5 @@
 package Hotel;
 
-import static Hotel.Result.COMMON_ERRORS.ER_MAX_CAPACITY;
-import static Hotel.Result.COMMON_ERRORS.ER_NOT_UNIQUE_GIVENNAME;
-import static Hotel.Result.COMMON_ERRORS.ER_NO_HOTEL;
-import static Hotel.Result.COMMON_ERRORS.ER_NO_RESERVATION;
 import static Hotel.View.MANAGER_STATE.MS_ADD_ROOMS;
 import static Hotel.View.MANAGER_STATE.MS_CHANGE_NAME;
 import static Hotel.View.MANAGER_STATE.MS_CHOSE_HOTEL;
@@ -22,16 +18,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.function.Function;
 
+import javax.swing.JButton;
 import javax.swing.JList;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 
 import Hotel.HotelGUI.PANEL_NAME;
 import Hotel.View.MANAGER_STATE;
@@ -43,9 +37,12 @@ import Hotel.View.MANAGER_STATE;
  * with the model and view to perform the necessary operations.
  */
 public class Controller implements ActionListener, DocumentListener, ListSelectionListener {
+    // System date constants
+    public static final int  SYSTEM_MONTH = 7,
+                             SYSTEM_YEAR = 2024;
     private Model model;
     private View view;
-    private HotelGUI view2;
+    private HotelGUI gui;
     private boolean hasConfirmed;
     private boolean hasAgreed;
     private Boolean[] hasSelectedHotel;
@@ -60,11 +57,12 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
     public Controller(Model model, View view, HotelGUI view2) {
         this.model = model;
         this.view = view;
-        this.view2 = view2;
+        this.gui = view2;
         this.actionToConfirm = "";
         this.hasConfirmed = false;
         this.hasAgreed = false;
-        this.selectedHotels = new Integer[4];
+        Integer selectedHotel[] = {0, 0, 0, 0};
+        this.selectedHotels = selectedHotel;
         Boolean hasSelectedHotel[] = {false, false, false, false};
         this.hasSelectedHotel = hasSelectedHotel;
         view2.setActionListener(this);
@@ -84,6 +82,8 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
     }
     
     private void controllerActions(String event){
+        
+        // General
         switch (event){
             case "Yes":
                 this.hasAgreed = true;
@@ -93,9 +93,29 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
                 this.hasAgreed = false;
                 controllerActions(this.actionToConfirm);
                 break;
-            case "Create Hotel Instance":
-                guiCreateHotel();
+        }
+
+        // Home Panel
+        switch (event){
+            case "Create Hotel":
+                gui.selectJtabbedPanelView(1);
                 break;
+            case "View Hotel":
+                gui.selectJtabbedPanelView(2);
+                break;
+            case "Manage Hotel":
+                gui.selectJtabbedPanelView(3);
+                break;
+            case "Book Hotel":
+                gui.selectJtabbedPanelView(4);
+                break;
+            case "Quit Manager":
+                System.exit(0);
+                break;
+        }
+
+        // Hotel Selection Panel and Create Panel
+        switch (event){
             case "<":
                 getPrevHotel();
                 break;
@@ -105,21 +125,54 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
             case "Select Hotel":
                 confirmSelectedHotel();
                 break;
-            case "Create Hotel":
-                view2.selectJtabbedPanelView(1);
+            case "Create Hotel Instance":
+                guiCreateHotel();
                 break;
-            case "View Hotel":
-                view2.selectJtabbedPanelView(2);
+        }
+
+        // View Panel
+        switch(event){
+            case "View High level":
+                guiViewHighHotel();
                 break;
-            case "Manage Hotel":
-                view2.selectJtabbedPanelView(3);
+            case "View Date":
+                guiLowLevelDate();
                 break;
-            case "Book Hotel":
-                view2.selectJtabbedPanelView(4);
+            case "View Room":
+                guiLowLevelRoom();
                 break;
-            case "Quit Manager":
-                System.exit(0);
+            case "View Reservation":
+                guiLowLevelReservation();
                 break;
+        }
+
+        // Manage Panel
+        switch(event) {
+            case "Change Name":
+                guiChangeName();
+                break;
+            case "Add Rooms":
+                guiAddRooms();
+                break;
+            case "Remove Rooms":
+                guiRemoveRooms();
+                break;
+            case "Update Price":
+                guiUpdatePrice();
+                break;
+            case "Remove Reservation":
+                guiRemoveReservation();
+                break;
+            case "Remove Hotel":
+                guiRemoveHotel();
+                break;
+        }
+
+        // Book Panel
+        switch (event){
+            case "Book Reservation":
+                guiBookReservation();
+            break;  
         }
     }
 
@@ -176,6 +229,735 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
         }
     }
 
+    private void guiViewHighHotel(){
+        PanelViewHotel viewPanel = this.gui.getPanelViewHotel();
+        Hotel hotel = getHotelPanelSelectedHotel(viewPanel);
+        boolean isHotelNull = hotel == null;
+        if (isHotelNull){
+            return;
+        }
+        double estimatedEarnings = model.getHotelEstimatedEarnings(hotel);
+  
+        String output = "Hotel name: " + hotel.getName() + "\nTotal number of rooms: " + hotel.getTotalRooms() + "\nEstimated earnings: " + estimatedEarnings;
+        viewPanel.setContentInfo(output);
+    }
+
+    private void guiLowLevelDate(){
+        PanelViewHotel viewPanel = this.gui.getPanelViewHotel();
+        Hotel hotel = getHotelPanelSelectedHotel(viewPanel);
+        boolean isHotelNull = hotel == null;
+        if (isHotelNull){
+            return;
+        }
+
+        int daySelection = viewPanel.getjLDateSelected().getSelectedIndex();
+        if (daySelection == -1){
+            viewPanel.setContentInfo("Select a date.");
+            return;
+        }
+        LocalDate date = LocalDate.of(2024, View.SYSTEM_MONTH, viewPanel.getjLDateSelected().getSelectedValue());
+        
+        int availableRooms = model.getNumOfAvailableRoomsByDate(hotel, date);
+        String output = "Hotel: " + hotel.getName() + "\nAvailable Rooms: " + availableRooms  + "\nUnvailable Rooms: " + (hotel.getTotalRooms() - availableRooms);
+        viewPanel.setContentInfo(output);
+    }
+
+    /**
+     * Displays the list of rooms for selection.
+     * @param roomList the list of rooms to display
+     */
+    private void guiDisplayRoomSelection(HotelPanel hotelPanel, String hotelName, ArrayList<Room> roomList) {
+        if (roomList.isEmpty()){
+            hotelPanel.addContentInfo("\nNo room currently exists.");
+            return;
+        }
+        String output = "Selected hotel: " + hotelName + "\nList of rooms:\n";
+        int i = 1;
+        for (Room room : roomList) {
+            if (i % 5 == 1)
+                output += "\n";
+            output +=  room.getName();
+            if (i % 5 != 0)
+                output += " | ";
+            ++i;
+        }
+        hotelPanel.addContentInfo(output);
+    }
+
+    private void guiLowLevelRoom(){
+        PanelViewHotel viewPanel = this.gui.getPanelViewHotel();
+        Hotel hotel = getHotelPanelSelectedHotel(viewPanel);
+        boolean isHotelNull = hotel == null;
+        if (isHotelNull){
+            return;
+        }
+        viewPanel.setContentInfo("");
+        guiDisplayRoomSelection(viewPanel, hotel.getName(), hotel.getRoomList());
+
+        String roomName = viewPanel.getTfRoomName().getText();
+        if (roomName.isEmpty()) {
+            return;
+        }
+
+        Room room = model.getRoomOfAHotel(hotel.getName(), roomName);
+        if (room == null) {
+            viewPanel.setContentInfo("Room does not exist. \nInput a valid room name, or empty the textfield to go back.");
+            return;
+        }
+        String output = "Name: " + room.getName();
+        output += "\nType: " + model.getRoomTypeString(room) + "\n" + "To go back to the list, please empty the View Room Textfield and press again.";
+        viewPanel.setContentInfo(output);
+    }
+
+    private void guiLowLevelReservation(){
+        PanelViewHotel viewPanel = this.gui.getPanelViewHotel();
+        Hotel hotel = getHotelPanelSelectedHotel(viewPanel);
+        boolean isHotelNull = hotel == null;
+        if (isHotelNull){
+            return;
+        }
+        viewPanel.setContentInfo("");
+        guiDisplayRoomSelection(viewPanel, hotel.getName(), hotel.getRoomList());
+        String roomName = viewPanel.getTfRoomName().getText();
+        if (roomName.isEmpty()) {
+            return;
+        }
+
+        Room room = model.getRoomOfAHotel(hotel.getName(), roomName);
+        if (room == null) {
+            viewPanel.setContentInfo("Room does not exist. \nInput a valid room name, or empty the textfield to go back.");
+            return;
+        }
+
+        ArrayList<Reservation> reservationList = model.filterHotelReservationsByRoom(hotel, room);
+        viewPanel.setContentInfo("\nSelected hotel: " + hotel.getName() + "\nSelected room: " + roomName);
+        String output = "";
+        if (reservationList.isEmpty())
+            viewPanel.setContentInfo("\nNo reservation currently exists.");
+        else {
+            viewPanel.addContentInfo("\nList of reservations:");
+            int i = 1;
+            for (Reservation reservation : reservationList) {
+                viewPanel.addContentInfo(i + ".)" + "\n");
+                viewPanel.addContentInfo("Check-in date: " + reservation.getCheckInDate() + "\n");
+                viewPanel.addContentInfo("Room: " + reservation.getRoom() + "\n");
+                ++i;
+            }
+        }
+        viewPanel.setContentInfo(output);
+
+        int daySelection = viewPanel.getjLDateSelected().getSelectedIndex();
+        if (daySelection == -1){
+            viewPanel.setContentInfo("Select a date.");
+            return;
+        }
+
+        LocalDate date = LocalDate.of(2024, View.SYSTEM_MONTH, viewPanel.getjLDateSelected().getSelectedValue());
+        Reservation reservation = model.getReservation(hotel.getName(), roomName, date);
+
+        if (reservation == null) {
+            viewPanel.setContentInfo("No reservation on room " + roomName + "." + "\nTo go back to the list, please empty the View Room Textfield and press again.");
+            return;
+        }
+
+        String guestName = reservation.getGuestName();
+        int checkInDay = reservation.getCheckInDate().getDayOfMonth();
+        int checkOutDay = reservation.getCheckOutDate().getDayOfMonth();
+        String priceBreakdown = model.getReservationPriceBreakdown(hotel, reservation); 
+        double totalPrice = model.getReservationTotalPrice(hotel, reservation);
+
+        viewPanel.addContentInfo("Guest: " + guestName);
+        viewPanel.addContentInfo("Check-in: July " + checkInDay + ", 2024");
+        viewPanel.addContentInfo("Check-out: July " + checkOutDay + ", 2024");
+        viewPanel.addContentInfo("Price breakdown:" + priceBreakdown);
+        viewPanel.addContentInfo("Total price: " + totalPrice);
+
+        viewPanel.setContentInfo(output);
+    }
+
+    private void guiCreateHotel(){
+        PanelCreateHotel createHotel = gui.getPanelCreateHotel();
+        String strHotelNameField = createHotel.getNameField().getText();
+        Hotel hotel = model.getHotelClone(strHotelNameField);
+        Boolean hasExistingName = hotel != null; /* hotel does not exist yet */
+
+        if (hasExistingName || strHotelNameField.equals("")){
+            createHotel.setContentInfo("Please insert a valid hotel name.");
+            return;
+        } 
+
+        String strPriceFieldText = gui.getPanelCreateHotel().getPriceField().getText();
+        Double hotelBasePrice = 0.0;
+
+        try {
+            hotelBasePrice = Double.parseDouble(strPriceFieldText);
+        } catch (NumberFormatException e) {
+            gui.getPanelCreateHotel().setContentInfo("Please insert a valid price.");
+            return;
+        }
+
+        if (hotelBasePrice < 100.0 || !Double.isFinite(hotelBasePrice)){
+            gui.getPanelCreateHotel().setContentInfo("Price should be finite and greater than P100.0.");
+            return;
+        }
+
+        if (hasUserNotConfirmed(createHotel, "Create Hotel Instance")){
+            return;
+        }
+
+        if (hasUserNotAgreed(createHotel, "Create Hotel Instance")){
+            createHotel.setContentInfo("Cancelled creation.");
+            return;
+        }
+
+        hasUserAgreed(createHotel);
+        
+        Result hotelResult = model.addHotel(strHotelNameField, hotelBasePrice);
+        System.out.println(hotelResult.getMessage());
+
+        createHotel.setContentInfo("Hotel succesfully created.");
+        createHotel.getNameField().setText("");
+        createHotel.getPriceField().setText("");
+        guiUpdateHotelSelection();
+    }
+
+    private void refreshPanel(){
+        ArrayList<Hotel> currentHotelList = model.getHotelList();
+        int currentPanelIndex = gui.getViewedPanel() - 1;
+        PanelHotelSelection hotelSelectionPanel = this.gui.getPanelHotelSelectionList().get(currentPanelIndex);
+        
+        if (hasSelectedHotel[currentPanelIndex]){
+            hotelSelectionPanel.setBtnPrevHotelEnable(false);
+            hotelSelectionPanel.setBtnNextHotelEnable(false);
+        } else {
+            hotelSelectionPanel.setBtnPrevHotelEnable(selectedHotels[currentPanelIndex] >= 1);
+            hotelSelectionPanel.setBtnNextHotelEnable(selectedHotels[currentPanelIndex] <= currentHotelList.size() - 2);
+        }
+        hotelSelectionPanel.setBtnSelectHotel(!this.hasConfirmed);
+        hotelSelectionPanel.setSelectionVisible(hasSelectedHotel[currentPanelIndex]);
+    }
+
+    private void guiUpdateHotelSelection(){
+        ArrayList<Hotel> currentHotelList = model.getHotelList();
+        String listString = new String("");
+        ArrayList<PanelHotelSelection> panelList = this.gui.getPanelHotelSelectionList();
+        
+        refreshPanel();
+
+        if (currentHotelList.isEmpty()){
+            
+            for (PanelHotelSelection hotelSelection : panelList){
+                hotelSelection.setSelectedHotel("None selected");
+                hotelSelection.setHotelList("No hotels created.");
+                hotelSelection.setBtnSelectHotel(false);
+                hotelSelection.setBtnNextHotelEnable(false);
+                hotelSelection.setBtnPrevHotelEnable(false);
+            }
+            
+            return;
+        }
+        
+        int i = 1;
+        for (Hotel currHotel : currentHotelList){
+            listString += "" + i + ") " + currHotel.getName() + "\n";
+            i++;
+        }
+        System.out.println(listString);
+        i = 0;
+        for (PanelHotelSelection hotelSelection : panelList){
+            selectedHotels[i] = 0;
+            hotelSelection.setHotelList(listString);
+            hotelSelection.setBtnSelectHotel(true);
+            hotelSelection.setSelectedHotel(currentHotelList.getFirst().getName());
+            hotelSelection.setBtnPrevHotelEnable(false);
+            hotelSelection.setBtnNextHotelEnable(currentHotelList.size() != 1);
+            i++;
+
+        }
+    }
+
+    private void getPrevHotel(){
+        ArrayList<Hotel> currentHotelList = model.getHotelList();
+        int currentPanelIndex = gui.getViewedPanel() - 1;
+        PanelHotelSelection hotelSelectionPanel = this.gui.getPanelHotelSelectionList().get(currentPanelIndex);
+        System.out.println(selectedHotels[currentPanelIndex] + currentHotelList.get(selectedHotels[currentPanelIndex]).getName());
+        hotelSelectionPanel.setBtnPrevHotelEnable(selectedHotels[currentPanelIndex] > 1);
+        hotelSelectionPanel.setBtnNextHotelEnable(true);
+        selectedHotels[currentPanelIndex] -= 1;
+        hotelSelectionPanel.setSelectedHotel(currentHotelList.get(selectedHotels[currentPanelIndex]).getName());
+    }
+
+    private Hotel getHotelPanelSelectedHotel(HotelPanel panel){
+        ArrayList<Hotel> currentHotelList = model.getHotelList();
+        int currentPanelIndex = gui.getViewedPanel() - 1;
+
+        if (currentHotelList.isEmpty() || !hasSelectedHotel[currentPanelIndex]){
+            panel.setContentInfo("No hotel selected.");
+            return null;
+        } else 
+
+        return currentHotelList.get(selectedHotels[currentPanelIndex]);
+    }
+
+    private boolean hasUserNotConfirmed(HotelPanel hotelPanel, String buttonName) {
+        System.out.println(this.hasConfirmed);
+        Boolean hasNotConfirmed = !this.hasConfirmed;
+        if (hasNotConfirmed) {
+            gui.setOnlyPanelEnable(hotelPanel.getPanelName());
+            hotelPanel.setAllButtonsDisabled();
+            hotelPanel.setConfirmationPanelVisilibity(true);
+            hotelPanel.setHotelButtonsEnabled(false);
+            this.actionToConfirm = buttonName;
+            this.hasConfirmed = true;
+            System.out.println("bus\n");
+        }
+        return hasNotConfirmed;
+    }
+
+    private boolean hasUserNotAgreed(HotelPanel hotelPanel, String buttonName){
+        System.out.println(this.hasAgreed);
+        Boolean hasUserNotAgreed = !this.hasAgreed;
+        if (hasUserNotAgreed) {
+            hotelPanel.setContentInfo("Cancelled creation.");
+            hotelPanel.resetButtonEnabled();
+            hotelPanel.setConfirmationPanelVisilibity(false);
+            this.actionToConfirm = "";
+            resetUserAgreement();
+            confirmSelectedHotel();
+            gui.resetPanelEnable(); 
+        }
+        return hasUserNotAgreed;
+    }
+
+    private boolean hasUserAgreed(HotelPanel hotelPanel){
+        System.out.println(this.hasAgreed);
+        Boolean hasUserAgreed = this.hasAgreed;
+        if (this.hasAgreed){
+            hotelPanel.setConfirmationPanelVisilibity(false);
+            hotelPanel.resetButtonEnabled();
+            this.actionToConfirm = "";
+            resetUserAgreement();
+            confirmSelectedHotel();
+            gui.resetPanelEnable();
+        }
+
+        return hasUserAgreed;
+    }
+
+    private void confirmSelectedHotel(){
+        int currentPanelIndex = gui.getViewedPanel() - 1;
+        hasSelectedHotel[currentPanelIndex] = !hasSelectedHotel[currentPanelIndex];
+        refreshPanel();
+    }
+
+    private void getNextHotel(){
+        ArrayList<Hotel> currentHotelList = model.getHotelList();
+        int currentPanelIndex = gui.getViewedPanel() - 1;
+        PanelHotelSelection hotelSelectionPanel = this.gui.getPanelHotelSelectionList().get(currentPanelIndex);
+        // TODO: Remove SYSTEM.out
+        System.out.println(selectedHotels[currentPanelIndex] + currentHotelList.get(selectedHotels[currentPanelIndex]).getName());
+        hotelSelectionPanel.setBtnPrevHotelEnable(true);
+        hotelSelectionPanel.setBtnNextHotelEnable(selectedHotels[currentPanelIndex] < currentHotelList.size() - 2);
+        selectedHotels[currentPanelIndex] += 1;
+
+        hotelSelectionPanel.setSelectedHotel(currentHotelList.get(selectedHotels[currentPanelIndex]).getName());
+    }
+
+    private void resetUserAgreement(){
+        this.hasConfirmed = false;
+        this.hasAgreed = false;
+    }
+
+    public void displayReservationInformation(HotelPanel hotelPanel, ArrayList<Reservation> reservationList) {
+        if (reservationList.isEmpty()) {
+            hotelPanel.addContentInfo("\nNo reservations currently exist.");
+        } else {
+            int i = 1;
+            for (Reservation reservation : reservationList) {
+                hotelPanel.addContentInfo(i + ".)");
+                hotelPanel.addContentInfo("Guest: " + reservation.getGuestName());
+                hotelPanel.addContentInfo("Room: " + reservation.getRoom().getName());
+                hotelPanel.addContentInfo("Check-in: " + reservation.getCheckInDate());
+                hotelPanel.addContentInfo("Check-out: " + reservation.getCheckOutDate());
+                ++i;
+            }
+        }
+    }
+
+    private void guiChangeName(){
+        PanelManageHotel manageHotel = gui.getPanelManageHotel();
+        Hotel hotel = getHotelPanelSelectedHotel(manageHotel);
+        boolean isHotelNull = hotel == null;
+        if (isHotelNull){
+            return;
+        }
+
+        String wantedName = manageHotel.getTfChangeName();
+        if (model.doesHotelExist(wantedName)){
+            manageHotel.setContentInfo("Name already exists. Please provide a unique name");
+            return;
+        } else if (wantedName.equals("")){
+            manageHotel.setContentInfo("New name is empty, please provide a name.");
+            return;
+        }
+
+        if (hasUserNotConfirmed(manageHotel, "Change Name"))
+            return;
+       
+        if (hasUserNotAgreed(manageHotel, "Change Name")){
+            manageHotel.setContentInfo("Cancelled name change.");
+            return;
+        }
+        hasUserAgreed(manageHotel);
+        
+        manageHotel.setContentInfo("Changed the name " + hotel.getName() + " to " + wantedName);
+        model.setHotelName(hotel.getName(), wantedName);
+        
+        guiUpdateHotelSelection();
+    }
+
+    private void guiAddRooms(){
+        PanelManageHotel manageHotel = gui.getPanelManageHotel();
+        Hotel hotel = getHotelPanelSelectedHotel(manageHotel);
+        boolean isHotelNull = hotel == null;
+
+        if (isHotelNull){
+            return;
+        }
+    
+        String wantedName = manageHotel.getTfAddRoomName();    
+        
+        if (wantedName.equals("")){
+            manageHotel.setContentInfo("");
+            guiDisplayRoomSelection(manageHotel, hotel.getName(), hotel.getRoomList());
+            return;
+        }
+
+        if (hasUserNotConfirmed(manageHotel, "Add Rooms"))
+            return;
+       
+        if (hasUserNotAgreed(manageHotel, "Add Rooms"))
+            return;
+
+        hasUserAgreed(manageHotel);
+        Result resAddRoom = model.addRoomToAHotel(hotel.getName(), wantedName, Room.ROOM_TYPE.STANDARD);
+        
+        if (resAddRoom.isSuccesful()){
+            manageHotel.setContentInfo("Succesfully added a Room.");
+            guiUpdateHotelSelection();
+            return;
+        }
+
+        switch(resAddRoom.getCommonError()){
+            case ER_MAX_CAPACITY:
+                manageHotel.setContentInfo("Hotel is at max capacity.");
+                break;
+            case ER_NO_HOTEL:
+                manageHotel.setContentInfo("Name of hotel does not exist.");
+                break;
+            case ER_NOT_UNIQUE_GIVENNAME:
+                manageHotel.setContentInfo("Room name is not unique.");
+                break;
+            default:
+                manageHotel.setContentInfo("Unknown Error: " + resAddRoom.getMessage());
+                break;
+        }    
+    }
+
+    private void guiRemoveRooms(){
+        PanelManageHotel manageHotel = gui.getPanelManageHotel();
+        Hotel hotel = getHotelPanelSelectedHotel(manageHotel);
+        boolean isHotelNull = hotel == null;
+        if (isHotelNull){
+            return;
+        }
+
+        String wantedName = manageHotel.getTfRemoveRoomName();    
+        
+        if (wantedName.equals("")){
+            manageHotel.setContentInfo("Please provide the name of the room you want to DELETE:");
+            guiDisplayRoomSelection(manageHotel, hotel.getName(), hotel.getRoomList());
+            return;
+        }
+
+        if (hasUserNotConfirmed(manageHotel, "Remove Rooms"))
+            return;
+       
+        if (hasUserNotAgreed(manageHotel, "Remove Rooms"))
+            return;
+
+        hasUserAgreed(manageHotel);
+
+
+        Result resRemoveRoom = model.removeRoomOfHotel(hotel.getName(), wantedName);
+        if (resRemoveRoom.isSuccesful()){
+            manageHotel.setContentInfo("Room successfully deleted.");
+            return;
+        }
+        switch (resRemoveRoom.getCommonError()) {
+            case ER_NO_ROOM:
+                manageHotel.setContentInfo("Room not found.");
+                break;
+            case ER_ROOM_HAS_RESERVATION:
+                manageHotel.setContentInfo("Cannot delete, has a reservation.");
+                break;
+            default:
+                manageHotel.setContentInfo("Unknown Error: " + resRemoveRoom.getMessage());
+                break;
+        }
+
+    }
+
+    private void guiUpdatePrice(){
+        PanelManageHotel manageHotel = gui.getPanelManageHotel();
+        Hotel hotel = getHotelPanelSelectedHotel(manageHotel);
+        boolean isHotelNull = hotel == null;
+        if (isHotelNull){
+            return;
+        }
+
+        double price = 0.0;
+        Result errorState;
+
+
+        String tfPrice = manageHotel.getTfUpdatePrice();
+
+        try {
+            price = Double.parseDouble(tfPrice);
+        } catch (NumberFormatException e) {
+            manageHotel.setContentInfo("Please insert a valid price.");
+            return;
+        }
+
+        if (price < 100.0 || !Double.isFinite(price)){
+            manageHotel.setContentInfo("Price should be finite and greater than P100.0.");
+            return;
+        }
+
+
+        if (hasUserNotConfirmed(manageHotel, "Update Price"))
+            return;
+       
+        if (hasUserNotAgreed(manageHotel, "Update Price")){
+            manageHotel.setContentInfo("Cancelled price change.");
+            return;
+        }
+        hasUserAgreed(manageHotel);
+
+        errorState = model.setHotelBasePrice(hotel.getName(), price);
+
+        if (errorState.isSuccesful()) {
+            manageHotel.setContentInfo("Price succesfully changed");
+            return;
+        }
+
+        switch (errorState.getCommonError()) {
+            case ER_NO_HOTEL:
+                manageHotel.setContentInfo("Hotel not found.");
+                break;
+            case ER_ROOM_HAS_RESERVATION:
+                manageHotel.setContentInfo("At least one reservation is made for this room; modification of price is not possible.");
+                break;
+            case ER_LOWER_THAN_BASEPRICE:
+                manageHotel.setContentInfo("Price is lower than 100. Please Change to a higher than the minimum price.");
+                break;
+            default:
+                manageHotel.setContentInfo("Unknown Error: " + errorState.getMessage());
+                break;
+        }
+    }
+
+    private void guiRemoveReservation(){
+        PanelManageHotel manageHotel = gui.getPanelManageHotel();
+        Hotel hotel = getHotelPanelSelectedHotel(manageHotel);
+        boolean isHotelNull = hotel == null;
+        if (isHotelNull){
+            return;
+        }
+
+        Result resRemoveReservation;
+
+        String roomName = manageHotel.getTfRemoveReservation();
+
+        if (roomName.equals("")){
+            displayReservationInformation(manageHotel, model.getReservations(hotel.getName()));
+            return;
+        }
+
+        if (hasUserNotConfirmed(manageHotel, "Remove Reservation"))
+            return;
+       
+        if (hasUserNotAgreed(manageHotel, "Remove Reservation")){
+            manageHotel.setContentInfo("Cancelled price change.");
+            return;
+        }
+        hasUserAgreed(manageHotel);
+
+        // TODO: Add a date namefield on manage hotel's guiRemoveReservation, and hook it up to this.
+        resRemoveReservation = model.removeReservation(hotel.getName(), roomName, LocalDate.of(View.SYSTEM_YEAR, View.SYSTEM_MONTH, 1)); /* placeholder */
+
+        if (resRemoveReservation.isSuccesful()) {
+            manageHotel.setContentInfo("Reservation successfully deleted.");
+        } else {
+            switch (resRemoveReservation.getCommonError()) {
+                case ER_NO_HOTEL:
+                    manageHotel.setContentInfo("Hotel is not found");
+                    break;
+                case ER_NO_RESERVATION:
+                    manageHotel.setContentInfo("Reservation is not found");
+                    break;
+                default:
+                    manageHotel.setContentInfo("Unknown Error: " + resRemoveReservation.getMessage());
+                    break;
+            }
+        }
+        
+    }
+
+    private void guiRemoveHotel(){
+        PanelManageHotel manageHotel = gui.getPanelManageHotel();
+        Hotel hotel = getHotelPanelSelectedHotel(manageHotel);
+        boolean isHotelNull = hotel == null;
+        if (isHotelNull){
+            return;
+        }
+
+        if (hasUserNotConfirmed(manageHotel, "Remove Hotel"))
+            return;
+       
+        if (hasUserNotAgreed(manageHotel, "Remove Hotel")){
+            manageHotel.setContentInfo("Cancelled remove hotel.");
+            return;
+        }
+        hasUserAgreed(manageHotel);
+        
+        Boolean hasDelete = model.removeHotel(hotel.getName());
+
+        if (hasDelete) {
+            manageHotel.setContentInfo("Successfully removed hotel.");
+            guiUpdateHotelSelection();
+        } else
+            manageHotel.setContentInfo("Hotel name cannot be found.");
+    }
+
+    /**
+     * Displays the list of rooms with their details.
+     * @param roomList the list of rooms to display
+     */
+    public void displayRoomList(HotelPanel hotelPanel, Hotel hotel, ArrayList<Room> roomList) {
+        if(roomList.isEmpty()){
+            hotelPanel.addContentInfo("No Rooms currently exist.");
+            return;
+        } 
+
+        int i = 0;
+        for (Room room : roomList) {
+            double basePricePerNight = hotel.getBasePricePerNight();
+            double multiplier = switch(room) {
+                case StandardRoom r -> hotel.getStandardMultiplier();
+                case DeluxeRoom r -> hotel.getDeluxeMultiplier();
+                case ExecutiveRoom r -> hotel.getExecutiveMultiplier();
+                case null, default -> 0f;
+            };
+
+            hotelPanel.addContentInfo(i + 1 + ".)");
+            assert room != null;
+            hotelPanel.addContentInfo("Room: " + room.getName());
+            hotelPanel.addContentInfo("Class: " + room.getClass());
+            hotelPanel.addContentInfo("Base Price: ₱" + (basePricePerNight * multiplier));
+            ++i;
+        }
+    }
+        
+
+    private void guiBookReservation(){
+        PanelBookReservation bookReservation = gui.getPanelBookReservation();
+        Hotel hotel = getHotelPanelSelectedHotel(bookReservation);
+        boolean isHotelNull = hotel == null;
+        if (isHotelNull){
+            return;
+        }
+
+        Room room = new StandardRoom(""); /* placeholder */
+        ArrayList<Room> listOfAvailableRooms = new ArrayList<Room>();
+
+
+        JList<Integer> jListStart = bookReservation.getJListDatesStart();
+        JList<Integer> jListEnd = bookReservation.getJListDatesEnd();
+
+        Boolean emptyDateSelection = jListStart.getSelectedIndex() == -1 || jListEnd.getSelectedIndex() == -1;
+        bookReservation.setContentInfo("");
+        if (emptyDateSelection) {
+            bookReservation.addContentInfo("Please select a date on the starting and end datelist.");
+            return;
+        }
+        
+        LocalDate startDate = LocalDate.of(SYSTEM_YEAR, SYSTEM_MONTH, jListStart.getSelectedValue());
+        LocalDate endDate = LocalDate.of(SYSTEM_YEAR, SYSTEM_MONTH, jListEnd.getSelectedValue());
+
+        bookReservation.addContentInfo("Using the dates from " + startDate + " to " + endDate);
+        listOfAvailableRooms = model.getAvailableRoomsByDate(hotel, startDate);
+       
+        
+        String roomName = bookReservation.getRoomName();
+        Room roomToReserve = model.getAvailableRoomByDateAndRoom(hotel, endDate, roomName);
+        Boolean roomDoesNotExist = roomToReserve == null;
+        if (roomDoesNotExist){
+            bookReservation.addContentInfo("Please input a valid input room name.");
+            displayRoomList(bookReservation, hotel, listOfAvailableRooms);
+            return;
+        }
+        bookReservation.addContentInfo("Reserving room " + roomName + "");    
+
+
+        String guestName = bookReservation.getGuestName();
+
+        if (guestName.trim().equals("")){
+            bookReservation.addContentInfo("Input a name with at least one non-white-space character.");
+            return;
+        }
+
+        bookReservation.addContentInfo("\nHotel name: " + hotel.getName());
+        bookReservation.addContentInfo("Guest name: " + guestName);
+        bookReservation.addContentInfo("Check In: " +  startDate);
+        bookReservation.addContentInfo("Check Out: " + endDate);
+        bookReservation.addContentInfo("Room: " + room.getName() + " " + model.getRoomBasePricePerNight(hotel, room) + " PHP per night");
+
+        if (hasUserNotConfirmed(bookReservation, "Book Reservation"))
+            return;
+       
+        if (hasUserNotAgreed(bookReservation, "Book Reservation")){
+            bookReservation.setContentInfo("Cancelled booking a reservation.");
+            return;
+        }
+        hasUserAgreed(bookReservation);
+
+
+        model.makeReservation(hotel.getName(), guestName, startDate,endDate, room);
+    }
+
+    /**
+     * GUI ABOVE
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * CONSOLE BELOW
+    */
+    
     /**
      * Repeatedly prompts the user for a hotel name until they provide a valid one or quit.
      *
@@ -255,150 +1037,6 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
         view.displayResultMessage("Hotel creation successful! :>");
     }
 
-    private void guiCreateHotel(){
-        String strHotelNameField = this.view2.getPanelCreateHotel().getNameField().getText();
-        Hotel hotel = model.getHotelClone(strHotelNameField);
-        Boolean hasExistingName = hotel != null; /* hotel does not exist yet */
-
-        if (hasExistingName || strHotelNameField.equals("")){
-            view2.getPanelCreateHotel().setHotelInfoText("Please insert a valid hotel name.");
-            return;
-        } 
-
-        String strPriceFieldText = view2.getPanelCreateHotel().getPriceField().getText();
-        Double hotelBasePrice = 0.0;
-
-        try {
-            hotelBasePrice = Double.parseDouble(strPriceFieldText);
-        } catch (NumberFormatException e) {
-            view2.getPanelCreateHotel().setHotelInfoText("Please insert a valid price.");
-            return;
-        }
-
-        if (hotelBasePrice < 100.0 || !Double.isFinite(hotelBasePrice)){
-            view2.getPanelCreateHotel().setHotelInfoText("Price should be finite and greater than P100.0.");
-            return;
-        }
-
-        
-        if (!this.hasConfirmed){
-            view2.setOnlyPanelEnable(PANEL_NAME.CREATE);
-            view2.getPanelCreateHotel().setCreateButtonEnable(false);
-            view2.getPanelCreateHotel().setConfirmationPanelEnable(true);
-            this.actionToConfirm = "Create Hotel Instance";
-            this.hasConfirmed = true;
-            return;
-        }
-
-        if (this.hasConfirmed && this.hasAgreed){
-            Result e = model.addHotel(strHotelNameField, hotelBasePrice);
-            System.out.println(e.getMessage());
-            view2.getPanelCreateHotel().setHotelInfoText("Hotel succesfully created.");
-        } else if (this.hasConfirmed && !this.hasAgreed) {
-            view2.getPanelCreateHotel().setHotelInfoText("Cancelled creation.");
-        } 
-        
-        if (this.hasConfirmed){
-            this.actionToConfirm = "";
-            resetUserAgreement();
-            view2.resetPanelEnable();
-            view2.getPanelCreateHotel().setCreateButtonEnable(true);
-            view2.getPanelCreateHotel().setConfirmationPanelEnable(false);
-            view2.getPanelCreateHotel().getNameField().setText("");
-            view2.getPanelCreateHotel().getPriceField().setText("");
-            guiUpdateHotelSelection();
-        }
-
-    }
-
-    private void guiUpdateHotelSelection(){
-        ArrayList<Hotel> currentHotelList = model.getHotelList();
-        String listString = new String();
-        ArrayList<PanelHotelSelection> panelList = this.view2.getPanelHotelSelectionList();
-
-        if (currentHotelList.isEmpty()){
-            for (PanelHotelSelection hotelSelection : panelList){
-                hotelSelection.setHotelList("No hotels created.");
-                hotelSelection.setBtnSelectHotel(false);
-                hotelSelection.setBtnNextHotelEnable(false);
-                hotelSelection.setBtnPrevHotelEnable(false);
-            }
-            
-            return;
-        }
-        
-        int i = 1;
-        for (Hotel currHotel : currentHotelList){
-            listString += i + ") " + currHotel.getName() + "\n";
-            i++;
-        }
-
-        i = 0;
-        for (PanelHotelSelection hotelSelection : panelList){
-            selectedHotels[i] = 0;
-            hotelSelection.setHotelList(listString);
-            hotelSelection.setBtnSelectHotel(true);
-            hotelSelection.setSelectedHotel(currentHotelList.getFirst().getName());
-            hotelSelection.setBtnPrevHotelEnable(false);
-            hotelSelection.setBtnNextHotelEnable(currentHotelList.size() != 1);
-            i++;
-
-        }
-    }
-
-    private void getPrevHotel(){
-        ArrayList<Hotel> currentHotelList = model.getHotelList();
-        int currentPanelIndex = view2.getViewedPanel() - 1;
-        PanelHotelSelection hotelSelectionPanel = this.view2.getPanelHotelSelectionList().get(currentPanelIndex);
-        System.out.println(selectedHotels[currentPanelIndex] + currentHotelList.get(selectedHotels[currentPanelIndex]).getName());
-        hotelSelectionPanel.setBtnPrevHotelEnable(selectedHotels[currentPanelIndex] > 1);
-        hotelSelectionPanel.setBtnNextHotelEnable(true);
-        selectedHotels[currentPanelIndex] -= 1;
-        hotelSelectionPanel.setSelectedHotel(currentHotelList.get(selectedHotels[currentPanelIndex]).getName());
-    }
-
-    private void confirmSelectedHotel(){
-        ArrayList<Hotel> currentHotelList = model.getHotelList();
-        int currentPanelIndex = view2.getViewedPanel() - 1;
-        PanelHotelSelection hotelSelectionPanel = this.view2.getPanelHotelSelectionList().get(currentPanelIndex);
-        hasSelectedHotel[currentPanelIndex] = !hasSelectedHotel[currentPanelIndex];
-        
-        if (hasSelectedHotel[currentPanelIndex]){
-            hotelSelectionPanel.setBtnPrevHotelEnable(false);
-            hotelSelectionPanel.setBtnNextHotelEnable(false);
-        } else {
-            hotelSelectionPanel.setBtnPrevHotelEnable(selectedHotels[currentPanelIndex] >= 1);
-            hotelSelectionPanel.setBtnNextHotelEnable(selectedHotels[currentPanelIndex] <= currentHotelList.size() - 2);
-        }
-        
-
-    }
-
-    private void getNextHotel(){
-        ArrayList<Hotel> currentHotelList = model.getHotelList();
-        int currentPanelIndex = view2.getViewedPanel() - 1;
-        PanelHotelSelection hotelSelectionPanel = this.view2.getPanelHotelSelectionList().get(currentPanelIndex);
-        // TODO: Remove SYSTEM.out
-        System.out.println(selectedHotels[currentPanelIndex] + currentHotelList.get(selectedHotels[currentPanelIndex]).getName());
-        hotelSelectionPanel.setBtnPrevHotelEnable(true);
-        hotelSelectionPanel.setBtnNextHotelEnable(selectedHotels[currentPanelIndex] < currentHotelList.size() - 2);
-        selectedHotels[currentPanelIndex] += 1;
-
-        hotelSelectionPanel.setSelectedHotel(currentHotelList.get(selectedHotels[currentPanelIndex]).getName());
-    }
-
-    private void resetUserAgreement(){
-        this.hasConfirmed = false;
-        this.hasAgreed = false;
-    }
-
-    private void guiViewHotel(){
-
-    }
-
-    private void guiSelectHotel(){
-
-    }
 
     /**
      * Repeatedly prompts the user for a number from 1-3 corresponding to the hotel information they want to view

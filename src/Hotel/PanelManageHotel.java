@@ -8,13 +8,14 @@ import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentListener;
 
-public class PanelManageHotel extends JPanel {
-    PanelHotelSelection hotelSelectionPanel;
-    private JLabel manageHotelInfo;
+import Hotel.HotelGUI.PANEL_NAME;
+
+public class PanelManageHotel extends HotelPanel {
     private JButton btnChangeHotelName;
     private JButton btnAddRooms;
     private JButton btnRemoveRooms;
@@ -26,10 +27,10 @@ public class PanelManageHotel extends JPanel {
     private JTextField tfRemoveRoomName;
     private JTextField tfUpdatePrice;
     private JTextField tfRemoveReservation;
-    private PanelEnable confirmationPanel;
 
 
     PanelManageHotel(ComponentFactory compFactory){
+        super(PANEL_NAME.MANAGE, compFactory);
         init(compFactory);
         this.setVisible(true);
     }
@@ -46,12 +47,10 @@ public class PanelManageHotel extends JPanel {
         boxBuildVert.setSpacing(10);
         boxBuildVert.setAutoSpace(false);
 
-        // Hotel Selection Panel;
-        PanelHotelSelection hotelSelectionPanel = new PanelHotelSelection(compFactory);
-        this.hotelSelectionPanel = hotelSelectionPanel;
+
         JPanel contentPanel = initContentPanel(director, compFactory);
 
-        this.add(hotelSelectionPanel, BorderLayout.WEST);
+        this.add(this.hotelSelectionPanel, BorderLayout.WEST);
         this.add(contentPanel, BorderLayout.CENTER);
     }
 
@@ -66,7 +65,7 @@ public class PanelManageHotel extends JPanel {
             "Remove Hotel",
         };
         
-        ArrayList<JButton> buttons = compFactory.createMultipleJButtons(buttonNames);
+        ArrayList<JButton> buttons = compFactory.createMultipleJButtons(this.jButtonList, buttonNames);
         ArrayList<JTextField> textFields = compFactory.createMultipleJTextFields(5, 12*2, 100);
         ArrayList<JLabel> jLabels = compFactory.createMultipleJLabel(buttonNames);
 
@@ -86,13 +85,16 @@ public class PanelManageHotel extends JPanel {
         CompBuilderBoxLayout boxBuildVert = ((CompBuilderBoxLayout) director.getBuilder());
         director.setBuilder(ComponentBuilderState.LAY_GRID);
         CompBuilderGridLayout gridLayout = ((CompBuilderGridLayout) director.getBuilder());
-        JLabel labelInfo = compFactory.createJLabelBody("No important info");
-        this.manageHotelInfo = labelInfo;
+
+        JTextArea contentInfo = compFactory.createJTextArea();
+        JScrollPane contentPane = compFactory.createJScrollPane(contentInfo);
+        contentInfo.setEditable(false);
+        this.contentInfo = contentInfo;
 
         boxBuildVert.setParent(contentPanel);
         boxBuildVert.setAutoSpace(true);
         boxBuildVert.setChild(compFactory.createJLabelHeading("Manage Hotel"));
-        boxBuildVert.setChild(labelInfo);
+        boxBuildVert.setChild(contentPane);
         JPanel manageSettingsPanel = compFactory.createJPanel();
 
         gridLayout.setParent(manageSettingsPanel);
@@ -126,10 +128,9 @@ public class PanelManageHotel extends JPanel {
 
         gridLayout.createNewRow(GroupLayout.Alignment.BASELINE);
 
-        gridLayout.finalize();
+        gridLayout.finalizeLayout();
+        this.confirmationPanel.setVisible(false);
         
-        this.confirmationPanel = new PanelEnable(compFactory, "Are you sure?");
-
         boxBuildVert.setChild(manageSettingsPanel);
         boxBuildVert.setChild(jLabels.get(i));
         boxBuildVert.setChild(buttons.get(i));
@@ -156,16 +157,25 @@ public class PanelManageHotel extends JPanel {
         tfRemoveReservation.getDocument().addDocumentListener(listener);
     }
 
-    public void setManageHotelInfo(String text){
-        this.manageHotelInfo.setText(text);
+    public String getTfChangeName(){
+        return tfChangeHotelName.getText();
     }
 
-    public PanelHotelSelection getHotelPanel(){
-        return this.hotelSelectionPanel;
+    public String getTfAddRoomName(){
+        return tfAddRoomName.getText();
     }
 
-    public PanelEnable getConfirmationPanel(){
-        return this.confirmationPanel;
+    public String getTfRemoveRoomName(){
+        return tfRemoveRoomName.getText();
     }
+
+    public String getTfUpdatePrice(){
+        return tfUpdatePrice.getText();
+    }
+
+    public String getTfRemoveReservation(){
+        return tfRemoveReservation.getText();
+    }
+
     
 }

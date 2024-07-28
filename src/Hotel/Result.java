@@ -45,6 +45,7 @@ public class Result {
     private String stateString;
     private COMMON_ERRORS commonError;
 
+
     Result(){
         this.isSucessful = true;
         this.stateString = new String("");

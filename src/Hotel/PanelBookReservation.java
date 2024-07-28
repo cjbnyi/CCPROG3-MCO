@@ -5,27 +5,24 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 
-public class PanelBookReservation extends JPanel{
-    JLabel bookInfo;
-    JList<String> jListDatesStart;
-    JList<String> jListDatesEnd;
-    JTextField tfRoomName;
-    JButton btnBook;
-    private PanelEnable confirmationPanel;
-    PanelHotelSelection hotelSelectionPanel;
+import Hotel.HotelGUI.PANEL_NAME;
 
+public class PanelBookReservation extends HotelPanel{
+    JList<Integer> jListDatesStart;
+    JList<Integer> jListDatesEnd;
+    JTextField tfRoomName;
+    JTextField tfGuestName;
+    JButton btnBook;
 
     PanelBookReservation(ComponentFactory compFactory){
+        super(PANEL_NAME.BOOK, compFactory);
         init(compFactory);
         this.setVisible(true);
     }
@@ -42,57 +39,46 @@ public class PanelBookReservation extends JPanel{
         boxBuildVert.setAutoSpace(false);
 
         // Hotel Selection Panel;
-        
-        PanelHotelSelection hotelSelectionPanel = new PanelHotelSelection(compFactory);
+
         JPanel contentPanel = initContentPanel(boxBuildVert, compFactory);
         JPanel settingsPanel = initSettingsPanel(boxBuildVert, compFactory);
-        this.hotelSelectionPanel = hotelSelectionPanel;
-        this.add(hotelSelectionPanel, BorderLayout.WEST);
+        this.add(this.hotelSelectionPanel, BorderLayout.WEST);
         this.add(contentPanel, BorderLayout.CENTER);
         this.add(settingsPanel, BorderLayout.EAST);
     }
 
-    public JPanel initContentPanel(CompBuilderBoxLayout boxBuildVert, ComponentFactory compFactory) {
+    private JPanel initContentPanel(CompBuilderBoxLayout boxBuildVert, ComponentFactory compFactory) {
         JPanel contentPanel = compFactory.createJPanel();
         
         boxBuildVert.setParent(contentPanel);
         boxBuildVert.setAutoSpace(true);
         boxBuildVert.setChild(compFactory.createJLabelHeading("Book Hotel"));
-        this.bookInfo = compFactory.createJLabelBody("No Booking information available");
+        this.contentInfo = compFactory.createJTextArea();
+        this.contentInfo.setEditable(false);
+        JScrollPane scrollPane = compFactory.createJScrollPane(this.contentInfo);
 
-        boxBuildVert.setChild(this.bookInfo);
+        boxBuildVert.setChild(scrollPane);
 
 
         return contentPanel;
     }
 
-    public JPanel initSettingsPanel(CompBuilderBoxLayout boxBuildVert, ComponentFactory compFactory) {
+    private JPanel initSettingsPanel(CompBuilderBoxLayout boxBuildVert, ComponentFactory compFactory) {
         boxBuildVert.setSpacing(10);
         JPanel settingsPanel = compFactory.createJPanel();
         settingsPanel.setBorder(compFactory.createPadding());
-        // String[] settingButtonNames = {
-        //     "Enter Start",
-        //     "Enter End",
-        //     "Enter R.No."
-        // };
-
-        // ArrayList<JButton> settingButtons = compFactory.createMultipleJButtons(settingButtonNames);
-        // ArrayList<JTextField> textFields = compFactory.createMultipleJTextFields(3, 2*12, 30);
 
         ArrayList<Integer> dateNums = new ArrayList<Integer>();
-        ArrayList<String> stringDates = new ArrayList<String>();
-        
 
         int i = 0;
         for (i = 1; i <= 31; i++){
             dateNums.add(i);
         }
 
-        dateNums.iterator().forEachRemaining((n) -> stringDates.add(String.valueOf(n)));
-        String[] dates = stringDates.toArray(new String[stringDates.size()]);
+        Integer[] dates = dateNums.toArray(new Integer[dateNums.size()]);
 
-        JList<String> jListDatesStart = compFactory.createJList(dates);
-        JList<String> jListDatesEnd = compFactory.createJList(dates);
+        JList<Integer> jListDatesStart = compFactory.createJListInteger(dates);
+        JList<Integer> jListDatesEnd = compFactory.createJListInteger(dates);
 
         this.jListDatesStart = jListDatesStart;
         this.jListDatesEnd = jListDatesEnd;
@@ -100,12 +86,13 @@ public class PanelBookReservation extends JPanel{
         JScrollPane datesStartPanel = compFactory.createJScrollPane(jListDatesStart);
         JScrollPane datesEndPanel = compFactory.createJScrollPane(jListDatesEnd);
         
-        this.tfRoomName = compFactory.createJTextField(2*12, 12*5);
+        this.tfRoomName = compFactory.createJTextField(2*12, 100);
+        this.tfGuestName = compFactory.createJTextField(2*12, 100);
 
-        JButton btnBook = compFactory.createSingleJButton("Book Reservation");
+        JButton btnBook = compFactory.createSingleJButton(this.jButtonList, "Book Reservation");
         this.btnBook = btnBook;
-
-        this.confirmationPanel = new PanelEnable(compFactory, "Are you sure?");
+        
+        this.confirmationPanel.setVisible(false);
 
         boxBuildVert.setParent(settingsPanel);
         boxBuildVert.setChild(compFactory.createJLabelHeading("Start Date:"));
@@ -114,6 +101,8 @@ public class PanelBookReservation extends JPanel{
         boxBuildVert.setChild(datesEndPanel);
         boxBuildVert.setChild(compFactory.createJLabelHeading("Room Name:"));
         boxBuildVert.setChild(this.tfRoomName);
+        boxBuildVert.setChild(compFactory.createJLabelHeading("Guest Name"));
+        boxBuildVert.setChild(this.tfGuestName);
         boxBuildVert.setChild(this.btnBook);
         boxBuildVert.setChild(this.confirmationPanel);
         
@@ -122,12 +111,13 @@ public class PanelBookReservation extends JPanel{
 
     public void setActionListener(ActionListener listener) {
         btnBook.addActionListener(listener);
-        hotelSelectionPanel.setActionListener(listener);
+        this.hotelSelectionPanel.setActionListener(listener);
         confirmationPanel.setActionListener(listener);
     }
 
     public void setDocumentListener(DocumentListener listener){
         tfRoomName.getDocument().addDocumentListener(listener);
+        tfGuestName.getDocument().addDocumentListener(listener);
     }
 
     public void setListSelectionListener(ListSelectionListener listener){
@@ -135,15 +125,19 @@ public class PanelBookReservation extends JPanel{
         jListDatesEnd.addListSelectionListener(listener);
     }
 
-    public void setBookInfo(String text){
-        this.bookInfo.setText(text);
+    public String getRoomName(){
+        return this.tfRoomName.getText();
     }
 
-    public PanelHotelSelection getHotelPanel(){
-        return this.hotelSelectionPanel;
+    public String getGuestName(){
+        return this.tfGuestName.getText();
     }
 
-    public PanelEnable getConfirmationPanel(){
-        return this.confirmationPanel;
+    public JList<Integer> getJListDatesStart() {
+        return jListDatesStart;
+    }
+
+    public JList<Integer> getJListDatesEnd() {
+        return jListDatesEnd;
     }
 }
