@@ -86,7 +86,14 @@ public class ComponentFactory {
     }
 
     public JScrollPane createJScrollPane(JComponent inputComponent){
-        return new JScrollPane(inputComponent);
+        JScrollPane newJScrollPane = new JScrollPane(inputComponent);
+        return newJScrollPane;
+    }
+
+    public JScrollPane createJScrollPaneJList(JList<Integer> inputJList){
+        JScrollPane newJScrollPane = new JScrollPane(inputJList);
+        newJScrollPane.setMaximumSize(new Dimension(100, 20*3));
+        return newJScrollPane;
     }
 
     public JScrollPane createJScrollPane(JList<String> stringListInput){

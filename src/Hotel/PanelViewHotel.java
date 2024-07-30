@@ -153,6 +153,4 @@ public class PanelViewHotel extends HotelPanel {
     public JList<Integer> getjLDateSelected() {
         return jLDateSelected;
     }
-
-   
 }

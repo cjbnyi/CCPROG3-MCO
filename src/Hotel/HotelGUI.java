@@ -1,6 +1,7 @@
 package Hotel;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
@@ -43,7 +44,7 @@ public class HotelGUI extends JFrame {
         }
     }
 
-    public HotelGUI() {
+    HotelGUI() {
         super("Hotel Manager");
         this.componentFactory = new ComponentFactory();
         this.enableOnly = -1;
@@ -53,13 +54,17 @@ public class HotelGUI extends JFrame {
         initializeComponents();
 
         // by default, the window will not be displayed
-        setVisible(true);
-        setResizable(false);
+        setMinimumSize(new Dimension(700, 600));
+        setResizable(true);
 
-        // so that the program will actually stop running
+        // the program will actually stop running
         // when you press the close button
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public void runGUI(){
+        setVisible(true);
     }
 
     private void initializeComponents(){
@@ -228,7 +233,7 @@ public class HotelGUI extends JFrame {
 
     public void displayReservationInformation(HotelPanel hotelPanel, ArrayList<Reservation> reservationList) {
         if (reservationList.isEmpty()) {
-            hotelPanel.addContentInfo("\nNo reservations currently exist.");
+            hotelPanel.setContentInfo("No reservations currently exist.");
         } else {
             int i = 1;
             for (Reservation reservation : reservationList) {
@@ -238,6 +243,35 @@ public class HotelGUI extends JFrame {
                 hotelPanel.addContentInfo("Check-out: " + reservation.getCheckOutDate());
                 ++i;
             }
+        }
+    }
+
+    /**
+     * Displays the list of rooms with their details.
+     * @param roomList the list of rooms to display
+     */
+    public void displayRoomList(HotelPanel hotelPanel, Hotel hotel, ArrayList<Room> roomList) {
+        if(roomList.isEmpty()){
+            hotelPanel.addContentInfo("No Rooms currently exist.");
+            return;
+        } 
+
+        int i = 0;
+        for (Room room : roomList) {
+            double basePricePerNight = hotel.getBasePricePerNight();
+            double multiplier = switch(room) {
+                case StandardRoom r -> hotel.getStandardMultiplier();
+                case DeluxeRoom r -> hotel.getDeluxeMultiplier();
+                case ExecutiveRoom r -> hotel.getExecutiveMultiplier();
+                case null, default -> 0f;
+            };
+
+            hotelPanel.addContentInfo(i + 1 + ".)");
+            assert room != null;
+            hotelPanel.addContentInfo("Room: " + room.getName());
+            hotelPanel.addContentInfo("Class: " + room.getClass().getName());
+            hotelPanel.addContentInfo("Base Price: ₱" + (basePricePerNight * multiplier));
+            ++i;
         }
     }
 }

@@ -7,9 +7,8 @@ public class Main {
         Model model = new Model();
         View  view  = new View();
         HotelGUI hotelGUI = new HotelGUI();
-        Controller controller = new Controller(model, view, hotelGUI);
-
-        /* execute program flow */
+        Controller_GUI controller = new Controller_GUI(model, hotelGUI);
+        
         controller.start();
     }
 }

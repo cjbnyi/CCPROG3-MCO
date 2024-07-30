@@ -64,14 +64,13 @@ public class PanelCreateHotel extends HotelPanel {
         gridLayout.createNewRow(GroupLayout.Alignment.BASELINE);
         gridLayout.attachRowGroupComponent(priceFieldLabel);
         gridLayout.attachRowGroupComponent(priceField);
-        gridLayout.createNewRow(GroupLayout.Alignment.BASELINE);
+
         gridLayout.createNewColumn(GroupLayout.Alignment.TRAILING);
         gridLayout.attachColumnGroupComponent(nameFieldLabel);
         gridLayout.attachColumnGroupComponent(priceFieldLabel);
         gridLayout.createNewColumn(GroupLayout.Alignment.TRAILING);
         gridLayout.attachColumnGroupComponent(nameField);
         gridLayout.attachColumnGroupComponent(priceField);
-        gridLayout.createNewColumn(GroupLayout.Alignment.TRAILING);
         gridLayout.finalizeLayout();
 
         return inputPanel;

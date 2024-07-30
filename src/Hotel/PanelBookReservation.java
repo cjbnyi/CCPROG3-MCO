@@ -81,8 +81,8 @@ public class PanelBookReservation extends HotelPanel{
         this.jListDatesStart = jListDatesStart;
         this.jListDatesEnd = jListDatesEnd;
 
-        JScrollPane datesStartPanel = compFactory.createJScrollPane(jListDatesStart);
-        JScrollPane datesEndPanel = compFactory.createJScrollPane(jListDatesEnd);
+        JScrollPane datesStartPanel = compFactory.createJScrollPaneJList(jListDatesStart);
+        JScrollPane datesEndPanel = compFactory.createJScrollPaneJList(jListDatesEnd);
         
         this.tfRoomName = compFactory.createJTextField(2*12, 100);
         this.tfGuestName = compFactory.createJTextField(2*12, 100);
