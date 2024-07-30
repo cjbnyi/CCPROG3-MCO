@@ -57,6 +57,18 @@ public class ComponentFactory {
         return newTabbedPane;
     }
 
+    public JList<Integer> createJListIntegerFilled(int intCap){
+        ArrayList<Integer> dateNums = new ArrayList<Integer>();
+        int i = 0;
+        for (i = 1; i <= intCap; i++){
+            dateNums.add(i);
+        }
+        Integer[] dates = dateNums.toArray(new Integer[dateNums.size()]);
+        JList<Integer> newJList = new JList<Integer>(dates);
+        newJList.setVisibleRowCount(3);
+        return newJList;
+    };
+
     public JList<Integer> createJListInteger(Integer[] intListInpt){
         JList<Integer> newJList = new JList<Integer>(intListInpt);
         newJList.setVisibleRowCount(3);

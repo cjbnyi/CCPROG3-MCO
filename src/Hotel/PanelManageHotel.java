@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionListener;
 
 import Hotel.HotelGUI.PANEL_NAME;
 
@@ -27,7 +29,7 @@ public class PanelManageHotel extends HotelPanel {
     private JTextField tfRemoveRoomName;
     private JTextField tfUpdatePrice;
     private JTextField tfRemoveReservation;
-
+    private JList<Integer> jlDates;
 
     PanelManageHotel(ComponentFactory compFactory){
         super(PANEL_NAME.MANAGE, compFactory);
@@ -54,7 +56,7 @@ public class PanelManageHotel extends HotelPanel {
         this.add(contentPanel, BorderLayout.CENTER);
     }
 
-    public JPanel initContentPanel(ComponentBuilderDirector director, ComponentFactory compFactory) {
+    private JPanel initContentPanel(ComponentBuilderDirector director, ComponentFactory compFactory) {
         JPanel contentPanel = compFactory.createJPanel();
         String buttonNames[] = {
             "Change Name",
@@ -66,8 +68,9 @@ public class PanelManageHotel extends HotelPanel {
         };
         
         ArrayList<JButton> buttons = compFactory.createMultipleJButtons(this.jButtonList, buttonNames);
-        ArrayList<JTextField> textFields = compFactory.createMultipleJTextFields(5, 12*2, 100);
+        ArrayList<JTextField> textFields = compFactory.createMultipleJTextFields(6, 12*2, 100);
         ArrayList<JLabel> jLabels = compFactory.createMultipleJLabel(buttonNames);
+        this.jlDates = compFactory.createJListIntegerFilled(31);
 
         this.btnChangeHotelName     = buttons.get(0);
         this.btnAddRooms            = buttons.get(1);
@@ -81,6 +84,7 @@ public class PanelManageHotel extends HotelPanel {
         this.tfRemoveRoomName       = textFields.get(2);
         this.tfUpdatePrice          = textFields.get(3);
         this.tfRemoveReservation    = textFields.get(4);
+        
         
         CompBuilderBoxLayout boxBuildVert = ((CompBuilderBoxLayout) director.getBuilder());
         director.setBuilder(ComponentBuilderState.LAY_GRID);
@@ -104,15 +108,15 @@ public class PanelManageHotel extends HotelPanel {
         gridLayout.createNewColumn(GroupLayout.Alignment.TRAILING);
         int items = 5;
         for (i = 0; i < items; i++) {
-            gridLayout.createColumnGroupComponent(jLabels.get(i));
+            gridLayout.attachColumnGroupComponent(jLabels.get(i));
         }
         gridLayout.createNewColumn(GroupLayout.Alignment.LEADING);
         for (i = 0; i < items; i++) {
-            gridLayout.createColumnGroupComponent(textFields.get(i));
+            gridLayout.attachColumnGroupComponent(textFields.get(i));
         }
         gridLayout.createNewColumn(GroupLayout.Alignment.LEADING);
         for (i = 0; i < items; i++) {
-            gridLayout.createColumnGroupComponent(buttons.get(i));
+            gridLayout.attachColumnGroupComponent(buttons.get(i));
         }
 
         gridLayout.createNewColumn(GroupLayout.Alignment.TRAILING);
@@ -120,9 +124,9 @@ public class PanelManageHotel extends HotelPanel {
 
         for (i = 0; i < items; i++) {
             gridLayout.createNewRow(GroupLayout.Alignment.BASELINE);
-            gridLayout.createRowGroupComponent(jLabels.get(i));
-            gridLayout.createRowGroupComponent(textFields.get(i));
-            gridLayout.createRowGroupComponent(buttons.get(i));
+            gridLayout.attachRowGroupComponent(jLabels.get(i));
+            gridLayout.attachRowGroupComponent(textFields.get(i));
+            gridLayout.attachRowGroupComponent(buttons.get(i));
 
         }
 
@@ -130,8 +134,10 @@ public class PanelManageHotel extends HotelPanel {
 
         gridLayout.finalizeLayout();
         this.confirmationPanel.setVisible(false);
-        
+        JScrollPane jspPane = compFactory.createJScrollPane(this.jlDates);
         boxBuildVert.setChild(manageSettingsPanel);
+        boxBuildVert.setChild(compFactory.createJLabelHeading("Date of Reservation:"));
+        boxBuildVert.setChild(jspPane);
         boxBuildVert.setChild(jLabels.get(i));
         boxBuildVert.setChild(buttons.get(i));
         boxBuildVert.setChild(this.confirmationPanel);
@@ -157,6 +163,10 @@ public class PanelManageHotel extends HotelPanel {
         tfRemoveReservation.getDocument().addDocumentListener(listener);
     }
 
+    public void setListSelectionListener(ListSelectionListener listener){
+        jlDates.addListSelectionListener(listener);
+    }
+
     public String getTfChangeName(){
         return tfChangeHotelName.getText();
     }
@@ -177,5 +187,8 @@ public class PanelManageHotel extends HotelPanel {
         return tfRemoveReservation.getText();
     }
 
-    
+    public JList<Integer> getJListDates(){
+        return this.jlDates;
+    }
+
 }

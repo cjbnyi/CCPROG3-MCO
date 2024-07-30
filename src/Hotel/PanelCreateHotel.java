@@ -33,21 +33,20 @@ public class PanelCreateHotel extends HotelPanel {
         this.setLayout(new BorderLayout());
         this.setBackground(compFactory.getRandomColor());
 
-        CompBuilderBoxLayout boxBuildVert = ((CompBuilderBoxLayout) director.getBuilder());
-        boxBuildVert.setSpacing(50);
-
-        boxBuildVert.setAutoSpace(false);
-        boxBuildVert.setAutoSpace(true);
-        JPanel contentPanel = initContentPanel(boxBuildVert, compFactory);
+   
+        JPanel contentPanel = initContentPanel(director, compFactory);
     
         this.add(this.hotelSelectionPanel, BorderLayout.WEST);
         this.add(contentPanel, BorderLayout.CENTER);
     }
 
-    public JPanel initPricePanel(ComponentFactory compFactory){
+    private JPanel initPricePanel(CompBuilderGridLayout gridLayout, ComponentFactory compFactory){
         JPanel inputPanel = compFactory.createJPanel();
         GroupLayout layout = new GroupLayout(inputPanel);
-        inputPanel.setLayout(layout);
+
+        gridLayout.setParent(inputPanel);
+        //inputPanel.setLayout(layout);
+
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
         
@@ -59,45 +58,29 @@ public class PanelCreateHotel extends HotelPanel {
         JTextField priceField = compFactory.createJTextField(36, 12*15);
         this.priceField = priceField;
 
-
-        layout.setHorizontalGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                .addComponent(nameFieldLabel)
-                .addComponent(priceFieldLabel)
-            )
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                .addComponent(nameField)
-                .addComponent(priceField)
-            )
-        );  
-
-        layout.setVerticalGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(nameFieldLabel)
-                .addComponent(nameField)   
-            )
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(priceFieldLabel)
-                .addComponent(priceField)
-            )
-        );
+        gridLayout.createNewRow(GroupLayout.Alignment.BASELINE);
+        gridLayout.attachRowGroupComponent(nameFieldLabel);
+        gridLayout.attachRowGroupComponent(nameField);
+        gridLayout.createNewRow(GroupLayout.Alignment.BASELINE);
+        gridLayout.attachRowGroupComponent(priceFieldLabel);
+        gridLayout.attachRowGroupComponent(priceField);
+        gridLayout.createNewRow(GroupLayout.Alignment.BASELINE);
+        gridLayout.createNewColumn(GroupLayout.Alignment.TRAILING);
+        gridLayout.attachColumnGroupComponent(nameFieldLabel);
+        gridLayout.attachColumnGroupComponent(priceFieldLabel);
+        gridLayout.createNewColumn(GroupLayout.Alignment.TRAILING);
+        gridLayout.attachColumnGroupComponent(nameField);
+        gridLayout.attachColumnGroupComponent(priceField);
+        gridLayout.createNewColumn(GroupLayout.Alignment.TRAILING);
+        gridLayout.finalizeLayout();
 
         return inputPanel;
     }
 
-    // public JPanel initHotelSelectionPanel(CompBuilderBoxLayout boxBuildVert, ComponentFactory compFactory){
-    //     JPanel hotelSelectionPanel = compFactory.createJPanel();
-
-    //     boxBuildVert.setParent(hotelSelectionPanel);
-    //     boxBuildVert.setChild(compFactory.createJLabelHeading("Hotels:"));
-    //     boxBuildVert.setChild(compFactory.createJLabelBody("No hotels created."));
-
-    //     return hotelSelectionPanel;
-    // }
-
-    public JPanel initContentPanel(CompBuilderBoxLayout boxBuildVert, ComponentFactory compFactory){
+    private JPanel initContentPanel(ComponentBuilderDirector director, ComponentFactory compFactory){
+        
+        
         JPanel contentPanel = compFactory.createJPanel();
-
         JLabel contentTitle = compFactory.createJLabelHeading("Create Hotel");
         
         JTextArea hotelInfo = compFactory.createJTextArea();
@@ -106,10 +89,18 @@ public class PanelCreateHotel extends HotelPanel {
         JButton createButton = compFactory.createSingleJButton(this.jButtonList, "Create Hotel Instance", 200, 50);
         this.createButton = createButton;
 
-        JPanel inputPanel = initPricePanel(compFactory);
+        director.setBuilder(ComponentBuilderState.LAY_GRID);
+        CompBuilderGridLayout gridLayout = (CompBuilderGridLayout) director.getBuilder();
+        JPanel inputPanel = initPricePanel(gridLayout, compFactory);
 
         this.confirmationPanel.setVisible(false);
         
+        director.setBuilder(ComponentBuilderState.LAY_BOX_VERTICAL);
+        CompBuilderBoxLayout boxBuildVert = ((CompBuilderBoxLayout) director.getBuilder());
+        boxBuildVert.setSpacing(50);
+        boxBuildVert.setAutoSpace(false);
+        boxBuildVert.setAutoSpace(true);
+
         boxBuildVert.setParent(contentPanel);
         boxBuildVert.setChild(contentTitle);
         boxBuildVert.setChild(hotelInfo);

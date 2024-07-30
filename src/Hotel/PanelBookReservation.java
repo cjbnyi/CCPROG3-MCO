@@ -69,12 +69,10 @@ public class PanelBookReservation extends HotelPanel{
         settingsPanel.setBorder(compFactory.createPadding());
 
         ArrayList<Integer> dateNums = new ArrayList<Integer>();
-
         int i = 0;
         for (i = 1; i <= 31; i++){
             dateNums.add(i);
         }
-
         Integer[] dates = dateNums.toArray(new Integer[dateNums.size()]);
 
         JList<Integer> jListDatesStart = compFactory.createJListInteger(dates);

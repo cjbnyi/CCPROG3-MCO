@@ -49,7 +49,7 @@ public class HotelGUI extends JFrame {
         this.enableOnly = -1;
         setLayout(new BorderLayout());
 
-        setSize(800, 600);
+        setSize(800, 800);
         initializeComponents();
 
         // by default, the window will not be displayed
@@ -116,7 +116,6 @@ public class HotelGUI extends JFrame {
     public PanelBookReservation getPanelBookReservation() {
         return this.panelBookReservation;
     }
-
 
     public void setHotelList(String text){
         this.panelCreateHotel.getHotelPanel().setHotelList(text);
@@ -197,64 +196,48 @@ public class HotelGUI extends JFrame {
         return this.panelHotelSelectionList;
     }
 
-
-
     public void selectJtabbedPanelView(int i){
         this.tabPane.setSelectedIndex(i);
     }
-
 
     public int getViewedPanel(){
         return this.tabPane.getSelectedIndex();
     }
 
     /**
-     * Displays a general invalid input warning.
+     * Displays the list of rooms for selection.
+     * @param roomList the list of rooms to display
      */
-
-    public void displayManageHotelPrompt(MANAGER_STATE displayState) {
-        final String[][] promptManageHotel = {
-            {
-                "",
-                "Welcome to Hotel Manager.",
-                "Please input the name of the hotel.",
-                ""
-            },{ // 0 : Hotel
-                "Hotel Manager", 
-                "Please Choose the following Managing actions:",
-                "",
-                " [a] Change the name of the Hotel",
-                " [b] Add Rooms",
-                " [c] Remove Rooms",
-                " [d] Update the Base Price for a Room",
-                " [e] Remove Reservation",
-                " [f] Remove Hotel",
-                " [q] Quit",
-                ""
-            }, {
-                "## Change Name of the Hotel",
-                "Please provide a valid name of the hotel you want to change the name."
-            }, {    // 1 : Change
-                "## Add a Room(s)",
-                "Adds a room to to the selected hotel.",
-                "Please provide the correct name for the additional room."
-            }, {
-                "## Remove a Room(s)",
-                "Please provide the room you want to remove.",
-                "Make sure that it does not have a reservation"
-            }, {
-                "## Update the Base Price",
-                "Please input the price you want to change. Change should be greater than P100."
-            }, {
-                "## Remove Reservation"
-            }, {
-                "## Remove Hotel"
-            }
-        };
-
-        for (String sentence : promptManageHotel[displayState.getID()]){
-            panelManageHotel.addContentInfo(sentence);
+    public void guiDisplayRoomSelection(HotelPanel hotelPanel, String hotelName, ArrayList<Room> roomList) {
+        if (roomList.isEmpty()){
+            hotelPanel.addContentInfo("\nNo room currently exists.");
+            return;
         }
+        String output = "Selected hotel: " + hotelName + "\nList of rooms:\n";
+        int i = 1;
+        for (Room room : roomList) {
+            if (i % 5 == 1)
+                output += "\n";
+            output +=  room.getName();
+            if (i % 5 != 0)
+                output += " | ";
+            ++i;
+        }
+        hotelPanel.addContentInfo(output);
+    }
 
+    public void displayReservationInformation(HotelPanel hotelPanel, ArrayList<Reservation> reservationList) {
+        if (reservationList.isEmpty()) {
+            hotelPanel.addContentInfo("\nNo reservations currently exist.");
+        } else {
+            int i = 1;
+            for (Reservation reservation : reservationList) {
+                hotelPanel.addContentInfo(i + ".)" + "Guest: " + reservation.getGuestName());
+                hotelPanel.addContentInfo("Room: " + reservation.getRoom().getName());
+                hotelPanel.addContentInfo("Check-in: " + reservation.getCheckInDate());
+                hotelPanel.addContentInfo("Check-out: " + reservation.getCheckOutDate());
+                ++i;
+            }
+        }
     }
 }

@@ -14,7 +14,6 @@ public class PanelHome extends JPanel {
     private JButton manageButton;
     private JButton quitButton;
 
-
     PanelHome(ComponentFactory componentFactory){
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.setBackground(componentFactory.getRandomColor());
@@ -60,27 +59,6 @@ public class PanelHome extends JPanel {
             cbBoxCenter.setChild(button);
         }
 
-    }
-
-    private void assignButtons(JButton button, Integer whichButton){
-        switch(whichButton) {
-            case 0:
-                this.createButton = button;
-                break;
-            case 1:
-                this.viewButton = button;
-                break;
-            case 2:
-                this.manageButton = button;
-                break;
-            case 3:
-                this.bookButton = button;
-                break;
-            case 4:
-                this.quitButton = button;
-                break;
-        }
-        whichButton++;
     }
 
     public void setActionListener(ActionListener listener){

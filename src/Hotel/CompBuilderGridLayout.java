@@ -41,11 +41,11 @@ public class CompBuilderGridLayout extends ComponentBuilder{
         this.horParallelGroup = this.groupLayout.createParallelGroup(alignment);
     }
 
-    public void createColComponent(JComponent component){
+    public void attachColComponent(JComponent component){
         this.horizontalGroup.addComponent(component);
     }
 
-    public void createColumnGroupComponent(JComponent component){
+    public void attachColumnGroupComponent(JComponent component){
         this.horParallelGroup.addComponent(component);
     }
 
@@ -62,7 +62,7 @@ public class CompBuilderGridLayout extends ComponentBuilder{
         this.verticalGroup.addComponent(component);
     }
 
-    public void createRowGroupComponent(JComponent component){
+    public void attachRowGroupComponent(JComponent component){
         this.vertParallelGroup.addComponent(component);
     }
     
