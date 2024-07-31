@@ -1044,6 +1044,9 @@ public class Controller_GUI implements ActionListener {
         manageHotel.setContentInfo("Removed Discount!");
     }
 
+    /**
+     * Applies the date price to a hotel.
+     */
     private void guiDatePriceModifier(){
         PanelManageHotel manageHotel = view.getPanelManageHotel();
         Hotel hotel = getHotelPanelSelectedHotel(manageHotel);        
