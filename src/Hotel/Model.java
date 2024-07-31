@@ -21,7 +21,9 @@ import java.util.ArrayList;
  * The Model class manages a list of hotels and provides methods to manipulate hotel data.
  */
 public class Model {
-
+    // System date constants
+    public static final int  SYSTEM_MONTH = 7,
+                             SYSTEM_YEAR = 2024;
     private ArrayList<Hotel> hotelList;
 
     /**
@@ -638,6 +640,18 @@ public class Model {
         }
 
         return new Result(ER_SUCCESSFUL);
+    }
+
+    public Result datePriceModifier(String hotelName, int day, double newPriceRate) {
+        Hotel hotel = getHotel(hotelName);
+
+        if (hotel == null){
+            return new Result(ER_NO_HOTEL);
+        }
+
+        Result resSetPrice = hotel.setPriceRateForADay(day, newPriceRate);
+
+        return resSetPrice;
     }
 
     // TODO: DONE! (remove)

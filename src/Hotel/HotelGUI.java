@@ -10,8 +10,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 
-import Hotel.View.MANAGER_STATE;
-
 public class HotelGUI extends JFrame {
     private JTabbedPane tabPane;
             
@@ -54,7 +52,7 @@ public class HotelGUI extends JFrame {
         initializeComponents();
 
         // by default, the window will not be displayed
-        setMinimumSize(new Dimension(700, 600));
+        setMinimumSize(new Dimension(700, 800));
         setResizable(true);
 
         // the program will actually stop running

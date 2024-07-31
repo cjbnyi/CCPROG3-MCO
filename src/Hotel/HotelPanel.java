@@ -79,6 +79,11 @@ public abstract class HotelPanel extends JPanel {
             this.contentInfo.setText(this.contentInfo.getText() + "\n" + text);
     }
 
+    public void addContentInfo(ArrayList<String> texts){
+        for (String text: texts)
+            this.contentInfo.setText(this.contentInfo.getText() + "\n" + text);
+    }
+
     public void resetContentInfo(){
         this.contentInfo.setText("");
     }

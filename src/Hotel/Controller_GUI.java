@@ -6,16 +6,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.swing.JList;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.text.BadLocationException;
 
 /** 
  * A Controller that uses the Java Swing.
 */
-public class Controller_GUI implements ActionListener, DocumentListener, ListSelectionListener {
+public class Controller_GUI implements ActionListener {
     private Model model;
     private HotelGUI view;
     private boolean hasConfirmed;
@@ -29,7 +24,7 @@ public class Controller_GUI implements ActionListener, DocumentListener, ListSel
      * Constructs a Controller with the specified Model and View.
      *
      * @param model the model to be used by the controller
-     * @param view the view to be used by the controller
+     * @param gui the view to be used by the controller
      */
     public Controller_GUI (Model model, HotelGUI gui) {
         this.model = model;
@@ -46,8 +41,6 @@ public class Controller_GUI implements ActionListener, DocumentListener, ListSel
         this.hasSelectedHotel = hasSelectedHotel;
 
         gui.setActionListener(this);
-        gui.setDocumentListener(this);
-        gui.setListSelectionListener(this);
     }
 
     public void start(){
@@ -149,6 +142,9 @@ public class Controller_GUI implements ActionListener, DocumentListener, ListSel
             case "Remove Hotel":
                 guiRemoveHotel();
                 break;
+            case "Date Price":
+                guiDatePriceModifier();
+                break;
         }
 
         // Book Panel
@@ -169,59 +165,6 @@ public class Controller_GUI implements ActionListener, DocumentListener, ListSel
 
         // TODO: Apply Discount code, and Remove Discount code.
         
-    }
-
-    @Override
-    public void insertUpdate(DocumentEvent e){
-        String output;
-        try {
-            output = e.getDocument().getText(0, e.getDocument().getLength());
-            System.out.println("Insert: " + output);
-        } catch (BadLocationException Error){
-            System.out.println("Error");
-        }
-    }
-
-    @Override
-    public void changedUpdate(DocumentEvent e){
-        String output;
-        try {
-            output = e.getDocument().getText(0, e.getDocument().getLength());
-            System.out.println("Changed: " + output);
-        } catch (BadLocationException Error){
-            System.out.println("Error");
-        }
-    }
-
-    @Override
-    public void removeUpdate(DocumentEvent e){
-        String output;
-        try {
-            output = e.getDocument().getText(0, e.getDocument().getLength());
-            System.out.println("Removed: " + output);
-        } catch (BadLocationException Error){
-            System.out.println("Error");
-        }
-    }
-
-    @Override
-    public void valueChanged(ListSelectionEvent e){
-        JList lsm = (JList) e.getSource();
-        String output = "";
-        
-        
-        if (lsm.isSelectionEmpty()) {
-            System.out.println("None");
-        } else {
-            // Find out which indexes are selected.
-            int minIndex = lsm.getMinSelectionIndex();
-            int maxIndex = lsm.getMaxSelectionIndex();
-            for (int i = minIndex; i <= maxIndex; i++) {
-                if (lsm.isSelectedIndex(i)) {
-                    System.out.println(i);
-                }
-            }
-        }
     }
     
     /**
@@ -544,7 +487,7 @@ public class Controller_GUI implements ActionListener, DocumentListener, ListSel
         if (isHotelNull){
             return;
         }
-
+        viewPanel.setContentInfo("");
         double estimatedEarnings = model.getHotelEstimatedEarnings(hotel);
   
         String output[] = {
@@ -566,7 +509,7 @@ public class Controller_GUI implements ActionListener, DocumentListener, ListSel
         if (doesHotelCloneNotExist(hotel)){
             return;
         }
-
+        viewPanel.setContentInfo("");
         int daySelection = viewPanel.getjLDateSelected().getSelectedIndex();
         if (daySelection == -1){
             viewPanel.setContentInfo("Select a date.");
@@ -1069,18 +1012,14 @@ public class Controller_GUI implements ActionListener, DocumentListener, ListSel
             return;
 
         String roomName = manageHotel.getTfDiscountCodeRoomName();
-        String strDiscount = manageHotel.getTfDiscountCode();
         
         if (isStringTrimmedEmpty(roomName)){
             view.displayReservationInformation(manageHotel, model.getReservations(hotel.getName()));
             return;
-        } else if (isStringTrimmedEmpty(strDiscount)){
-            manageHotel.setContentInfo("Please enter a discount code!");
-            return;
         }
 
         JList<Integer> jListReservationDate = manageHotel.getJListDates();
-
+        manageHotel.resetContentInfo();
         // Check if empty
         Boolean emptyDateSelection = jListReservationDate.getSelectedIndex() == -1;
         if (emptyDateSelection) {
@@ -1103,5 +1042,70 @@ public class Controller_GUI implements ActionListener, DocumentListener, ListSel
 
         model.removeDiscountCode(grabbedReservation);
         manageHotel.setContentInfo("Removed Discount!");
+    }
+
+    private void guiDatePriceModifier(){
+        PanelManageHotel manageHotel = view.getPanelManageHotel();
+        Hotel hotel = getHotelPanelSelectedHotel(manageHotel);        
+        
+        if (doesHotelCloneNotExist(hotel))
+            return;
+        
+        JList<Integer> jListReservationDate = manageHotel.getJListDatePriceList();
+        ArrayList<String> datePriceInfo = new ArrayList<String>();
+        manageHotel.resetContentInfo();
+        double priceList[] = hotel.getPriceRateList();
+        int i = 0;
+        for (i = 0; i < priceList.length; i++){
+            datePriceInfo.add("Day " + (i+1) + ": Price " + Double.toString(priceList[i]) + "%");
+        }
+
+
+        // Check if empty
+        Boolean emptyDateSelection = jListReservationDate.getSelectedIndex() == -1;
+        if (emptyDateSelection) {
+            manageHotel.addContentInfo("Please select a date on the starting datelist.");
+            
+            manageHotel.addContentInfo(datePriceInfo);
+            return;
+        }
+
+        Double price = 0.0;
+        String tfPrice = manageHotel.getTfDatePriceForTheDay();
+
+        try {
+            price = Double.parseDouble(tfPrice);
+        } catch (NumberFormatException e) {
+            manageHotel.setContentInfo("Please insert a valid rate multiplier.");
+            manageHotel.addContentInfo(datePriceInfo);
+            return;
+        }
+
+        Boolean isWithinAllowedDatePrice = (Double.isFinite(price) && price >= 0.50 && price <= 1.50);
+        
+        if (!isWithinAllowedDatePrice) {
+            manageHotel.setContentInfo("Please insert a valid rate multiplier. Must be between 0.5 to 1.50 inclusively");
+            return;
+        }
+
+        if (hasUserFailedAgreement(manageHotel, "Date Price", "Date price changed failed"))
+            return;
+
+        Result resDatePrice = model.datePriceModifier(hotel.getName(), jListReservationDate.getSelectedValue(), price);
+
+        if (resDatePrice.isSuccesful()) {
+            manageHotel.setContentInfo("Date Price successful");
+        } else {
+            switch (resDatePrice.getCommonError()) {
+                case ER_INVALID_DAY:
+                case ER_INVALID_PRICE_RATE:
+                case ER_NO_HOTEL:
+                    manageHotel.setContentInfo("Date Price Failed, Reason: " + resDatePrice.getMessage());
+                    break;
+                default:
+                    manageHotel.setContentInfo("Date Price Failed, Unknonw Reason: " + resDatePrice.getMessage());
+                    break;
+            }
+        }
     }
 }

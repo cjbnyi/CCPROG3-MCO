@@ -1,7 +1,6 @@
 package Hotel;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
@@ -27,6 +26,7 @@ public class PanelManageHotel extends HotelPanel {
     private JButton btnRemoveHotel;
     private JButton btnApplyDiscountCode;
     private JButton btnRemoveDiscountCode;
+    private JButton btnApplyDatePrice;
     private JTextField tfChangeHotelName;
     private JTextField tfAddRoomName;
     private JTextField tfRemoveRoomName;
@@ -34,6 +34,8 @@ public class PanelManageHotel extends HotelPanel {
     private JTextField tfRemoveReservation;
     private JTextField tfDiscountCode;
     private JTextField tfRoomName;
+    private JTextField tfDatePriceList;
+    private JList<Integer> jlDatePriceDateList;
     private JList<Integer> jlDates;
 
     PanelManageHotel(ComponentFactory compFactory){
@@ -140,7 +142,6 @@ public class PanelManageHotel extends HotelPanel {
         gridLayout.attachColumnGroupComponent(textFields.get(5));
         gridLayout.attachColumnGroupComponent(textFields.get(6));
         gridLayout.createNewColumn(GroupLayout.Alignment.LEADING);
-        
         gridLayout.attachColumnGroupComponent(this.btnApplyDiscountCode);
         gridLayout.attachColumnGroupComponent(this.btnRemoveDiscountCode);
 
@@ -157,6 +158,28 @@ public class PanelManageHotel extends HotelPanel {
         return discountPanel;
     }
 
+    private JPanel initDatePriceModifier(CompBuilderBoxLayout boxBuildVert, ComponentFactory compFactory){
+        JPanel datePricePanel = new JPanel();
+        
+        JList<Integer> dateList = compFactory.createJListIntegerFilled(31);
+        this.jlDatePriceDateList = dateList;    
+        
+        JTextField tfDatePriceList = compFactory.createJTextField(50, 100);
+        this.tfDatePriceList = tfDatePriceList;
+
+        JButton btnApplyDatePrice = compFactory.createSingleJButton("Date Price");
+        this.btnApplyDatePrice = btnApplyDatePrice;
+        JScrollPane jsp = compFactory.createJScrollPaneJList(dateList);
+
+        boxBuildVert.setParent(datePricePanel);
+        boxBuildVert.setChild(compFactory.createJLabelHeading("Apply Date Price"));
+        boxBuildVert.setChild(jsp);
+        boxBuildVert.setChild(tfDatePriceList);
+        boxBuildVert.setChild(btnApplyDatePrice);
+        
+        return datePricePanel;
+    }
+    
     private JPanel initContentPanel(ComponentBuilderDirector director, ComponentFactory compFactory) {
         JPanel contentPanel = compFactory.createJPanel();
         String buttonNames[] = {
@@ -225,12 +248,15 @@ public class PanelManageHotel extends HotelPanel {
 
         director.setBuilder(ComponentBuilderState.LAY_BOX_VERTICAL);
         CompBuilderBoxLayout boxBuildVert = ((CompBuilderBoxLayout) director.getBuilder());
+        JPanel datePricePanel = initDatePriceModifier(boxBuildVert, compFactory);
+        
         boxBuildVert.setParent(contentPanel);
         boxBuildVert.setAutoSpace(true);
         boxBuildVert.setChild(compFactory.createJLabelHeading("Manage Hotel"));
         boxBuildVert.setChild(contentPane);
         boxBuildVert.setChild(defaultActionsPanel);
         boxBuildVert.setChild(discountPanel);
+        boxBuildVert.setChild(datePricePanel);
         boxBuildVert.setChild(jLabels.get(5));
         boxBuildVert.setChild(buttons.get(5));
         boxBuildVert.setChild(this.confirmationPanel);
@@ -247,6 +273,7 @@ public class PanelManageHotel extends HotelPanel {
         btnRemoveHotel.addActionListener(listener);
         btnApplyDiscountCode.addActionListener(listener);
         btnRemoveDiscountCode.addActionListener(listener);
+        btnApplyDatePrice.addActionListener(listener);
         hotelSelectionPanel.setActionListener(listener);
         confirmationPanel.setActionListener(listener);
     };
@@ -257,7 +284,7 @@ public class PanelManageHotel extends HotelPanel {
         tfRemoveRoomName.getDocument().addDocumentListener(listener);
         tfUpdatePrice.getDocument().addDocumentListener(listener);
         tfRemoveReservation.getDocument().addDocumentListener(listener);
-        
+    
     }
 
     public void setListSelectionListener(ListSelectionListener listener){
@@ -292,8 +319,16 @@ public class PanelManageHotel extends HotelPanel {
         return tfRoomName.getText();
     }
 
+    public String getTfDatePriceForTheDay(){
+        return tfDatePriceList.getText();
+    }
+
     public JList<Integer> getJListDates(){
         return this.jlDates;
+    }
+
+    public JList<Integer> getJListDatePriceList(){
+        return this.jlDatePriceDateList;
     }
 
 }

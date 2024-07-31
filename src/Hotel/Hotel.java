@@ -22,7 +22,7 @@ public class Hotel {
     private ArrayList<Room> roomList;
     private ArrayList<Reservation> reservationList;
     private double[] priceRateList;
-
+    
     private double basePricePerNight = 1299.0;
     private double standardMultiplier = 1.0;
     private double deluxeMultiplier = 1.2;
