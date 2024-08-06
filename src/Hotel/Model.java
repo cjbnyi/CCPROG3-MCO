@@ -94,6 +94,7 @@ public class Model {
             case StandardRoom r -> new StandardRoom(room);
             case DeluxeRoom r -> new DeluxeRoom(room);
             case ExecutiveRoom r -> new ExecutiveRoom(room);
+            case VIPRoom r -> new VIPRoom(room);
             case null, default -> null;
         };
     }
@@ -109,6 +110,7 @@ public class Model {
             case StandardRoom r -> "Standard";
             case DeluxeRoom r -> "Deluxe";
             case ExecutiveRoom r -> "Executive";
+            case VIPRoom r -> "VIP";
             case null, default -> null;
         };
     }
@@ -137,6 +139,7 @@ public class Model {
             case StandardRoom r -> hotel.getStandardMultiplier();
             case DeluxeRoom r -> hotel.getDeluxeMultiplier();
             case ExecutiveRoom r -> hotel.getExecutiveMultiplier();
+            case VIPRoom r -> hotel.getVIPMultiplier();
             case null, default -> 0f;
         };
         double priceRate = hotel.getPriceRateForADay(day);
@@ -172,6 +175,7 @@ public class Model {
             case StandardRoom r -> hotel.getStandardMultiplier();
             case DeluxeRoom r -> hotel.getDeluxeMultiplier();
             case ExecutiveRoom r -> hotel.getExecutiveMultiplier();
+            case VIPRoom r -> hotel.getVIPMultiplier();
             case null, default -> 0f;
         };
 
@@ -217,7 +221,7 @@ public class Model {
     public ArrayList<Reservation> filterHotelReservationsByRoom(Hotel hotel, Room room) {
         ArrayList<Reservation> reservationList = new ArrayList<Reservation>();
         for (Reservation reservation : hotel.getReservationList()) {
-            if (reservation.getRoom().equals(room)) {
+            if (reservation.getRoom().getName().equals(room.getName())) {
                 reservationList.add(reservation);
             }
         }
@@ -235,6 +239,8 @@ public class Model {
 
         Hotel hotel = getHotel(hotelName);
         assert hotel != null;
+
+        
         ArrayList<Reservation> reservationList = hotel.getReservationList();
 
         for (Reservation r : reservationList) {
@@ -296,7 +302,6 @@ public class Model {
 
 
     // TODO: Undocumented
-    // !: Please check if its correct and fit MVC.
     /**
      * Filters and returns a list of available rooms by a specified date.
      *
@@ -431,6 +436,7 @@ public class Model {
             case StandardRoom r -> basePricePerNight * hotel.getStandardMultiplier();
             case DeluxeRoom r -> basePricePerNight * hotel.getDeluxeMultiplier();
             case ExecutiveRoom r -> basePricePerNight * hotel.getExecutiveMultiplier();
+            case VIPRoom r -> basePricePerNight * hotel.getVIPMultiplier();
             case null, default -> -1;
         };
     }

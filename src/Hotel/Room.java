@@ -9,7 +9,8 @@ public abstract class Room {
     public enum ROOM_TYPE {
         STANDARD,
         DELUXE,
-        EXECUTIVE
+        EXECUTIVE,
+        VIP
     }
 
     private String name;

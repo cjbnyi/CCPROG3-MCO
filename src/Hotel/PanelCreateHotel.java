@@ -77,8 +77,6 @@ public class PanelCreateHotel extends HotelPanel {
     }
 
     private JPanel initContentPanel(ComponentBuilderDirector director, ComponentFactory compFactory){
-        
-        
         JPanel contentPanel = compFactory.createJPanel();
         JLabel contentTitle = compFactory.createJLabelHeading("Create Hotel");
         

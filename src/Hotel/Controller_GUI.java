@@ -516,7 +516,7 @@ public class Controller_GUI implements ActionListener {
             return;
         }
 
-        LocalDate date = LocalDate.of(2024, View.SYSTEM_MONTH, viewPanel.getjLDateSelected().getSelectedValue());
+        LocalDate date = LocalDate.of(SYSTEM_YEAR, SYSTEM_MONTH, viewPanel.getjLDateSelected().getSelectedValue());
         
         int availableRooms = model.getNumOfAvailableRoomsByDate(hotel, date);
 
@@ -585,17 +585,20 @@ public class Controller_GUI implements ActionListener {
             return;
         }
 
-        ArrayList<Reservation> reservationList = model.filterHotelReservationsByRoom(hotel, room);
         viewPanel.setContentInfo("\nSelected hotel: " + hotel.getName() + "\nSelected room: " + roomName);
+        ArrayList<Reservation> reservationList = model.filterHotelReservationsByRoom(hotel, room);
+        
 
-        if (reservationList.isEmpty())
-            viewPanel.setContentInfo("\nNo reservation currently exists.");
+        if (reservationList.isEmpty()){
+            viewPanel.addContentInfo("\nNo reservation currently exists.");
+            return;
+        }
         else {
             viewPanel.addContentInfo("\nList of reservations:");
             int i = 1;
             for (Reservation reservation : reservationList) {
                 viewPanel.addContentInfo(i + ".)" + "Check-in date: " + reservation.getCheckInDate() + "\n");
-                viewPanel.addContentInfo("Room: " + reservation.getRoom() + "\n");
+                viewPanel.addContentInfo("Room: " + reservation.getRoom().getName() + "\n");
                 ++i;
             }
         }
@@ -607,7 +610,7 @@ public class Controller_GUI implements ActionListener {
         }
 
         LocalDate date = LocalDate.of(2024, View.SYSTEM_MONTH, viewPanel.getjLDateSelected().getSelectedValue());
-        Reservation reservation = model.getReservation(hotel.getName(), roomName, date);
+        Reservation reservation = model.getReservation(hotel.getName(), room.getName(), date);
 
         if (reservation == null) {
             String strReservationNullResponse[] = {
@@ -619,21 +622,23 @@ public class Controller_GUI implements ActionListener {
             return;
         }
 
-        String  guestName       = reservation.getGuestName(),
+        
+            String  guestName       = reservation.getGuestName(),
                 priceBreakdown  = model.getReservationPriceBreakdown(hotel, reservation); 
-        int checkInDay  = reservation.getCheckInDate().getDayOfMonth(),
-            checkOutDay = reservation.getCheckOutDate().getDayOfMonth();
-        double totalPrice = model.getReservationTotalPrice(hotel, reservation);
+            int checkInDay  = reservation.getCheckInDate().getDayOfMonth(),
+                checkOutDay = reservation.getCheckOutDate().getDayOfMonth();
+            double totalPrice = model.getReservationTotalPrice(hotel, reservation);
 
-        String guiLowLevelReservationInfo[] = {
-            "Guest: " + guestName,
-            "Check-in: July " + checkInDay + ", 2024",
-            "Check-out: July " + checkOutDay + ", 2024",
-            "Price breakdown:" + priceBreakdown,
-            "Total price: " + totalPrice
-        };
+            String guiLowLevelReservationInfo[] = {
+                "Guest: " + guestName,
+                "Check-in: July " + checkInDay + ", 2024",
+                "Check-out: July " + checkOutDay + ", 2024",
+                "Price breakdown:" + priceBreakdown,
+                "Total price: " + totalPrice
+            };
 
-        viewPanel.addContentInfo(guiLowLevelReservationInfo);
+            viewPanel.addContentInfo(guiLowLevelReservationInfo);
+        
     }
 
     /**
@@ -938,6 +943,7 @@ public class Controller_GUI implements ActionListener {
         }
 
         model.makeReservation(hotel.getName(), guestName, startDate,endDate, roomToReserve);
+        guiUpdateHotelSelection();
     }
     
     /**

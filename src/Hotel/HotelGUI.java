@@ -261,6 +261,7 @@ public class HotelGUI extends JFrame {
                 case StandardRoom r -> hotel.getStandardMultiplier();
                 case DeluxeRoom r -> hotel.getDeluxeMultiplier();
                 case ExecutiveRoom r -> hotel.getExecutiveMultiplier();
+                case VIPRoom r -> hotel.getVIPMultiplier();
                 case null, default -> 0f;
             };
 

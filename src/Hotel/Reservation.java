@@ -93,6 +93,7 @@ public class Reservation {
             case StandardRoom r -> new StandardRoom(room);
             case DeluxeRoom r -> new DeluxeRoom(room);
             case ExecutiveRoom r -> new ExecutiveRoom(room);
+            case VIPRoom r -> new VIPRoom(room);
             case null, default -> null;
         };
     }

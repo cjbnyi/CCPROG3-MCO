@@ -1,20 +1,12 @@
 package Hotel;
-import static Hotel.Result.COMMON_ERRORS.ER_HOTEL_HAS_RESERVATION;
-import static Hotel.Result.COMMON_ERRORS.ER_INVALID_DAY;
-import static Hotel.Result.COMMON_ERRORS.ER_INVALID_PRICE_RATE;
-import static Hotel.Result.COMMON_ERRORS.ER_LOWER_THAN_BASEPRICE;
-import static Hotel.Result.COMMON_ERRORS.ER_NO_RESERVATION;
-import static Hotel.Result.COMMON_ERRORS.ER_NO_ROOM;
-import static Hotel.Result.COMMON_ERRORS.ER_ROOM_HAS_RESERVATION;
-import static Hotel.Result.COMMON_ERRORS.ER_SUCCESSFUL;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
+
+import static Hotel.Result.COMMON_ERRORS.*;
 /**
  * The Hotel class represents a hotel with rooms and reservations.
  */
 public class Hotel {
-
     public static final int MAX_ROOMS = 50;
     private static final int DAYS_IN_MONTH = 31;
 
@@ -27,7 +19,7 @@ public class Hotel {
     private double standardMultiplier = 1.0;
     private double deluxeMultiplier = 1.2;
     private double executiveMultiplier = 1.35;
-
+    private double vipMultiplier = 1.5 * executiveMultiplier;
 
     /**
      * Constructs a Hotel object with a given name.
@@ -56,6 +48,7 @@ public class Hotel {
         this.standardMultiplier = hotel.standardMultiplier;
         this.deluxeMultiplier = hotel.deluxeMultiplier;
         this.executiveMultiplier = hotel.executiveMultiplier;
+        this.vipMultiplier = hotel.vipMultiplier;
     }
 
 
@@ -85,10 +78,12 @@ public class Hotel {
                 roomName = "" + letter + number;
                 if (letter <= 'B') {
                     newRoom = new StandardRoom(roomName);
-                } else if (letter <= 'D') {
+                } else if (letter <= 'C') {
                     newRoom = new DeluxeRoom(roomName);
-                } else {
+                } else if (letter <= 'D') {
                     newRoom = new ExecutiveRoom(roomName);
+                } else {
+                    newRoom = new VIPRoom(roomName);
                 }
                 this.roomList.add(newRoom);
             }
@@ -106,6 +101,7 @@ public class Hotel {
             case StandardRoom r -> new StandardRoom(room);
             case DeluxeRoom r -> new DeluxeRoom(room);
             case ExecutiveRoom r -> new ExecutiveRoom(room);
+            case VIPRoom r -> new VIPRoom(room);
             case null, default -> null;
         };
     }
@@ -184,6 +180,10 @@ public class Hotel {
      */
     public double getExecutiveMultiplier() {
         return executiveMultiplier;
+    }
+
+    public double getVIPMultiplier(){
+        return vipMultiplier;
     }
 
 
@@ -331,6 +331,7 @@ public class Hotel {
             case StandardRoom r -> filterStandardReservations();
             case DeluxeRoom r -> filterDeluxeReservations();
             case ExecutiveRoom r -> filterExecutiveReservations();
+            case VIPRoom r -> filterVIPReservations();
             case null, default -> null;
         };
 
@@ -368,6 +369,7 @@ public class Hotel {
             case Room.ROOM_TYPE.STANDARD -> new StandardRoom(roomName);
             case Room.ROOM_TYPE.DELUXE -> new DeluxeRoom(roomName);
             case Room.ROOM_TYPE.EXECUTIVE -> new ExecutiveRoom(roomName);
+            case Room.ROOM_TYPE.VIP -> new VIPRoom(roomName);
         };
 
         /* the room can be added */
@@ -449,6 +451,16 @@ public class Hotel {
         ArrayList<Reservation> rList = new ArrayList<Reservation>();
         for (Reservation r : this.reservationList) {
             if (r.getRoom() instanceof ExecutiveRoom) {
+                rList.add(r);
+            }
+        }
+        return rList;
+    }
+
+    public ArrayList<Reservation> filterVIPReservations() {
+        ArrayList<Reservation> rList = new ArrayList<Reservation>();
+        for (Reservation r : this.reservationList) {
+            if (r.getRoom() instanceof VIPRoom) {
                 rList.add(r);
             }
         }
